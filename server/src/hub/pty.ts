@@ -16,7 +16,7 @@ export interface Chunk {
 
 /** 구독자에게 보내는 이벤트. TerminalOutput 메시지와 1:1 이다. */
 export type PtyEvent =
-  | { kind: 'output'; seq: bigint; data: Uint8Array; reset: boolean }
+  | { kind: 'output'; seq: bigint; data: Uint8Array; reset: boolean; replay: boolean }
   | { kind: 'exit'; seq: bigint; exitCode: number };
 
 /** 서버 쪽 PTY 세션. 출력은 seq 와 함께 링버퍼에 쌓고, 구독자(브라우저 탭)마다 큐로 흘려보낸다. */
@@ -24,6 +24,8 @@ export class PtySession {
   readonly id = randomUUID();
   readonly createdAt = new Date();
   exitCode: number | undefined;
+  /** 사용자가 붙인 탭 이름. 비어 있으면 클라이언트 기본 이름 */
+  title = '';
 
   #chunks: Chunk[] = [];
   #bytes = 0;
@@ -59,7 +61,7 @@ export class PtySession {
     while (this.#bytes > RING_BUFFER_BYTES && this.#chunks.length > 1) {
       this.#bytes -= this.#chunks.shift()!.data.length;
     }
-    for (const q of this.#subscribers) q.push({ kind: 'output', seq: chunk.seq, data, reset: false });
+    for (const q of this.#subscribers) q.push({ kind: 'output', seq: chunk.seq, data, reset: false, replay: false });
   }
 
   /** 셸 종료. 구독자에게 종료 코드를 보내고 스트림을 끝낸다. */
@@ -90,10 +92,10 @@ export class PtySession {
     let first = true;
     for (const c of this.#chunks) {
       if (c.seq < start) continue;
-      q.push({ kind: 'output', seq: c.seq, data: c.data, reset: gap && first });
+      q.push({ kind: 'output', seq: c.seq, data: c.data, reset: gap && first, replay: true });
       first = false;
     }
-    if (gap && first) q.push({ kind: 'output', seq: this.#nextSeq, data: new Uint8Array(), reset: true });
+    if (gap && first) q.push({ kind: 'output', seq: this.#nextSeq, data: new Uint8Array(), reset: true, replay: true });
 
     if (this.exited) {
       q.push({ kind: 'exit', seq: this.#nextSeq, exitCode: this.exitCode! });

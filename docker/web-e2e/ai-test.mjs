@@ -22,7 +22,7 @@ try {
   await page.getByLabel('아이디').fill(USERNAME);
   await page.getByLabel('비밀번호').fill(PASSWORD);
   await page.getByRole('button', { name: '로그인' }).click();
-  await page.getByRole('navigation', { name: 'PC 목록' }).getByRole('button', { name: new RegExp(PC) }).click();
+  await page.getByRole('navigation', { name: 'PC 목록' }).locator('button[data-endpoint-id]', { hasText: PC }).click();
   await ai.waitFor();
   const modelSelect = ai.getByLabel('AI 모델');
   await modelSelect.waitFor();

@@ -68,7 +68,8 @@ endpoints
     }
     for (const e of res.endpoints) {
       const seen = e.lastSeenMs ? new Date(Number(e.lastSeenMs)).toISOString() : '-';
-      console.log(`${e.online ? '●' : '○'} ${e.id}  ${e.hostname}  ${e.os}/${e.arch}  last seen ${seen}`);
+      const name = e.displayName ? `${e.displayName} (${e.hostname})` : e.hostname;
+      console.log(`${e.online ? '●' : '○'} ${e.id}  ${name}  ${e.os}/${e.arch}  last seen ${seen}`);
     }
   });
 endpoints

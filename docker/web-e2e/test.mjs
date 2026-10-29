@@ -73,7 +73,7 @@ try {
   pass('로그인 (틀린 비밀번호 거부 후 성공)');
 
   // PC 선택 → 새 터미널
-  const pcButton = page.getByRole('navigation', { name: 'PC 목록' }).getByRole('button', { name: new RegExp(PC) });
+  const pcButton = page.getByRole('navigation', { name: 'PC 목록' }).locator('button[data-endpoint-id]', { hasText: PC });
   await pcButton.waitFor();
   await pcButton.click();
   await newTerminal(1);
@@ -146,8 +146,39 @@ try {
   await page.locator(`[data-session-id="${sessionId}"]`).waitFor({ state: 'attached' });
   await waitScreen((s) => s.includes('after-top'), 'replayed output after reload');
   await type('echo after-reload\n');
-  await waitScreen((s) => s.includes('after-reload'), 'output after reload');
+  // 명령이 그대로 실행되어야 한다 (지난 출력 재생 중 xterm 응답이 입력으로 섞이면 안 됨)
+  await waitScreen((s) => s.split('\n').some((l) => l.trim() === 'after-reload'), 'output after reload');
   pass('새로고침 후 같은 세션에 재접속 (이전 출력 복원, 입력 계속)');
+
+  // 이름 바꾸기: 터미널 탭(더블클릭), PC(연필 버튼). 새로고침 후에도 남는다
+  const nav = page.getByRole('navigation', { name: 'PC 목록' });
+  await page.getByRole('tab', { name: '터미널 1' }).dblclick();
+  await page.getByLabel('터미널 이름').fill('빌드 로그');
+  await page.getByLabel('터미널 이름').press('Enter');
+  await page.getByRole('tab', { name: '빌드 로그' }).waitFor();
+  await page.getByRole('tab', { name: '터미널 2' }).dblclick();
+  await page.getByLabel('터미널 이름').fill('취소될 이름');
+  await page.getByLabel('터미널 이름').press('Escape');
+  await page.getByRole('tab', { name: '터미널 2' }).waitFor();
+  await nav.getByRole('button', { name: `${PC} 이름 바꾸기` }).click({ force: true });
+  await page.getByLabel('PC 이름').fill('개발 서버');
+  await page.getByLabel('PC 이름').press('Enter');
+  await nav.getByText('개발 서버').waitFor();
+  await page.reload({ timeout: 15_000 });
+  await page.getByRole('tab', { name: '빌드 로그' }).waitFor();
+  await nav.getByText('개발 서버').waitFor();
+  if (!(await nav.getByText(PC).count())) throw new Error('original hostname is no longer shown');
+  pass('터미널 탭·PC 이름 바꾸기 (Esc 취소, 새로고침 후 유지, 원래 호스트 이름도 표시)');
+  // 비우면 기본 이름으로 돌아간다
+  await page.getByRole('tab', { name: '빌드 로그' }).dblclick();
+  await page.getByLabel('터미널 이름').fill('');
+  await page.getByLabel('터미널 이름').press('Enter');
+  await page.getByRole('tab', { name: '터미널 1', exact: true }).waitFor();
+  await nav.getByRole('button', { name: '개발 서버 이름 바꾸기' }).click({ force: true });
+  await page.getByLabel('PC 이름').fill('');
+  await page.getByLabel('PC 이름').press('Enter');
+  await nav.getByRole('button', { name: `${PC} 이름 바꾸기` }).waitFor({ state: 'attached' });
+  pass('이름을 비우면 기본 이름(터미널 N, 호스트 이름)으로 돌아감');
 
   // 셸 종료 → 탭에 종료 표시
   await type('exit 5\n');

@@ -33,6 +33,7 @@ type Endpoint struct {
 	Online         bool                   `protobuf:"varint,8,opt,name=online,proto3" json:"online,omitempty"`
 	LastSeenMs     int64                  `protobuf:"varint,9,opt,name=last_seen_ms,json=lastSeenMs,proto3" json:"last_seen_ms,omitempty"`
 	ApprovalPolicy string                 `protobuf:"bytes,10,opt,name=approval_policy,json=approvalPolicy,proto3" json:"approval_policy,omitempty"` // always | dangerous | auto
+	DisplayName    string                 `protobuf:"bytes,11,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`          // 사용자가 붙인 이름. 비어 있으면 hostname 을 쓴다
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -133,6 +134,13 @@ func (x *Endpoint) GetLastSeenMs() int64 {
 func (x *Endpoint) GetApprovalPolicy() string {
 	if x != nil {
 		return x.ApprovalPolicy
+	}
+	return ""
+}
+
+func (x *Endpoint) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
 	}
 	return ""
 }
@@ -407,6 +415,7 @@ type Terminal struct {
 	EndpointId    string                 `protobuf:"bytes,2,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
 	CreatedAtMs   int64                  `protobuf:"varint,3,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
 	Exited        bool                   `protobuf:"varint,4,opt,name=exited,proto3" json:"exited,omitempty"`
+	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"` // 사용자가 붙인 탭 이름. 비어 있으면 클라이언트가 "터미널 N" 으로 보여 준다
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -467,6 +476,13 @@ func (x *Terminal) GetExited() bool {
 		return x.Exited
 	}
 	return false
+}
+
+func (x *Terminal) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
 }
 
 type ListTerminalsRequest struct {
@@ -610,11 +626,14 @@ func (x *AttachTerminalRequest) GetFromSeq() uint64 {
 }
 
 type TerminalOutput struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	Seq           uint64                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
-	Reset_        bool                   `protobuf:"varint,3,opt,name=reset,proto3" json:"reset,omitempty"`                             // true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
-	ExitCode      *int32                 `protobuf:"varint,4,opt,name=exit_code,json=exitCode,proto3,oneof" json:"exit_code,omitempty"` // 셸 종료 시 마지막 메시지에 담고 스트림 종료
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Data     []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Seq      uint64                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
+	Reset_   bool                   `protobuf:"varint,3,opt,name=reset,proto3" json:"reset,omitempty"`                             // true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
+	ExitCode *int32                 `protobuf:"varint,4,opt,name=exit_code,json=exitCode,proto3,oneof" json:"exit_code,omitempty"` // 셸 종료 시 마지막 메시지에 담고 스트림 종료
+	// true 면 버퍼에서 다시 보내는 지난 출력. 그 안의 터미널 질의(색상·장치 정보 등)에 xterm 이 답하면
+	// 그 답이 셸 입력으로 들어가므로, 클라이언트는 재생 출력을 그리는 동안 생긴 응답을 버린다
+	Replay        bool `protobuf:"varint,5,opt,name=replay,proto3" json:"replay,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -675,6 +694,13 @@ func (x *TerminalOutput) GetExitCode() int32 {
 		return *x.ExitCode
 	}
 	return 0
+}
+
+func (x *TerminalOutput) GetReplay() bool {
+	if x != nil {
+		return x.Replay
+	}
+	return false
 }
 
 type SendInputRequest struct {
@@ -1489,11 +1515,187 @@ func (x *UpdateAiSettingsRequest) GetModel() string {
 	return ""
 }
 
+type RenameTerminalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"` // 비우면 기본 이름으로 돌아간다
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameTerminalRequest) Reset() {
+	*x = RenameTerminalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameTerminalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameTerminalRequest) ProtoMessage() {}
+
+func (x *RenameTerminalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameTerminalRequest.ProtoReflect.Descriptor instead.
+func (*RenameTerminalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *RenameTerminalRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *RenameTerminalRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+type RenameTerminalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameTerminalResponse) Reset() {
+	*x = RenameTerminalResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameTerminalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameTerminalResponse) ProtoMessage() {}
+
+func (x *RenameTerminalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameTerminalResponse.ProtoReflect.Descriptor instead.
+func (*RenameTerminalResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{30}
+}
+
+type RenameEndpointRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"` // 비우면 hostname 으로 돌아간다
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameEndpointRequest) Reset() {
+	*x = RenameEndpointRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameEndpointRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameEndpointRequest) ProtoMessage() {}
+
+func (x *RenameEndpointRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameEndpointRequest.ProtoReflect.Descriptor instead.
+func (*RenameEndpointRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *RenameEndpointRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *RenameEndpointRequest) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+type RenameEndpointResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameEndpointResponse) Reset() {
+	*x = RenameEndpointResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameEndpointResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameEndpointResponse) ProtoMessage() {}
+
+func (x *RenameEndpointResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameEndpointResponse.ProtoReflect.Descriptor instead.
+func (*RenameEndpointResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{32}
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\n" +
-	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xa2\x02\n" +
+	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xc5\x02\n" +
 	"\bEndpoint\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x0e\n" +
@@ -1506,7 +1708,8 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\flast_seen_ms\x18\t \x01(\x03R\n" +
 	"lastSeenMs\x12'\n" +
 	"\x0fapproval_policy\x18\n" +
-	" \x01(\tR\x0eapprovalPolicy\"\x16\n" +
+	" \x01(\tR\x0eapprovalPolicy\x12!\n" +
+	"\fdisplay_name\x18\v \x01(\tR\vdisplayName\"\x16\n" +
 	"\x14ListEndpointsRequest\"L\n" +
 	"\x15ListEndpointsResponse\x123\n" +
 	"\tendpoints\x18\x01 \x03(\v2\x15.gridelta.v1.EndpointR\tendpoints\"\x17\n" +
@@ -1520,14 +1723,15 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x04rows\x18\x03 \x01(\rR\x04rows\"5\n" +
 	"\x14OpenTerminalResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"\x86\x01\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"\x9c\x01\n" +
 	"\bTerminal\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1f\n" +
 	"\vendpoint_id\x18\x02 \x01(\tR\n" +
 	"endpointId\x12\"\n" +
 	"\rcreated_at_ms\x18\x03 \x01(\x03R\vcreatedAtMs\x12\x16\n" +
-	"\x06exited\x18\x04 \x01(\bR\x06exited\"7\n" +
+	"\x06exited\x18\x04 \x01(\bR\x06exited\x12\x14\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\"7\n" +
 	"\x14ListTerminalsRequest\x12\x1f\n" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\"L\n" +
@@ -1536,12 +1740,13 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x15AttachTerminalRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x19\n" +
-	"\bfrom_seq\x18\x02 \x01(\x04R\afromSeq\"|\n" +
+	"\bfrom_seq\x18\x02 \x01(\x04R\afromSeq\"\x94\x01\n" +
 	"\x0eTerminalOutput\x12\x12\n" +
 	"\x04data\x18\x01 \x01(\fR\x04data\x12\x10\n" +
 	"\x03seq\x18\x02 \x01(\x04R\x03seq\x12\x14\n" +
 	"\x05reset\x18\x03 \x01(\bR\x05reset\x12 \n" +
-	"\texit_code\x18\x04 \x01(\x05H\x00R\bexitCode\x88\x01\x01B\f\n" +
+	"\texit_code\x18\x04 \x01(\x05H\x00R\bexitCode\x88\x01\x01\x12\x16\n" +
+	"\x06replay\x18\x05 \x01(\bR\x06replayB\f\n" +
 	"\n" +
 	"_exit_code\"\x7f\n" +
 	"\x10SendInputRequest\x12\x1d\n" +
@@ -1591,7 +1796,18 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x06models\x18\x02 \x03(\v2\x14.gridelta.v1.AiModelR\x06models\"\x16\n" +
 	"\x14GetAiSettingsRequest\"/\n" +
 	"\x17UpdateAiSettingsRequest\x12\x14\n" +
-	"\x05model\x18\x01 \x01(\tR\x05model2\xf0\b\n" +
+	"\x05model\x18\x01 \x01(\tR\x05model\"L\n" +
+	"\x15RenameTerminalRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\"\x18\n" +
+	"\x16RenameTerminalResponse\"[\n" +
+	"\x15RenameEndpointRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\x18\n" +
+	"\x16RenameEndpointResponse2\xa6\n" +
+	"\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
 	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12S\n" +
@@ -1600,7 +1816,9 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x0eAttachTerminal\x12\".gridelta.v1.AttachTerminalRequest\x1a\x1b.gridelta.v1.TerminalOutput0\x01\x12J\n" +
 	"\tSendInput\x12\x1d.gridelta.v1.SendInputRequest\x1a\x1e.gridelta.v1.SendInputResponse\x12Y\n" +
 	"\x0eResizeTerminal\x12\".gridelta.v1.ResizeTerminalRequest\x1a#.gridelta.v1.ResizeTerminalResponse\x12V\n" +
-	"\rCloseTerminal\x12!.gridelta.v1.CloseTerminalRequest\x1a\".gridelta.v1.CloseTerminalResponse\x12R\n" +
+	"\rCloseTerminal\x12!.gridelta.v1.CloseTerminalRequest\x1a\".gridelta.v1.CloseTerminalResponse\x12Y\n" +
+	"\x0eRenameTerminal\x12\".gridelta.v1.RenameTerminalRequest\x1a#.gridelta.v1.RenameTerminalResponse\x12Y\n" +
+	"\x0eRenameEndpoint\x12\".gridelta.v1.RenameEndpointRequest\x1a#.gridelta.v1.RenameEndpointResponse\x12R\n" +
 	"\x0eWatchApprovals\x12\".gridelta.v1.WatchApprovalsRequest\x1a\x1a.gridelta.v1.ApprovalEvent0\x01\x12Y\n" +
 	"\x0eDecideApproval\x12\".gridelta.v1.DecideApprovalRequest\x1a#.gridelta.v1.DecideApprovalResponse\x12b\n" +
 	"\x11SetApprovalPolicy\x12%.gridelta.v1.SetApprovalPolicyRequest\x1a&.gridelta.v1.SetApprovalPolicyResponse\x12K\n" +
@@ -1619,7 +1837,7 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_gridelta_v1_console_proto_goTypes = []any{
 	(*Endpoint)(nil),                  // 0: gridelta.v1.Endpoint
 	(*ListEndpointsRequest)(nil),      // 1: gridelta.v1.ListEndpointsRequest
@@ -1650,6 +1868,10 @@ var file_gridelta_v1_console_proto_goTypes = []any{
 	(*AiSettings)(nil),                // 26: gridelta.v1.AiSettings
 	(*GetAiSettingsRequest)(nil),      // 27: gridelta.v1.GetAiSettingsRequest
 	(*UpdateAiSettingsRequest)(nil),   // 28: gridelta.v1.UpdateAiSettingsRequest
+	(*RenameTerminalRequest)(nil),     // 29: gridelta.v1.RenameTerminalRequest
+	(*RenameTerminalResponse)(nil),    // 30: gridelta.v1.RenameTerminalResponse
+	(*RenameEndpointRequest)(nil),     // 31: gridelta.v1.RenameEndpointRequest
+	(*RenameEndpointResponse)(nil),    // 32: gridelta.v1.RenameEndpointResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
@@ -1665,26 +1887,30 @@ var file_gridelta_v1_console_proto_depIdxs = []int32{
 	12, // 10: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
 	14, // 11: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
 	16, // 12: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	19, // 13: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
-	21, // 14: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
-	23, // 15: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
-	27, // 16: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
-	28, // 17: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
-	2,  // 18: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 19: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	6,  // 20: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 21: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 22: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 23: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 24: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 25: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	20, // 26: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
-	22, // 27: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
-	24, // 28: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
-	26, // 29: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
-	26, // 30: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
-	18, // [18:31] is the sub-list for method output_type
-	5,  // [5:18] is the sub-list for method input_type
+	29, // 13: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
+	31, // 14: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
+	19, // 15: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 16: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 17: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	27, // 18: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
+	28, // 19: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
+	2,  // 20: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 21: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	6,  // 22: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 23: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 24: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 25: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 26: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 27: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	30, // 28: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
+	32, // 29: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
+	20, // 30: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 31: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 32: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	26, // 33: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
+	26, // 34: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
+	20, // [20:35] is the sub-list for method output_type
+	5,  // [5:20] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -1702,7 +1928,7 @@ func file_gridelta_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

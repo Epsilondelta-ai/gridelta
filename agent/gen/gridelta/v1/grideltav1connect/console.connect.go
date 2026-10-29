@@ -47,6 +47,12 @@ const (
 	// ConsoleServiceCloseTerminalProcedure is the procedure name of the ConsoleService's CloseTerminal
 	// RPC.
 	ConsoleServiceCloseTerminalProcedure = "/gridelta.v1.ConsoleService/CloseTerminal"
+	// ConsoleServiceRenameTerminalProcedure is the procedure name of the ConsoleService's
+	// RenameTerminal RPC.
+	ConsoleServiceRenameTerminalProcedure = "/gridelta.v1.ConsoleService/RenameTerminal"
+	// ConsoleServiceRenameEndpointProcedure is the procedure name of the ConsoleService's
+	// RenameEndpoint RPC.
+	ConsoleServiceRenameEndpointProcedure = "/gridelta.v1.ConsoleService/RenameEndpoint"
 	// ConsoleServiceWatchApprovalsProcedure is the procedure name of the ConsoleService's
 	// WatchApprovals RPC.
 	ConsoleServiceWatchApprovalsProcedure = "/gridelta.v1.ConsoleService/WatchApprovals"
@@ -121,6 +127,20 @@ var (
 			Procedure:  ConsoleServiceCloseTerminalProcedure,
 		}
 	})
+	consoleServiceRenameTerminalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RenameTerminal"),
+			Procedure:  ConsoleServiceRenameTerminalProcedure,
+		}
+	})
+	consoleServiceRenameEndpointSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RenameEndpoint"),
+			Procedure:  ConsoleServiceRenameEndpointProcedure,
+		}
+	})
 	consoleServiceWatchApprovalsSpec = sync.OnceValue(func() connect.Spec {
 		return connect.Spec{
 			StreamType: connect.StreamTypeServer,
@@ -169,6 +189,8 @@ type ConsoleServiceClient interface {
 	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
 	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
 	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
+	RenameTerminal(context.Context, *v1.RenameTerminalRequest) (*v1.RenameTerminalResponse, error)
+	RenameEndpoint(context.Context, *v1.RenameEndpointRequest) (*v1.RenameEndpointResponse, error)
 	// AI 명령 승인
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest) (ConsoleServiceWatchApprovalsClientStream, error)
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
@@ -258,6 +280,8 @@ type ConsoleServiceHandler interface {
 	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
 	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
 	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
+	RenameTerminal(context.Context, *v1.RenameTerminalRequest) (*v1.RenameTerminalResponse, error)
+	RenameEndpoint(context.Context, *v1.RenameEndpointRequest) (*v1.RenameEndpointResponse, error)
 	// AI 명령 승인
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
@@ -280,6 +304,8 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 		connect.Method{Spec: consoleServiceSendInputSpec(), Handler: adapter.sendInput},
 		connect.Method{Spec: consoleServiceResizeTerminalSpec(), Handler: adapter.resizeTerminal},
 		connect.Method{Spec: consoleServiceCloseTerminalSpec(), Handler: adapter.closeTerminal},
+		connect.Method{Spec: consoleServiceRenameTerminalSpec(), Handler: adapter.renameTerminal},
+		connect.Method{Spec: consoleServiceRenameEndpointSpec(), Handler: adapter.renameEndpoint},
 		connect.Method{Spec: consoleServiceWatchApprovalsSpec(), Handler: adapter.watchApprovals},
 		connect.Method{Spec: consoleServiceDecideApprovalSpec(), Handler: adapter.decideApproval},
 		connect.Method{Spec: consoleServiceSetApprovalPolicySpec(), Handler: adapter.setApprovalPolicy},
@@ -371,6 +397,14 @@ func (UnimplementedConsoleServiceHandler) CloseTerminal(context.Context, *v1.Clo
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CloseTerminal is not implemented")
 }
 
+func (UnimplementedConsoleServiceHandler) RenameTerminal(context.Context, *v1.RenameTerminalRequest) (*v1.RenameTerminalResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RenameTerminal is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) RenameEndpoint(context.Context, *v1.RenameEndpointRequest) (*v1.RenameEndpointResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RenameEndpoint is not implemented")
+}
+
 func (UnimplementedConsoleServiceHandler) WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error {
 	return connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.WatchApprovals is not implemented")
 }
@@ -454,6 +488,22 @@ func (c *consoleServiceClient) ResizeTerminal(ctx context.Context, req *v1.Resiz
 func (c *consoleServiceClient) CloseTerminal(ctx context.Context, req *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error) {
 	var res v1.CloseTerminalResponse
 	if err := c.client.CallUnary(ctx, consoleServiceCloseTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RenameTerminal(ctx context.Context, req *v1.RenameTerminalRequest) (*v1.RenameTerminalResponse, error) {
+	var res v1.RenameTerminalResponse
+	if err := c.client.CallUnary(ctx, consoleServiceRenameTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RenameEndpoint(ctx context.Context, req *v1.RenameEndpointRequest) (*v1.RenameEndpointResponse, error) {
+	var res v1.RenameEndpointResponse
+	if err := c.client.CallUnary(ctx, consoleServiceRenameEndpointSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -583,6 +633,30 @@ func (h consoleServiceHandler) closeTerminal(ctx context.Context, _ connect.Spec
 		return err
 	}
 	res, err := h.svc.CloseTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) renameTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RenameTerminalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RenameTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) renameEndpoint(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RenameEndpointRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RenameEndpoint(ctx, &req)
 	if err != nil {
 		return err
 	}

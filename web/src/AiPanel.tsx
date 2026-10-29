@@ -124,7 +124,7 @@ export function AiPanel({ endpoint }: { endpoint: Endpoint }) {
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 text-sm" data-testid="ai-messages">
         {agent.historyReady && agent.messages.length === 0 && (
-          <p className="text-muted">{endpoint.hostname}에서 할 일을 말해 보세요. 예: 디스크 사용량이 큰 폴더 5개 알려줘</p>
+          <p className="text-muted">{endpoint.displayName || endpoint.hostname}에서 할 일을 말해 보세요. 예: 디스크 사용량이 큰 폴더 5개 알려줘</p>
         )}
         {agent.messages
           .filter((m) => m.display !== 'hidden')

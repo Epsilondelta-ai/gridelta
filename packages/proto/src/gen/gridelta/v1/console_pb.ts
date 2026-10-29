@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/console.proto.
  */
 export const file_gridelta_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLBAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkiFgoUTGlzdEVuZHBvaW50c1JlcXVlc3QiQQoVTGlzdEVuZHBvaW50c1Jlc3BvbnNlEigKCWVuZHBvaW50cxgBIAMoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IhcKFVdhdGNoRW5kcG9pbnRzUmVxdWVzdCI4Cg1FbmRwb2ludEV2ZW50EicKCGVuZHBvaW50GAEgASgLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiRgoTT3BlblRlcm1pbmFsUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iKgoUT3BlblRlcm1pbmFsUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCSJaCghUZXJtaW5hbBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhUKDWNyZWF0ZWRfYXRfbXMYAyABKAMSDgoGZXhpdGVkGAQgASgIIisKFExpc3RUZXJtaW5hbHNSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJIkEKFUxpc3RUZXJtaW5hbHNSZXNwb25zZRIoCgl0ZXJtaW5hbHMYASADKAsyFS5ncmlkZWx0YS52MS5UZXJtaW5hbCI9ChVBdHRhY2hUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIQCghmcm9tX3NlcRgCIAEoBCJgCg5UZXJtaW5hbE91dHB1dBIMCgRkYXRhGAEgASgMEgsKA3NlcRgCIAEoBBINCgVyZXNldBgDIAEoCBIWCglleGl0X2NvZGUYBCABKAVIAIgBAUIMCgpfZXhpdF9jb2RlIloKEFNlbmRJbnB1dFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIRCglpbnB1dF9zZXEYAiABKAQSDAoEZGF0YRgDIAEoDBIRCgljbGllbnRfaWQYBCABKAkiEwoRU2VuZElucHV0UmVzcG9uc2UiRwoVUmVzaXplVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIhgKFlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2UiKgoUQ2xvc2VUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSIXChVDbG9zZVRlcm1pbmFsUmVzcG9uc2UijgEKCEFwcHJvdmFsEgoKAmlkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhAKCGhvc3RuYW1lGAMgASgJEg8KB2NvbW1hbmQYBCABKAkSDgoGc3RhdHVzGAUgASgJEhUKDWNyZWF0ZWRfYXRfbXMYBiABKAMSFwoPY29udmVyc2F0aW9uX2lkGAcgASgJIhcKFVdhdGNoQXBwcm92YWxzUmVxdWVzdCI4Cg1BcHByb3ZhbEV2ZW50EicKCGFwcHJvdmFsGAEgASgLMhUuZ3JpZGVsdGEudjEuQXBwcm92YWwiNAoVRGVjaWRlQXBwcm92YWxSZXF1ZXN0EgoKAmlkGAEgASgJEg8KB2FwcHJvdmUYAiABKAgiGAoWRGVjaWRlQXBwcm92YWxSZXNwb25zZSI/ChhTZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDgoGcG9saWN5GAIgASgJIhsKGVNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2UiIwoHQWlNb2RlbBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIkEKCkFpU2V0dGluZ3MSDQoFbW9kZWwYASABKAkSJAoGbW9kZWxzGAIgAygLMhQuZ3JpZGVsdGEudjEuQWlNb2RlbCIWChRHZXRBaVNldHRpbmdzUmVxdWVzdCIoChdVcGRhdGVBaVNldHRpbmdzUmVxdWVzdBINCgVtb2RlbBgBIAEoCTLwCAoOQ29uc29sZVNlcnZpY2USVgoNTGlzdEVuZHBvaW50cxIhLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1Jlc3BvbnNlElIKDldhdGNoRW5kcG9pbnRzEiIuZ3JpZGVsdGEudjEuV2F0Y2hFbmRwb2ludHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuRW5kcG9pbnRFdmVudDABElMKDE9wZW5UZXJtaW5hbBIgLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlcXVlc3QaIS5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXNwb25zZRJWCg1MaXN0VGVybWluYWxzEiEuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVzcG9uc2USUwoOQXR0YWNoVGVybWluYWwSIi5ncmlkZWx0YS52MS5BdHRhY2hUZXJtaW5hbFJlcXVlc3QaGy5ncmlkZWx0YS52MS5UZXJtaW5hbE91dHB1dDABEkoKCVNlbmRJbnB1dBIdLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlcXVlc3QaHi5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXNwb25zZRJZCg5SZXNpemVUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2USVgoNQ2xvc2VUZXJtaW5hbBIhLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlc3BvbnNlElIKDldhdGNoQXBwcm92YWxzEiIuZ3JpZGVsdGEudjEuV2F0Y2hBcHByb3ZhbHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuQXBwcm92YWxFdmVudDABElkKDkRlY2lkZUFwcHJvdmFsEiIuZ3JpZGVsdGEudjEuRGVjaWRlQXBwcm92YWxSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuRGVjaWRlQXBwcm92YWxSZXNwb25zZRJiChFTZXRBcHByb3ZhbFBvbGljeRIlLmdyaWRlbHRhLnYxLlNldEFwcHJvdmFsUG9saWN5UmVxdWVzdBomLmdyaWRlbHRhLnYxLlNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2USSwoNR2V0QWlTZXR0aW5ncxIhLmdyaWRlbHRhLnYxLkdldEFpU2V0dGluZ3NSZXF1ZXN0GhcuZ3JpZGVsdGEudjEuQWlTZXR0aW5ncxJRChBVcGRhdGVBaVNldHRpbmdzEiQuZ3JpZGVsdGEudjEuVXBkYXRlQWlTZXR0aW5nc1JlcXVlc3QaFy5ncmlkZWx0YS52MS5BaVNldHRpbmdzQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
+  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLXAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkSFAoMZGlzcGxheV9uYW1lGAsgASgJIhYKFExpc3RFbmRwb2ludHNSZXF1ZXN0IkEKFUxpc3RFbmRwb2ludHNSZXNwb25zZRIoCgllbmRwb2ludHMYASADKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludCIXChVXYXRjaEVuZHBvaW50c1JlcXVlc3QiOAoNRW5kcG9pbnRFdmVudBInCghlbmRwb2ludBgBIAEoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IkYKE09wZW5UZXJtaW5hbFJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIioKFE9wZW5UZXJtaW5hbFJlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkiaQoIVGVybWluYWwSEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtlbmRwb2ludF9pZBgCIAEoCRIVCg1jcmVhdGVkX2F0X21zGAMgASgDEg4KBmV4aXRlZBgEIAEoCBINCgV0aXRsZRgFIAEoCSIrChRMaXN0VGVybWluYWxzUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSJBChVMaXN0VGVybWluYWxzUmVzcG9uc2USKAoJdGVybWluYWxzGAEgAygLMhUuZ3JpZGVsdGEudjEuVGVybWluYWwiPQoVQXR0YWNoVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSEAoIZnJvbV9zZXEYAiABKAQicAoOVGVybWluYWxPdXRwdXQSDAoEZGF0YRgBIAEoDBILCgNzZXEYAiABKAQSDQoFcmVzZXQYAyABKAgSFgoJZXhpdF9jb2RlGAQgASgFSACIAQESDgoGcmVwbGF5GAUgASgIQgwKCl9leGl0X2NvZGUiWgoQU2VuZElucHV0UmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlucHV0X3NlcRgCIAEoBBIMCgRkYXRhGAMgASgMEhEKCWNsaWVudF9pZBgEIAEoCSITChFTZW5kSW5wdXRSZXNwb25zZSJHChVSZXNpemVUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iGAoWUmVzaXplVGVybWluYWxSZXNwb25zZSIqChRDbG9zZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJIhcKFUNsb3NlVGVybWluYWxSZXNwb25zZSKOAQoIQXBwcm92YWwSCgoCaWQYASABKAkSEwoLZW5kcG9pbnRfaWQYAiABKAkSEAoIaG9zdG5hbWUYAyABKAkSDwoHY29tbWFuZBgEIAEoCRIOCgZzdGF0dXMYBSABKAkSFQoNY3JlYXRlZF9hdF9tcxgGIAEoAxIXCg9jb252ZXJzYXRpb25faWQYByABKAkiFwoVV2F0Y2hBcHByb3ZhbHNSZXF1ZXN0IjgKDUFwcHJvdmFsRXZlbnQSJwoIYXBwcm92YWwYASABKAsyFS5ncmlkZWx0YS52MS5BcHByb3ZhbCI0ChVEZWNpZGVBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkSDwoHYXBwcm92ZRgCIAEoCCIYChZEZWNpZGVBcHByb3ZhbFJlc3BvbnNlIj8KGFNldEFwcHJvdmFsUG9saWN5UmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIOCgZwb2xpY3kYAiABKAkiGwoZU2V0QXBwcm92YWxQb2xpY3lSZXNwb25zZSIjCgdBaU1vZGVsEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiQQoKQWlTZXR0aW5ncxINCgVtb2RlbBgBIAEoCRIkCgZtb2RlbHMYAiADKAsyFC5ncmlkZWx0YS52MS5BaU1vZGVsIhYKFEdldEFpU2V0dGluZ3NSZXF1ZXN0IigKF1VwZGF0ZUFpU2V0dGluZ3NSZXF1ZXN0Eg0KBW1vZGVsGAEgASgJIjoKFVJlbmFtZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEg0KBXRpdGxlGAIgASgJIhgKFlJlbmFtZVRlcm1pbmFsUmVzcG9uc2UiQgoVUmVuYW1lRW5kcG9pbnRSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJEhQKDGRpc3BsYXlfbmFtZRgCIAEoCSIYChZSZW5hbWVFbmRwb2ludFJlc3BvbnNlMqYKCg5Db25zb2xlU2VydmljZRJWCg1MaXN0RW5kcG9pbnRzEiEuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVzcG9uc2USUgoOV2F0Y2hFbmRwb2ludHMSIi5ncmlkZWx0YS52MS5XYXRjaEVuZHBvaW50c1JlcXVlc3QaGi5ncmlkZWx0YS52MS5FbmRwb2ludEV2ZW50MAESUwoMT3BlblRlcm1pbmFsEiAuZ3JpZGVsdGEudjEuT3BlblRlcm1pbmFsUmVxdWVzdBohLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlc3BvbnNlElYKDUxpc3RUZXJtaW5hbHMSIS5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RUZXJtaW5hbHNSZXNwb25zZRJTCg5BdHRhY2hUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLkF0dGFjaFRlcm1pbmFsUmVxdWVzdBobLmdyaWRlbHRhLnYxLlRlcm1pbmFsT3V0cHV0MAESSgoJU2VuZElucHV0Eh0uZ3JpZGVsdGEudjEuU2VuZElucHV0UmVxdWVzdBoeLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlc3BvbnNlElkKDlJlc2l6ZVRlcm1pbmFsEiIuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXNwb25zZRJWCg1DbG9zZVRlcm1pbmFsEiEuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlcXVlc3QaIi5ncmlkZWx0YS52MS5DbG9zZVRlcm1pbmFsUmVzcG9uc2USWQoOUmVuYW1lVGVybWluYWwSIi5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlc3BvbnNlElkKDlJlbmFtZUVuZHBvaW50EiIuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXNwb25zZRJSCg5XYXRjaEFwcHJvdmFscxIiLmdyaWRlbHRhLnYxLldhdGNoQXBwcm92YWxzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkFwcHJvdmFsRXZlbnQwARJZCg5EZWNpZGVBcHByb3ZhbBIiLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVzcG9uc2USYgoRU2V0QXBwcm92YWxQb2xpY3kSJS5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QaJi5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlc3BvbnNlEksKDUdldEFpU2V0dGluZ3MSIS5ncmlkZWx0YS52MS5HZXRBaVNldHRpbmdzUmVxdWVzdBoXLmdyaWRlbHRhLnYxLkFpU2V0dGluZ3MSUQoQVXBkYXRlQWlTZXR0aW5ncxIkLmdyaWRlbHRhLnYxLlVwZGF0ZUFpU2V0dGluZ3NSZXF1ZXN0GhcuZ3JpZGVsdGEudjEuQWlTZXR0aW5nc0JGWkRnaXRodWIuY29tL0Vwc2lsb25kZWx0YS1haS9ncmlkZWx0YS9hZ2VudC9nZW4vZ3JpZGVsdGEvdjE7Z3JpZGVsdGF2MWIGcHJvdG8z");
 
 /**
  * @generated from message gridelta.v1.Endpoint
@@ -67,6 +67,13 @@ export type Endpoint = Message<"gridelta.v1.Endpoint"> & {
    * @generated from field: string approval_policy = 10;
    */
   approvalPolicy: string;
+
+  /**
+   * 사용자가 붙인 이름. 비어 있으면 hostname 을 쓴다
+   *
+   * @generated from field: string display_name = 11;
+   */
+  displayName: string;
 };
 
 /**
@@ -205,6 +212,13 @@ export type Terminal = Message<"gridelta.v1.Terminal"> & {
    * @generated from field: bool exited = 4;
    */
   exited: boolean;
+
+  /**
+   * 사용자가 붙인 탭 이름. 비어 있으면 클라이언트가 "터미널 N" 으로 보여 준다
+   *
+   * @generated from field: string title = 5;
+   */
+  title: string;
 };
 
 /**
@@ -301,6 +315,14 @@ export type TerminalOutput = Message<"gridelta.v1.TerminalOutput"> & {
    * @generated from field: optional int32 exit_code = 4;
    */
   exitCode?: number | undefined;
+
+  /**
+   * true 면 버퍼에서 다시 보내는 지난 출력. 그 안의 터미널 질의(색상·장치 정보 등)에 xterm 이 답하면
+   * 그 답이 셸 입력으로 들어가므로, 클라이언트는 재생 출력을 그리는 동안 생긴 응답을 버린다
+   *
+   * @generated from field: bool replay = 5;
+   */
+  replay: boolean;
 };
 
 /**
@@ -661,6 +683,80 @@ export const UpdateAiSettingsRequestSchema: GenMessage<UpdateAiSettingsRequest> 
   messageDesc(file_gridelta_v1_console, 28);
 
 /**
+ * @generated from message gridelta.v1.RenameTerminalRequest
+ */
+export type RenameTerminalRequest = Message<"gridelta.v1.RenameTerminalRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * 비우면 기본 이름으로 돌아간다
+   *
+   * @generated from field: string title = 2;
+   */
+  title: string;
+};
+
+/**
+ * Describes the message gridelta.v1.RenameTerminalRequest.
+ * Use `create(RenameTerminalRequestSchema)` to create a new message.
+ */
+export const RenameTerminalRequestSchema: GenMessage<RenameTerminalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 29);
+
+/**
+ * @generated from message gridelta.v1.RenameTerminalResponse
+ */
+export type RenameTerminalResponse = Message<"gridelta.v1.RenameTerminalResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.RenameTerminalResponse.
+ * Use `create(RenameTerminalResponseSchema)` to create a new message.
+ */
+export const RenameTerminalResponseSchema: GenMessage<RenameTerminalResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 30);
+
+/**
+ * @generated from message gridelta.v1.RenameEndpointRequest
+ */
+export type RenameEndpointRequest = Message<"gridelta.v1.RenameEndpointRequest"> & {
+  /**
+   * @generated from field: string endpoint_id = 1;
+   */
+  endpointId: string;
+
+  /**
+   * 비우면 hostname 으로 돌아간다
+   *
+   * @generated from field: string display_name = 2;
+   */
+  displayName: string;
+};
+
+/**
+ * Describes the message gridelta.v1.RenameEndpointRequest.
+ * Use `create(RenameEndpointRequestSchema)` to create a new message.
+ */
+export const RenameEndpointRequestSchema: GenMessage<RenameEndpointRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 31);
+
+/**
+ * @generated from message gridelta.v1.RenameEndpointResponse
+ */
+export type RenameEndpointResponse = Message<"gridelta.v1.RenameEndpointResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.RenameEndpointResponse.
+ * Use `create(RenameEndpointResponseSchema)` to create a new message.
+ */
+export const RenameEndpointResponseSchema: GenMessage<RenameEndpointResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 32);
+
+/**
  * 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
  * AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
  *
@@ -740,6 +836,22 @@ export const ConsoleService: GenService<{
     methodKind: "unary";
     input: typeof CloseTerminalRequestSchema;
     output: typeof CloseTerminalResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.RenameTerminal
+   */
+  renameTerminal: {
+    methodKind: "unary";
+    input: typeof RenameTerminalRequestSchema;
+    output: typeof RenameTerminalResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.RenameEndpoint
+   */
+  renameEndpoint: {
+    methodKind: "unary";
+    input: typeof RenameEndpointRequestSchema;
+    output: typeof RenameEndpointResponseSchema;
   },
   /**
    * AI 명령 승인

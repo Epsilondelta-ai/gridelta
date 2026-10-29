@@ -3,6 +3,7 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 export const endpoints = sqliteTable('endpoints', {
   id: text('id').primaryKey(),
   hostname: text('hostname').notNull(),
+  displayName: text('display_name').notNull().default(''),
   os: text('os').notNull(),
   arch: text('arch').notNull(),
   homeDir: text('home_dir').notNull().default(''),

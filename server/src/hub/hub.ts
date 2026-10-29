@@ -92,6 +92,8 @@ type HubEvents = {
   offline: [EndpointInfo];
   'pty-open': [PtySession];
   'pty-exit': [PtySession];
+  /** 이름 등 DB 의 PC 정보가 바뀜 (WatchEndpoints 가 다시 보낸다) */
+  changed: [{ id: string }];
 };
 
 /** 터미널 세션이 없거나 이미 종료됐다. */
@@ -295,6 +297,10 @@ export class AgentHub {
       conn.send(create(ServerMessageSchema, { msg: { case: 'ptyResize', value: { sessionId, cols: pty.cols, rows } } }));
     resize(pty.rows - 1);
     setTimeout(() => resize(pty.rows), 50);
+  }
+
+  renamePty(sessionId: string, title: string): void {
+    this.getPty(sessionId).title = title;
   }
 
   async closePty(sessionId: string): Promise<void> {

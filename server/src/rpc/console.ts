@@ -28,7 +28,6 @@ import { AsyncQueue } from '../hub/async-queue.ts';
 import {
   AgentRequestError,
   type AgentHub,
-  type EndpointInfo,
   EndpointOfflineError,
   PtyNotFoundError,
   RequestTimeoutError,
@@ -40,6 +39,16 @@ import { APPROVAL_POLICIES, type ApprovalPolicy, type ApprovalRow, type SessionU
 import { endpointsView } from './endpoints-view.ts';
 
 export const RPC_PREFIX = '/rpc';
+const MAX_NAME_LENGTH = 64;
+
+/** 앞뒤 공백을 지우고 길이를 확인한다. 빈 문자열은 기본 이름으로 되돌린다는 뜻이다 */
+function cleanName(name: string): string {
+  const trimmed = name.trim();
+  if ([...trimmed].length > MAX_NAME_LENGTH) {
+    throw new ConnectError(`name must be at most ${MAX_NAME_LENGTH} characters`, Code.InvalidArgument);
+  }
+  return trimmed;
+}
 
 const kUser = createContextKey<SessionUser | undefined>(undefined, { description: 'logged-in user' });
 
@@ -66,16 +75,18 @@ function toTerminal(pty: PtySession): Terminal {
     endpointId: pty.endpointId,
     createdAtMs: BigInt(pty.createdAt.getTime()),
     exited: pty.exited,
+    title: pty.title,
   });
 }
 
 export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels) {
   const view = endpointsView(hub, store);
+  const names = new Map<string, string>(); // 승인 카드에 보여 줄 PC 이름 (WatchApprovals 시작 때 채움)
   const toApproval = (row: ApprovalRow): Approval =>
     create(ApprovalSchema, {
       id: row.id,
       endpointId: row.endpointId,
-      hostname: hub.list().find((e) => e.id === row.endpointId)?.hostname ?? '',
+      hostname: names.get(row.endpointId) || hub.list().find((e) => e.id === row.endpointId)?.hostname || '',
       command: row.command,
       status: row.status,
       createdAtMs: BigInt(row.createdAt.getTime()),
@@ -89,9 +100,10 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
 
       async *watchEndpoints(_req, ctx): AsyncIterable<EndpointEvent> {
         const queue = new AsyncQueue<string>();
-        const onChange = (info: EndpointInfo) => queue.push(info.id);
+        const onChange = (info: { id: string }) => queue.push(info.id);
         hub.events.on('online', onChange);
         hub.events.on('offline', onChange);
+        hub.events.on('changed', onChange);
         ctx.signal.addEventListener('abort', () => queue.close());
         try {
           for (const endpoint of await view.list()) yield create(EndpointEventSchema, { endpoint });
@@ -103,6 +115,7 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         } finally {
           hub.events.off('online', onChange);
           hub.events.off('offline', onChange);
+          hub.events.off('changed', onChange);
         }
       },
 
@@ -134,7 +147,7 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         try {
           for await (const ev of events) {
             if (ev.kind === 'output') {
-              yield create(TerminalOutputSchema, { data: ev.data, seq: ev.seq, reset: ev.reset });
+              yield create(TerminalOutputSchema, { data: ev.data, seq: ev.seq, reset: ev.reset, replay: ev.replay });
             } else {
               yield create(TerminalOutputSchema, { seq: ev.seq, exitCode: ev.exitCode });
               return;
@@ -161,12 +174,27 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         return {};
       },
 
+      async renameTerminal(req) {
+        const title = cleanName(req.title);
+        await mapErrors(() => hub.renamePty(req.sessionId, title));
+        return {};
+      },
+
+      async renameEndpoint(req) {
+        if (!(await store.renameEndpoint(req.endpointId, cleanName(req.displayName)))) {
+          throw new ConnectError(`endpoint ${req.endpointId} not found`, Code.NotFound);
+        }
+        hub.events.emit('changed', { id: req.endpointId });
+        return {};
+      },
+
       async *watchApprovals(_req, ctx): AsyncIterable<ApprovalEvent> {
         const queue = new AsyncQueue<ApprovalRow>();
         const onChange = (row: ApprovalRow) => queue.push(row);
         approvals.events.on('change', onChange);
         ctx.signal.addEventListener('abort', () => queue.close());
         try {
+          for (const e of await view.list()) names.set(e.id, e.displayName || e.hostname);
           for (const row of approvals.pending()) yield create(ApprovalEventSchema, { approval: toApproval(row) });
           for await (const row of queue) yield create(ApprovalEventSchema, { approval: toApproval(row) });
         } finally {

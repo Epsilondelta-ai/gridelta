@@ -56,8 +56,14 @@ export function TerminalView({ sessionId, active, onStatus, onSession }: Props) 
     fitRef.current = fit;
     termRef.current = term;
 
+    // 지난 출력을 다시 그리는 동안 xterm 이 터미널 질의에 자동으로 답한 것은 셸로 보내지 않는다
+    let replaying = 0;
     const session = new TerminalSession(sessionId, {
-      write: (data) => term.write(data),
+      write: (data, replay) => {
+        if (!replay) return term.write(data);
+        replaying++;
+        term.write(data, () => replaying--);
+      },
       reset: () => term.reset(),
       exited: (code) => {
         term.write(`\r\n\x1b[2m[프로세스 종료: ${code}]\x1b[0m\r\n`);
@@ -65,7 +71,9 @@ export function TerminalView({ sessionId, active, onStatus, onSession }: Props) 
       },
       status: (s) => statusRef.current(s),
     });
-    const onData = term.onData((d) => session.input(d));
+    const onData = term.onData((d) => {
+      if (replaying === 0) session.input(d);
+    });
     const onResize = term.onResize(({ cols, rows }) => session.resize(cols, rows));
     registry.terminals.set(sessionId, term);
     registry.sessions.set(sessionId, session);
