@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package gridelta.v1;
+
+option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
+
+// 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
+// M1 에서는 PC 목록만 두고, 터미널·승인·AI 설정 RPC 는 이후 마일스톤에서 추가한다.
+service ConsoleService {
+  rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
+  rpc WatchEndpoints(WatchEndpointsRequest) returns (stream EndpointEvent); // 온라인/오프라인 변화
+}
+
+message Endpoint {
+  string id = 1;
+  string hostname = 2;
+  string os = 3;
+  string arch = 4;
+  string home_dir = 5;
+  string default_shell = 6;
+  string agent_version = 7;
+  bool online = 8;
+  int64 last_seen_ms = 9;
+}
+
+message ListEndpointsRequest {}
+
+message ListEndpointsResponse {
+  repeated Endpoint endpoints = 1;
+}
+
+message WatchEndpointsRequest {}
+
+message EndpointEvent {
+  Endpoint endpoint = 1; // 상태가 바뀐 PC. 구독 직후에는 현재 목록을 한 건씩 보낸다
+}

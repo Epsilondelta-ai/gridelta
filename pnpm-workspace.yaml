@@ -1,0 +1,26 @@
+packages:
+  - packages/*
+  - server
+
+catalogMode: strict
+
+catalog:
+  "@bufbuild/protobuf": 2.16.0
+  "@bufbuild/protoc-gen-es": 2.16.0
+  "@connectrpc/connect": 2.3.0
+  "@connectrpc/connect-node": 2.3.0
+  "@flue/cli": 2.3.0
+  "@flue/runtime": 2.3.0
+  "@flue/vite": 2.3.0
+  "@types/node": ^26.0.0
+  hono: 4.13.14
+  typescript: 7.0.2
+  vite: 8.3.5
+  vitest: 5.0.5
+
+# 설치 스크립트 실행 허용 목록 (pnpm 은 기본적으로 막는다)
+allowBuilds:
+  esbuild: true
+  "@google/genai": false
+  core-js-pure: false
+  protobufjs: false

@@ -1,0 +1,28 @@
+{
+  "name": "@gridelta/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "node dist/server.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-node": "catalog:",
+    "@flue/runtime": "catalog:",
+    "@gridelta/proto": "workspace:*",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@flue/cli": "catalog:",
+    "@flue/vite": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

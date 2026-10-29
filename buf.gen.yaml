@@ -1,0 +1,14 @@
+version: v2
+clean: true
+plugins:
+  # 플러그인은 로컬 버전 고정: Go 는 tools/go.mod, TS 는 루트 devDependencies (Makefile 이 PATH 를 잡아 준다)
+  - local: protoc-gen-go
+    out: agent/gen
+    opt: paths=source_relative
+  - local: protoc-gen-connect-go
+    out: agent/gen
+    opt: paths=source_relative
+  - local: protoc-gen-es
+    out: packages/proto/src/gen
+    opt: target=ts
+    include_imports: true

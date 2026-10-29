@@ -1,0 +1,210 @@
+syntax = "proto3";
+
+package gridelta.v1;
+
+option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
+
+// 에이전트 ↔ 서버. 경로 필드는 모두 POSIX 형식이다(설계 5.3).
+// Connect 는 Authorization: Bearer <credential> 헤더로 인증한다. Enroll 만 등록 토큰으로 인증.
+service AgentGateway {
+  // 에이전트가 연결을 열고 유지한다. 첫 메시지는 반드시 Hello.
+  rpc Connect(stream AgentMessage) returns (stream ServerMessage);
+  // 최초 등록: 등록 토큰 → 에이전트 자격 증명 발급
+  rpc Enroll(EnrollRequest) returns (EnrollResponse);
+}
+
+message EnrollRequest {
+  string enroll_token = 1;
+  string hostname = 2;
+  string os = 3;
+  string arch = 4;
+}
+
+message EnrollResponse {
+  string agent_id = 1; // UUIDv7
+  string credential = 2; // 이후 Connect 인증에 사용. 서버에는 해시만 저장
+}
+
+message AgentMessage {
+  oneof msg {
+    Hello hello = 1;
+    Heartbeat heartbeat = 2; // Ping 에 대한 응답
+    Response response = 3; // ServerMessage.request 에 대한 응답
+    PtyOutput pty_output = 4; // PTY 출력(비동기)
+    PtyExit pty_exit = 5;
+  }
+}
+
+message ServerMessage {
+  oneof msg {
+    Welcome welcome = 1;
+    Request request = 2;
+    PtyInput pty_input = 3; // 응답 불필요한 단방향 데이터
+    PtyResize pty_resize = 4;
+    Ping ping = 5;
+  }
+}
+
+message Hello {
+  string agent_id = 1;
+  string os = 2; // darwin | linux | windows
+  string arch = 3;
+  string hostname = 4;
+  string agent_version = 5;
+  string home_dir = 6;
+  string default_shell = 7; // /bin/zsh, /bin/bash, powershell.exe ...
+  string os_user = 8;
+}
+
+message Welcome {
+  string server_version = 1;
+  string min_agent_version = 2; // 정보용. 비호환이면 Welcome 대신 failed_precondition 으로 스트림을 닫음
+  uint32 ping_interval_ms = 3; // 기본 15000
+}
+
+message Ping {
+  uint64 nonce = 1;
+}
+
+message Heartbeat {
+  uint64 nonce = 1; // 받은 Ping.nonce 를 그대로 돌려줌
+}
+
+message Request {
+  string request_id = 1; // UUID, 서버가 발급
+  oneof op {
+    ExecRequest exec = 10;
+    CancelRequest cancel = 11; // 진행 중인 exec 취소
+    FsReadRequest fs_read = 20;
+    FsWriteRequest fs_write = 21;
+    FsStatRequest fs_stat = 22;
+    FsReaddirRequest fs_readdir = 23;
+    FsMkdirRequest fs_mkdir = 24;
+    FsRmRequest fs_rm = 25;
+    PtyOpenRequest pty_open = 30;
+    PtyCloseRequest pty_close = 31;
+  }
+}
+
+message Response {
+  string request_id = 1;
+  Error error = 2; // 전송/실행 실패. 명령의 non-zero exit 는 에러가 아님
+  oneof result {
+    ExecResult exec = 10;
+    FsReadResult fs_read = 20;
+    FsStatResult fs_stat = 22;
+    FsReaddirResult fs_readdir = 23;
+    Empty ok = 29;
+    PtyOpenResult pty_open = 30;
+  }
+}
+
+message ExecRequest {
+  string command = 1;
+  string cwd = 2;
+  map<string, string> env = 3;
+  uint32 timeout_ms = 4;
+  string shell = 5; // 비우면 에이전트 기본값
+}
+
+message ExecResult {
+  bytes stdout = 1;
+  bytes stderr = 2;
+  int32 exit_code = 3; // 타임아웃 = 124
+  bool truncated = 4; // stdout+stderr 가 exec_output_limit 를 넘어 잘림
+}
+
+message CancelRequest {
+  string target_request_id = 1;
+}
+
+message FsReadRequest {
+  string path = 1;
+}
+
+message FsReadResult {
+  bytes data = 1; // 3 MiB 초과 파일은 too_large
+}
+
+message FsWriteRequest {
+  string path = 1;
+  bytes data = 2; // 3 MiB 이하
+}
+
+message FsStatRequest {
+  string path = 1;
+}
+
+// 모르는 값은 비워 둔다.
+message FsStatResult {
+  bool is_dir = 1;
+  bool is_symlink = 2;
+  optional uint64 size = 3;
+  optional int64 mtime_ms = 4;
+  optional uint32 mode = 5;
+}
+
+message FsReaddirRequest {
+  string path = 1;
+}
+
+message FsReaddirResult {
+  repeated string names = 1;
+}
+
+message FsMkdirRequest {
+  string path = 1;
+  bool recursive = 2;
+}
+
+message FsRmRequest {
+  string path = 1;
+  bool recursive = 2;
+  bool force = 3;
+}
+
+message PtyOpenRequest {
+  string session_id = 1;
+  uint32 cols = 2;
+  uint32 rows = 3;
+  string shell = 4;
+  string cwd = 5;
+}
+
+message PtyOpenResult {
+  int32 pid = 1;
+}
+
+message PtyCloseRequest {
+  string session_id = 1;
+}
+
+message PtyInput {
+  string session_id = 1;
+  bytes data = 2;
+}
+
+message PtyOutput {
+  string session_id = 1;
+  bytes data = 2;
+  uint64 seq = 3; // 세션별 0부터 1씩 증가
+}
+
+message PtyResize {
+  string session_id = 1;
+  uint32 cols = 2;
+  uint32 rows = 3;
+}
+
+message PtyExit {
+  string session_id = 1;
+  int32 exit_code = 2;
+}
+
+message Empty {}
+
+// code: not_found, permission_denied, invalid_argument, unsupported, too_large, canceled, internal
+message Error {
+  string code = 1;
+  string message = 2;
+}

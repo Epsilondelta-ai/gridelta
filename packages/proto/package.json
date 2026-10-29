@@ -1,0 +1,18 @@
+{
+  "name": "@gridelta/proto",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/gen/gridelta/v1/*_pb.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/node": "catalog:"
+  }
+}
