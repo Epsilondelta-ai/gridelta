@@ -15,6 +15,8 @@ export interface TerminalSink {
 /**
  * 서버 PTY 세션 하나에 붙는 클라이언트 쪽 상태.
  * 출력: AttachTerminal 서버 스트림. 끊기면 받은 마지막 seq + 1 로 다시 붙는다.
+ *   보이는 탭만 스트림을 연다(resume/pause). HTTP/1.1 에서는 브라우저가 서버당 연결을 6개까지만 열어서,
+ *   숨긴 탭까지 스트림을 붙잡으면 입력과 새로고침 요청이 빈 연결을 끝없이 기다리게 된다.
  * 입력: 16 ms 동안 모아 SendInput(unary) 을 직렬로 보낸다. input_seq 로 재시도 중복을 서버가 걸러 낸다.
  */
 export class TerminalSession {
@@ -26,7 +28,9 @@ export class TerminalSession {
   #flushTimer: ReturnType<typeof setTimeout> | undefined;
   #sending = false;
   #resizeTimer: ReturnType<typeof setTimeout> | undefined;
-  #abort = new AbortController();
+  #abort: AbortController | undefined;
+  #exited = false;
+  #disposed = false;
   #encoder = new TextEncoder();
   #lastInputAt = 0;
 
@@ -36,12 +40,22 @@ export class TerminalSession {
   constructor(
     readonly sessionId: string,
     private readonly sink: TerminalSink,
-  ) {
-    void this.#attachLoop();
+  ) {}
+
+  /** 출력 스트림을 연다. 멈춰 있던 동안의 출력은 서버 링버퍼에서 이어 받는다 */
+  resume(): void {
+    if (this.#abort || this.#exited || this.#disposed) return;
+    this.#abort = new AbortController();
+    void this.#attachLoop(this.#abort.signal);
   }
 
-  async #attachLoop(): Promise<void> {
-    const signal = this.#abort.signal;
+  /** 출력 스트림만 닫는다. 화면(xterm)과 seq 는 그대로 둔다 */
+  pause(): void {
+    this.#abort?.abort();
+    this.#abort = undefined;
+  }
+
+  async #attachLoop(signal: AbortSignal): Promise<void> {
     this.sink.status('connecting');
     let delay = 500;
     while (!signal.aborted) {
@@ -53,6 +67,7 @@ export class TerminalSession {
           this.sink.status('live');
           delay = 500;
           if (out.exitCode !== undefined) {
+            this.#exited = true;
             this.sink.exited(out.exitCode);
             return;
           }
@@ -109,7 +124,7 @@ export class TerminalSession {
           break;
         } catch (err) {
           const code = ConnectError.from(err).code;
-          if (code === Code.NotFound || attempt >= 5 || this.#abort.signal.aborted) return;
+          if (code === Code.NotFound || attempt >= 5 || this.#disposed) return;
           await sleep(200 * 2 ** attempt);
         }
       }
@@ -128,7 +143,8 @@ export class TerminalSession {
 
   /** 화면에서 떼기만 한다 (세션은 서버에 남는다). */
   detach(): void {
-    this.#abort.abort();
+    this.#disposed = true;
+    this.pause();
     clearTimeout(this.#flushTimer);
     clearTimeout(this.#resizeTimer);
   }

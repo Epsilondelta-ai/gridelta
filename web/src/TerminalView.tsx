@@ -89,14 +89,20 @@ export function TerminalView({ sessionId, active, onStatus, onSession }: Props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
+  // 보이는 탭만 출력 스트림을 연다 (TerminalSession 주석 참고). 숨기면 스트림만 닫고 화면은 남긴다
   useEffect(() => {
-    if (!active) return;
+    const session = registry.sessions.get(sessionId);
+    if (!active) {
+      session?.pause();
+      return;
+    }
+    session?.resume();
     // 보이게 된 뒤에 크기를 맞추고 포커스를 준다
     requestAnimationFrame(() => {
       fitRef.current?.fit();
       termRef.current?.focus();
     });
-  }, [active]);
+  }, [active, sessionId]);
 
   return <div ref={container} className={`h-full w-full ${active ? '' : 'hidden'}`} data-session-id={sessionId} />;
 }

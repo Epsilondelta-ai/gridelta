@@ -48,6 +48,13 @@ function promptReady(s) {
   return /[#$]$/.test(last);
 }
 
+/** 새 터미널을 열고, 그 탭이 선택되어 프롬프트가 뜰 때까지 기다린다 */
+async function newTerminal(n) {
+  await page.getByRole('button', { name: '+ 새 터미널' }).click();
+  await page.getByRole('tab', { name: `터미널 ${n}`, selected: true }).waitFor();
+  await waitScreen(promptReady, `terminal ${n} prompt`);
+}
+
 async function type(text) {
   await page.locator('[data-session-id]:not(.hidden) .xterm').click();
   await page.keyboard.type(text, { delay: 15 });
@@ -69,8 +76,7 @@ try {
   const pcButton = page.getByRole('navigation', { name: 'PC 목록' }).getByRole('button', { name: new RegExp(PC) });
   await pcButton.waitFor();
   await pcButton.click();
-  await page.getByRole('button', { name: '+ 새 터미널' }).click();
-  await waitScreen(promptReady, 'shell prompt');
+  await newTerminal(1);
   const sessionId = await page.locator('[data-session-id]:not(.hidden)').getAttribute('data-session-id');
   pass(`PC 선택 후 새 터미널 열림 (${sessionId})`);
 
@@ -79,13 +85,14 @@ try {
   pass('명령 입력과 출력 (한글 포함)');
 
   // vim: 전체 화면 프로그램
-  await type('vim /tmp/m3.txt\n');
-  await waitScreen((s) => s.includes('m3.txt') && s.includes('~'), 'vim screen');
+  const vimFile = `/tmp/m3-${Date.now()}.txt`;
+  await type(`vim ${vimFile}\n`);
+  await waitScreen((s) => s.includes('m3-') && s.includes('~'), 'vim screen');
   await type('igridelta vim test');
   await page.keyboard.press('Escape');
   await type(':wq\n');
   await waitScreen((s) => promptReady(s) && !s.includes('~\n~'), 'prompt after vim');
-  await type('cat /tmp/m3.txt\n');
+  await type(`cat ${vimFile}\n`);
   await waitScreen((s) => s.split('\n').some((l) => l.trim() === 'gridelta vim test'), 'file written by vim');
   pass('vim 으로 파일 편집 후 저장');
 
@@ -121,8 +128,20 @@ try {
   const msg = `입력 지연 중앙값 ${median.toFixed(1)} ms, p90 ${p90.toFixed(1)} ms (기준 ${LATENCY_LIMIT_MS} ms, 16 ms 묶음 포함)`;
   median < LATENCY_LIMIT_MS ? pass(msg) : fail(msg);
 
-  // 새로고침 후 같은 세션에 재접속
-  await page.reload();
+  // 탭 여러 개: 숨긴 탭은 출력 스트림을 닫고, 돌아오면 놓친 출력을 이어 받는다
+  await newTerminal(2);
+  await type('sleep 1; echo hidden-$((5*5))\n');
+  await page.getByRole('tab', { name: '터미널 1' }).click();
+  await page.waitForTimeout(2000);
+  await page.getByRole('tab', { name: '터미널 2' }).click();
+  await waitScreen((s) => s.includes('hidden-25'), 'output produced while the tab was hidden');
+  await newTerminal(3);
+  await newTerminal(4);
+  await page.getByRole('tab', { name: '터미널 1' }).click();
+  pass('터미널 탭 4개: 숨긴 탭에서 나온 출력도 돌아오면 보임');
+
+  // 새로고침 후 같은 세션에 재접속 (탭이 여러 개여도 HTTP/1.1 연결 수 제한에 걸리지 않아야 한다)
+  await page.reload({ timeout: 15_000 });
   await page.getByRole('navigation', { name: 'PC 목록' }).waitFor();
   await page.locator(`[data-session-id="${sessionId}"]`).waitFor({ state: 'attached' });
   await waitScreen((s) => s.includes('after-top'), 'replayed output after reload');

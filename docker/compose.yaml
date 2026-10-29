@@ -19,7 +19,7 @@ services:
       GRIDELTA_TLS_KEY: /certs/server.key
       GRIDELTA_TLS_SELF_SIGNED: "1"
     volumes:
-      - ./.e2e/certs:/certs:ro
+      - ${GRIDELTA_CERT_DIR:-./.e2e/certs}:/certs:ro
     ports:
       - "127.0.0.1:${GRIDELTA_E2E_PORT:-3900}:3000"
       - "127.0.0.1:${GRIDELTA_OAUTH_PORT:-1455}:1455"
