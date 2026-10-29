@@ -7,12 +7,16 @@ import "gridelta/v1/console.proto";
 option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
 
 // CLI 전용. 서버 호스트의 유닉스 소켓에서만 수신하며, 소켓 파일 권한(0600)이 곧 인증이다.
-// OAuth 관련 RPC 는 M6 에서 추가한다.
 service AdminService {
   rpc CreateEnrollToken(CreateEnrollTokenRequest) returns (CreateEnrollTokenResponse);
   rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
   rpc RevokeEndpoint(RevokeEndpointRequest) returns (RevokeEndpointResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+
+  // OpenAI 로그인: CLI 가 받은 OAuth 자격 증명을 서버 DB 에 암호화해 저장한다
+  rpc StoreOAuthToken(StoreOAuthTokenRequest) returns (StoreOAuthTokenResponse);
+  rpc DeleteOAuthToken(DeleteOAuthTokenRequest) returns (DeleteOAuthTokenResponse);
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);
 }
 
 message CreateEnrollTokenRequest {
@@ -39,4 +43,27 @@ message CreateUserRequest {
 
 message CreateUserResponse {
   string user_id = 1;
+}
+
+message StoreOAuthTokenRequest {
+  string provider = 1; // openai-codex
+  string credential_json = 2; // Pi OAuthCredential (access, refresh, expires, accountId ...)
+}
+
+message StoreOAuthTokenResponse {}
+
+message DeleteOAuthTokenRequest {
+  string provider = 1;
+}
+
+message DeleteOAuthTokenResponse {}
+
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {
+  bool logged_in = 1;
+  string provider = 2;
+  string account = 3;
+  int64 expires_at_ms = 4;
+  string model = 5; // 서버가 쓰는 AI 모델 (provider/model)
 }

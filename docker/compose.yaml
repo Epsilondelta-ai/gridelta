@@ -10,7 +10,9 @@ services:
     environment:
       GRIDELTA_DEBUG: "1"
       # 실제 LLM 대신 정해진 응답 모델로 AI 흐름을 확인한다
-      GRIDELTA_AI_FAUX: "1"
+      GRIDELTA_AI_FAUX: ${GRIDELTA_AI_FAUX:-1}
+      # gridelta login openai 의 브라우저 콜백(1455)을 호스트에서 받을 수 있게 한다
+      PI_OAUTH_CALLBACK_HOST: 0.0.0.0
       GRIDELTA_WEB_AUTH: ${GRIDELTA_WEB_AUTH:-on}
       GRIDELTA_GATEWAY_URL: https://server:8443
       GRIDELTA_TLS_CERT: /certs/server.crt
@@ -20,6 +22,7 @@ services:
       - ./.e2e/certs:/certs:ro
     ports:
       - "127.0.0.1:${GRIDELTA_E2E_PORT:-3900}:3000"
+      - "127.0.0.1:${GRIDELTA_OAUTH_PORT:-1455}:1455"
 
   agent-debian:
     build:

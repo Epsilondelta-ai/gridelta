@@ -3,12 +3,15 @@ import http from 'node:http';
 import { Code, ConnectError, type ConnectRouter } from '@connectrpc/connect';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { AdminService } from '@gridelta/proto/admin';
+import { CODEX_PROVIDER, type OAuthVault } from '../auth/openai.ts';
 import type { AgentHub } from '../hub/index.ts';
 import { type Store, UsernameTakenError } from '../store/index.ts';
 import { endpointsView } from './endpoints-view.ts';
 
 export interface AdminOptions {
   gatewayUrl: string;
+  vault: OAuthVault;
+  aiModel: string;
   /** 자체 서명 인증서일 때만 등록 명령줄에 넣을 지문 */
   caFingerprint?: string;
 }
@@ -42,6 +45,34 @@ export function adminRoutes(hub: AgentHub, store: Store, opts: AdminOptions) {
         const conn = hub.get(req.endpointId);
         if (conn) hub.detach(conn);
         return {};
+      },
+
+      async storeOAuthToken(req) {
+        if (req.provider !== CODEX_PROVIDER) {
+          throw new ConnectError(`unsupported provider ${req.provider}`, Code.InvalidArgument);
+        }
+        const cred = JSON.parse(req.credentialJson) as { access?: unknown; refresh?: unknown; expires?: unknown };
+        if (typeof cred.access !== 'string' || typeof cred.refresh !== 'string' || typeof cred.expires !== 'number') {
+          throw new ConnectError('credential must have access, refresh and expires', Code.InvalidArgument);
+        }
+        await opts.vault.save(req.provider, { ...cred, type: 'oauth' } as Parameters<OAuthVault['save']>[1]);
+        return {};
+      },
+
+      async deleteOAuthToken(req) {
+        await opts.vault.delete(req.provider || CODEX_PROVIDER);
+        return {};
+      },
+
+      async getAuthStatus() {
+        const row = await store.getOAuthToken(CODEX_PROVIDER);
+        return {
+          loggedIn: !!row,
+          provider: row?.provider ?? '',
+          account: row?.account ?? '',
+          expiresAtMs: BigInt(row?.expiresAt.getTime() ?? 0),
+          model: opts.aiModel,
+        };
       },
 
       async createUser(req) {

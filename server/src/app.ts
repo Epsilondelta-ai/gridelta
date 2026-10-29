@@ -5,6 +5,8 @@ import { Hono } from 'hono';
 import { Operator } from './agents/operator.ts';
 import { registerFauxProvider } from './ai/faux.ts';
 import { approvals } from './ai/index.ts';
+import { OAuthVault, registerCodexProvider } from './auth/openai.ts';
+import { loadMasterKey } from './auth/secrets.ts';
 import { mountAuth, requireAuth } from './auth/web.ts';
 import { config } from './config.ts';
 import { certFingerprint, startGateway } from './gateway/gateway.ts';
@@ -36,11 +38,19 @@ g.__grideltaServers ??= (() => {
   setInterval(() => void store.deleteExpiredSessions(), 60 * 60 * 1000).unref();
   // 재시작 전에 기다리던 AI 호출은 사라졌으므로 대기 중인 승인 요청을 만료 처리한다
   void store.expirePendingApprovals();
+  const vault = new OAuthVault(store, loadMasterKey(config.masterKeyPath));
   if (config.aiFaux) registerFauxProvider();
+  // openai-codex 는 CLI 로그인(gridelta login openai)으로 저장한 자격 증명을 쓴다. openai/... 는 OPENAI_API_KEY
+  else if (config.aiModel.startsWith('openai-codex/')) registerCodexProvider(vault);
 
   return {
     gateway: startGateway(hub, store, { port: config.gatewayPort, tlsCert: config.tlsCert, tlsKey: config.tlsKey }),
-    admin: startAdmin(hub, store, config.adminSocket, { gatewayUrl: config.gatewayUrl, caFingerprint }),
+    admin: startAdmin(hub, store, config.adminSocket, {
+      gatewayUrl: config.gatewayUrl,
+      caFingerprint,
+      vault,
+      aiModel: config.aiFaux ? 'faux/scripted' : config.aiModel,
+    }),
   };
 })();
 

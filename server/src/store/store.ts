@@ -2,7 +2,7 @@ import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
 import { and, eq, gt, isNull, lt } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { approvals, auditLog, endpoints, enrollTokens, sessions, users } from './schema.ts';
+import { approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, users } from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -25,6 +25,8 @@ export interface SessionUser {
 export type ApprovalRow = typeof approvals.$inferSelect;
 export type ApprovalPolicy = 'always' | 'dangerous' | 'auto';
 export const APPROVAL_POLICIES: readonly ApprovalPolicy[] = ['always', 'dangerous', 'auto'];
+
+export type OAuthTokenRow = typeof oauthTokens.$inferSelect;
 
 export type AuditEntry = Omit<typeof auditLog.$inferInsert, 'id' | 'at'>;
 
@@ -201,5 +203,22 @@ export class Store {
       .update(approvals)
       .set({ status: 'expired', decidedAt: new Date() })
       .where(eq(approvals.status, 'pending'));
+  }
+
+  // --- OAuth 자격 증명 (암호화는 호출자가 한다) ---
+
+  async getOAuthToken(provider: string): Promise<OAuthTokenRow | undefined> {
+    const [row] = await this.db.select().from(oauthTokens).where(eq(oauthTokens.provider, provider)).limit(1);
+    return row;
+  }
+
+  async putOAuthToken(row: Omit<OAuthTokenRow, 'updatedAt'>): Promise<void> {
+    const values = { ...row, updatedAt: new Date() };
+    await this.db.insert(oauthTokens).values(values).onConflictDoUpdate({ target: oauthTokens.provider, set: values });
+  }
+
+  async deleteOAuthToken(provider: string): Promise<boolean> {
+    const result = await this.db.delete(oauthTokens).where(eq(oauthTokens.provider, provider));
+    return Number(result.changes) === 1;
   }
 }

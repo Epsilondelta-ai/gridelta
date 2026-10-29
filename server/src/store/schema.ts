@@ -64,3 +64,13 @@ export const approvals = sqliteTable('approvals', {
   decidedBy: text('decided_by'),
   decidedAt: integer('decided_at', { mode: 'timestamp_ms' }),
 });
+
+/** OpenAI 등 OAuth 자격 증명. credential 은 마스터 키로 암호화한 값이다. */
+export const oauthTokens = sqliteTable('oauth_tokens', {
+  provider: text('provider').primaryKey(),
+  credential: text('credential').notNull(),
+  keyVersion: integer('key_version').notNull(),
+  account: text('account').notNull().default(''),
+  expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+});

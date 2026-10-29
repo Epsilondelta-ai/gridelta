@@ -10,6 +10,8 @@ export const config = {
   /** drizzle-kit 이 만든 마이그레이션 폴더. 서버는 server/ 디렉터리에서 실행한다 */
   migrationsDir: resolve(env.GRIDELTA_MIGRATIONS_DIR ?? 'drizzle'),
   adminSocket: env.GRIDELTA_ADMIN_SOCKET ?? join(dataDir, 'admin.sock'),
+  /** OAuth 토큰 암호화용 마스터 키 파일 (GRIDELTA_MASTER_KEY 가 없을 때) */
+  masterKeyPath: join(dataDir, 'master.key'),
 
   gatewayPort: Number(env.GRIDELTA_GATEWAY_PORT ?? 8443),
   /** 에이전트가 접속할 게이트웨이 주소. 등록 명령줄에 들어간다 */

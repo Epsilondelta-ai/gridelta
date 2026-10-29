@@ -13,6 +13,7 @@
     "@clack/prompts": "catalog:",
     "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-node": "catalog:",
+    "@earendil-works/pi-ai": "catalog:",
     "@gridelta/proto": "workspace:*",
     "commander": "catalog:"
   },

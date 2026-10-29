@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/admin.proto.
  */
 export const file_gridelta_v1_admin: GenFile = /*@__PURE__*/
-  fileDesc("ChdncmlkZWx0YS92MS9hZG1pbi5wcm90bxILZ3JpZGVsdGEudjEiLwoYQ3JlYXRlRW5yb2xsVG9rZW5SZXF1ZXN0EhMKC3R0bF9zZWNvbmRzGAEgASgNIm0KGUNyZWF0ZUVucm9sbFRva2VuUmVzcG9uc2USDQoFdG9rZW4YASABKAkSFQoNZXhwaXJlc19hdF9tcxgCIAEoAxISCgpzZXJ2ZXJfdXJsGAMgASgJEhYKDmNhX2ZpbmdlcnByaW50GAQgASgJIiwKFVJldm9rZUVuZHBvaW50UmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSIYChZSZXZva2VFbmRwb2ludFJlc3BvbnNlIjcKEUNyZWF0ZVVzZXJSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJIiUKEkNyZWF0ZVVzZXJSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJMvQCCgxBZG1pblNlcnZpY2USYgoRQ3JlYXRlRW5yb2xsVG9rZW4SJS5ncmlkZWx0YS52MS5DcmVhdGVFbnJvbGxUb2tlblJlcXVlc3QaJi5ncmlkZWx0YS52MS5DcmVhdGVFbnJvbGxUb2tlblJlc3BvbnNlElYKDUxpc3RFbmRwb2ludHMSIS5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXNwb25zZRJZCg5SZXZva2VFbmRwb2ludBIiLmdyaWRlbHRhLnYxLlJldm9rZUVuZHBvaW50UmVxdWVzdBojLmdyaWRlbHRhLnYxLlJldm9rZUVuZHBvaW50UmVzcG9uc2USTQoKQ3JlYXRlVXNlchIeLmdyaWRlbHRhLnYxLkNyZWF0ZVVzZXJSZXF1ZXN0Gh8uZ3JpZGVsdGEudjEuQ3JlYXRlVXNlclJlc3BvbnNlQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM", [file_gridelta_v1_console]);
+  fileDesc("ChdncmlkZWx0YS92MS9hZG1pbi5wcm90bxILZ3JpZGVsdGEudjEiLwoYQ3JlYXRlRW5yb2xsVG9rZW5SZXF1ZXN0EhMKC3R0bF9zZWNvbmRzGAEgASgNIm0KGUNyZWF0ZUVucm9sbFRva2VuUmVzcG9uc2USDQoFdG9rZW4YASABKAkSFQoNZXhwaXJlc19hdF9tcxgCIAEoAxISCgpzZXJ2ZXJfdXJsGAMgASgJEhYKDmNhX2ZpbmdlcnByaW50GAQgASgJIiwKFVJldm9rZUVuZHBvaW50UmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSIYChZSZXZva2VFbmRwb2ludFJlc3BvbnNlIjcKEUNyZWF0ZVVzZXJSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJIiUKEkNyZWF0ZVVzZXJSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJIkMKFlN0b3JlT0F1dGhUb2tlblJlcXVlc3QSEAoIcHJvdmlkZXIYASABKAkSFwoPY3JlZGVudGlhbF9qc29uGAIgASgJIhkKF1N0b3JlT0F1dGhUb2tlblJlc3BvbnNlIisKF0RlbGV0ZU9BdXRoVG9rZW5SZXF1ZXN0EhAKCHByb3ZpZGVyGAEgASgJIhoKGERlbGV0ZU9BdXRoVG9rZW5SZXNwb25zZSIWChRHZXRBdXRoU3RhdHVzUmVxdWVzdCJzChVHZXRBdXRoU3RhdHVzUmVzcG9uc2USEQoJbG9nZ2VkX2luGAEgASgIEhAKCHByb3ZpZGVyGAIgASgJEg8KB2FjY291bnQYAyABKAkSFQoNZXhwaXJlc19hdF9tcxgEIAEoAxINCgVtb2RlbBgFIAEoCTKLBQoMQWRtaW5TZXJ2aWNlEmIKEUNyZWF0ZUVucm9sbFRva2VuEiUuZ3JpZGVsdGEudjEuQ3JlYXRlRW5yb2xsVG9rZW5SZXF1ZXN0GiYuZ3JpZGVsdGEudjEuQ3JlYXRlRW5yb2xsVG9rZW5SZXNwb25zZRJWCg1MaXN0RW5kcG9pbnRzEiEuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVzcG9uc2USWQoOUmV2b2tlRW5kcG9pbnQSIi5ncmlkZWx0YS52MS5SZXZva2VFbmRwb2ludFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZXZva2VFbmRwb2ludFJlc3BvbnNlEk0KCkNyZWF0ZVVzZXISHi5ncmlkZWx0YS52MS5DcmVhdGVVc2VyUmVxdWVzdBofLmdyaWRlbHRhLnYxLkNyZWF0ZVVzZXJSZXNwb25zZRJcCg9TdG9yZU9BdXRoVG9rZW4SIy5ncmlkZWx0YS52MS5TdG9yZU9BdXRoVG9rZW5SZXF1ZXN0GiQuZ3JpZGVsdGEudjEuU3RvcmVPQXV0aFRva2VuUmVzcG9uc2USXwoQRGVsZXRlT0F1dGhUb2tlbhIkLmdyaWRlbHRhLnYxLkRlbGV0ZU9BdXRoVG9rZW5SZXF1ZXN0GiUuZ3JpZGVsdGEudjEuRGVsZXRlT0F1dGhUb2tlblJlc3BvbnNlElYKDUdldEF1dGhTdGF0dXMSIS5ncmlkZWx0YS52MS5HZXRBdXRoU3RhdHVzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkdldEF1dGhTdGF0dXNSZXNwb25zZUJGWkRnaXRodWIuY29tL0Vwc2lsb25kZWx0YS1haS9ncmlkZWx0YS9hZ2VudC9nZW4vZ3JpZGVsdGEvdjE7Z3JpZGVsdGF2MWIGcHJvdG8z", [file_gridelta_v1_console]);
 
 /**
  * @generated from message gridelta.v1.CreateEnrollTokenRequest
@@ -139,8 +139,128 @@ export const CreateUserResponseSchema: GenMessage<CreateUserResponse> = /*@__PUR
   messageDesc(file_gridelta_v1_admin, 5);
 
 /**
+ * @generated from message gridelta.v1.StoreOAuthTokenRequest
+ */
+export type StoreOAuthTokenRequest = Message<"gridelta.v1.StoreOAuthTokenRequest"> & {
+  /**
+   * openai-codex
+   *
+   * @generated from field: string provider = 1;
+   */
+  provider: string;
+
+  /**
+   * Pi OAuthCredential (access, refresh, expires, accountId ...)
+   *
+   * @generated from field: string credential_json = 2;
+   */
+  credentialJson: string;
+};
+
+/**
+ * Describes the message gridelta.v1.StoreOAuthTokenRequest.
+ * Use `create(StoreOAuthTokenRequestSchema)` to create a new message.
+ */
+export const StoreOAuthTokenRequestSchema: GenMessage<StoreOAuthTokenRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 6);
+
+/**
+ * @generated from message gridelta.v1.StoreOAuthTokenResponse
+ */
+export type StoreOAuthTokenResponse = Message<"gridelta.v1.StoreOAuthTokenResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.StoreOAuthTokenResponse.
+ * Use `create(StoreOAuthTokenResponseSchema)` to create a new message.
+ */
+export const StoreOAuthTokenResponseSchema: GenMessage<StoreOAuthTokenResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 7);
+
+/**
+ * @generated from message gridelta.v1.DeleteOAuthTokenRequest
+ */
+export type DeleteOAuthTokenRequest = Message<"gridelta.v1.DeleteOAuthTokenRequest"> & {
+  /**
+   * @generated from field: string provider = 1;
+   */
+  provider: string;
+};
+
+/**
+ * Describes the message gridelta.v1.DeleteOAuthTokenRequest.
+ * Use `create(DeleteOAuthTokenRequestSchema)` to create a new message.
+ */
+export const DeleteOAuthTokenRequestSchema: GenMessage<DeleteOAuthTokenRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 8);
+
+/**
+ * @generated from message gridelta.v1.DeleteOAuthTokenResponse
+ */
+export type DeleteOAuthTokenResponse = Message<"gridelta.v1.DeleteOAuthTokenResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.DeleteOAuthTokenResponse.
+ * Use `create(DeleteOAuthTokenResponseSchema)` to create a new message.
+ */
+export const DeleteOAuthTokenResponseSchema: GenMessage<DeleteOAuthTokenResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 9);
+
+/**
+ * @generated from message gridelta.v1.GetAuthStatusRequest
+ */
+export type GetAuthStatusRequest = Message<"gridelta.v1.GetAuthStatusRequest"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.GetAuthStatusRequest.
+ * Use `create(GetAuthStatusRequestSchema)` to create a new message.
+ */
+export const GetAuthStatusRequestSchema: GenMessage<GetAuthStatusRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 10);
+
+/**
+ * @generated from message gridelta.v1.GetAuthStatusResponse
+ */
+export type GetAuthStatusResponse = Message<"gridelta.v1.GetAuthStatusResponse"> & {
+  /**
+   * @generated from field: bool logged_in = 1;
+   */
+  loggedIn: boolean;
+
+  /**
+   * @generated from field: string provider = 2;
+   */
+  provider: string;
+
+  /**
+   * @generated from field: string account = 3;
+   */
+  account: string;
+
+  /**
+   * @generated from field: int64 expires_at_ms = 4;
+   */
+  expiresAtMs: bigint;
+
+  /**
+   * 서버가 쓰는 AI 모델 (provider/model)
+   *
+   * @generated from field: string model = 5;
+   */
+  model: string;
+};
+
+/**
+ * Describes the message gridelta.v1.GetAuthStatusResponse.
+ * Use `create(GetAuthStatusResponseSchema)` to create a new message.
+ */
+export const GetAuthStatusResponseSchema: GenMessage<GetAuthStatusResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_admin, 11);
+
+/**
  * CLI 전용. 서버 호스트의 유닉스 소켓에서만 수신하며, 소켓 파일 권한(0600)이 곧 인증이다.
- * OAuth 관련 RPC 는 M6 에서 추가한다.
  *
  * @generated from service gridelta.v1.AdminService
  */
@@ -176,6 +296,32 @@ export const AdminService: GenService<{
     methodKind: "unary";
     input: typeof CreateUserRequestSchema;
     output: typeof CreateUserResponseSchema;
+  },
+  /**
+   * OpenAI 로그인: CLI 가 받은 OAuth 자격 증명을 서버 DB 에 암호화해 저장한다
+   *
+   * @generated from rpc gridelta.v1.AdminService.StoreOAuthToken
+   */
+  storeOAuthToken: {
+    methodKind: "unary";
+    input: typeof StoreOAuthTokenRequestSchema;
+    output: typeof StoreOAuthTokenResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.AdminService.DeleteOAuthToken
+   */
+  deleteOAuthToken: {
+    methodKind: "unary";
+    input: typeof DeleteOAuthTokenRequestSchema;
+    output: typeof DeleteOAuthTokenResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.AdminService.GetAuthStatus
+   */
+  getAuthStatus: {
+    methodKind: "unary";
+    input: typeof GetAuthStatusRequestSchema;
+    output: typeof GetAuthStatusResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_gridelta_v1_admin, 0);

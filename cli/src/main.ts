@@ -1,9 +1,12 @@
 import { join } from 'node:path';
+import { createInterface } from 'node:readline/promises';
 import { text } from 'node:stream/consumers';
 import { cancel, isCancel, password as promptPassword } from '@clack/prompts';
 import { ConnectError, createClient } from '@connectrpc/connect';
 import { createConnectTransport } from '@connectrpc/connect-node';
 import { AdminService } from '@gridelta/proto/admin';
+import type { AuthEvent, AuthPrompt, ProviderAuthInteraction } from '@earendil-works/pi-ai';
+import { openaiCodexProvider } from '@earendil-works/pi-ai/providers/openai-codex';
 import { Command, InvalidArgumentError } from 'commander';
 
 const program = new Command('gridelta')
@@ -95,6 +98,82 @@ user
     }
     const res = await admin().createUser({ username, password });
     console.log(`계정을 만들었습니다: ${username} (${res.userId})`);
+  });
+
+/** Pi 의 로그인 흐름에 터미널 입출력을 붙인다. 로그인 방식 선택은 --device 로 정한다 */
+function terminalInteraction(device: boolean, signal: AbortSignal): ProviderAuthInteraction {
+  return {
+    signal,
+    async prompt(p: AuthPrompt) {
+      if (p.type === 'select') {
+        const pick = p.options.find((o) => (device ? /device/i.test(o.id + o.label) : !/device/i.test(o.id + o.label)));
+        return (pick ?? p.options[0]!).id;
+      }
+      // 콜백을 받지 못했을 때 붙여 넣는 리디렉션 URL / 코드. 콜백이 먼저 오면 signal 로 취소된다
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      try {
+        return await rl.question(`\n${p.message}\n> `, { signal: p.signal ?? signal });
+      } finally {
+        rl.close();
+      }
+    },
+    notify(e: AuthEvent) {
+      switch (e.type) {
+        case 'auth_url':
+          console.log(`\n브라우저에서 아래 주소를 열어 로그인하세요:\n\n  ${e.url}\n`);
+          console.log('로그인 후 http://localhost:1455/auth/callback?... 로 이동합니다.');
+          console.log('그 페이지가 열리지 않으면 주소창의 URL 전체를 복사해 아래에 붙여 넣으세요.');
+          break;
+        case 'device_code':
+          console.log(`\n${e.verificationUri} 에서 아래 코드를 입력하세요:\n\n  ${e.userCode}\n`);
+          console.log('(디바이스 코드 로그인은 ChatGPT 보안 설정 또는 워크스페이스 관리자가 켜야 합니다)');
+          break;
+        case 'info':
+        case 'progress':
+          console.log(e.message);
+          break;
+      }
+    },
+  };
+}
+
+const loginCmd = program.command('login').description('외부 서비스 로그인');
+loginCmd
+  .command('openai')
+  .description('ChatGPT 계정으로 로그인한다 (Codex OAuth). 자격 증명은 서버 DB 에 암호화해 저장한다')
+  .option('--device', '브라우저 대신 디바이스 코드로 로그인한다')
+  .action(async (opts: { device?: boolean }) => {
+    const oauth = openaiCodexProvider().auth.oauth!;
+    const ac = new AbortController();
+    process.once('SIGINT', () => ac.abort());
+    const cred = await oauth.login(terminalInteraction(!!opts.device, ac.signal));
+    await admin().storeOAuthToken({ provider: 'openai-codex', credentialJson: JSON.stringify(cred) });
+    console.log(`\n로그인했습니다. 만료: ${new Date(cred.expires).toISOString()} (서버가 자동으로 갱신합니다)`);
+    process.exit(0);
+  });
+
+program
+  .command('logout')
+  .argument('<service>', 'openai')
+  .description('저장된 자격 증명을 지운다')
+  .action(async (service: string) => {
+    if (service !== 'openai') throw new InvalidArgumentError('openai 만 지원합니다');
+    await admin().deleteOAuthToken({ provider: 'openai-codex' });
+    console.log('로그아웃했습니다.');
+  });
+
+program
+  .command('auth')
+  .command('status')
+  .description('OpenAI 로그인 상태와 서버가 쓰는 모델')
+  .action(async () => {
+    const s = await admin().getAuthStatus({});
+    console.log(`모델: ${s.model}`);
+    if (!s.loggedIn) {
+      console.log('OpenAI: 로그인하지 않음 (gridelta login openai)');
+      return;
+    }
+    console.log(`OpenAI: 로그인됨 (계정 ${s.account || '-'}, 토큰 만료 ${new Date(Number(s.expiresAtMs)).toISOString()})`);
   });
 
 try {
