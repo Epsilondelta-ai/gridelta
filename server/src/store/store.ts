@@ -2,7 +2,7 @@ import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
 import { and, eq, gt, isNull, lt } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { auditLog, endpoints, enrollTokens, sessions, users } from './schema.ts';
+import { approvals, auditLog, endpoints, enrollTokens, sessions, users } from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -21,6 +21,10 @@ export interface SessionUser {
   id: string;
   username: string;
 }
+
+export type ApprovalRow = typeof approvals.$inferSelect;
+export type ApprovalPolicy = 'always' | 'dangerous' | 'auto';
+export const APPROVAL_POLICIES: readonly ApprovalPolicy[] = ['always', 'dangerous', 'auto'];
 
 export type AuditEntry = Omit<typeof auditLog.$inferInsert, 'id' | 'at'>;
 
@@ -160,5 +164,42 @@ export class Store {
 
   async audit(entry: AuditEntry): Promise<void> {
     await this.db.insert(auditLog).values({ ...entry, at: new Date() });
+  }
+
+  // --- AI 승인 ---
+
+  async setApprovalPolicy(endpointId: string, policy: ApprovalPolicy): Promise<boolean> {
+    const result = await this.db.update(endpoints).set({ approvalPolicy: policy }).where(eq(endpoints.id, endpointId));
+    return Number(result.changes) === 1;
+  }
+
+  async createApproval(row: Pick<ApprovalRow, 'endpointId' | 'command' | 'requestedBy'>): Promise<ApprovalRow> {
+    const approval: ApprovalRow = {
+      ...row,
+      id: uuidv7(),
+      status: 'pending',
+      createdAt: new Date(),
+      decidedBy: null,
+      decidedAt: null,
+    };
+    await this.db.insert(approvals).values(approval);
+    return approval;
+  }
+
+  /** 대기 중인 요청만 결정할 수 있다. 이미 결정·만료됐으면 false. */
+  async decideApproval(id: string, status: 'approved' | 'denied' | 'expired', decidedBy?: string): Promise<boolean> {
+    const result = await this.db
+      .update(approvals)
+      .set({ status, decidedBy: decidedBy ?? null, decidedAt: new Date() })
+      .where(and(eq(approvals.id, id), eq(approvals.status, 'pending')));
+    return Number(result.changes) === 1;
+  }
+
+  /** 서버 재시작 전에 대기 중이던 요청은 기다리던 AI 호출이 사라졌으므로 만료 처리한다. */
+  async expirePendingApprovals(): Promise<void> {
+    await this.db
+      .update(approvals)
+      .set({ status: 'expired', decidedAt: new Date() })
+      .where(eq(approvals.status, 'pending'));
   }
 }

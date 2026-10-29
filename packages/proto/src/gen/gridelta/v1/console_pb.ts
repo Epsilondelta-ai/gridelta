@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/console.proto.
  */
 export const file_gridelta_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSKoAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAyIWChRMaXN0RW5kcG9pbnRzUmVxdWVzdCJBChVMaXN0RW5kcG9pbnRzUmVzcG9uc2USKAoJZW5kcG9pbnRzGAEgAygLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiFwoVV2F0Y2hFbmRwb2ludHNSZXF1ZXN0IjgKDUVuZHBvaW50RXZlbnQSJwoIZW5kcG9pbnQYASABKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludCJGChNPcGVuVGVybWluYWxSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJEgwKBGNvbHMYAiABKA0SDAoEcm93cxgDIAEoDSIqChRPcGVuVGVybWluYWxSZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJIloKCFRlcm1pbmFsEhIKCnNlc3Npb25faWQYASABKAkSEwoLZW5kcG9pbnRfaWQYAiABKAkSFQoNY3JlYXRlZF9hdF9tcxgDIAEoAxIOCgZleGl0ZWQYBCABKAgiKwoUTGlzdFRlcm1pbmFsc1JlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkiQQoVTGlzdFRlcm1pbmFsc1Jlc3BvbnNlEigKCXRlcm1pbmFscxgBIAMoCzIVLmdyaWRlbHRhLnYxLlRlcm1pbmFsIj0KFUF0dGFjaFRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhAKCGZyb21fc2VxGAIgASgEImAKDlRlcm1pbmFsT3V0cHV0EgwKBGRhdGEYASABKAwSCwoDc2VxGAIgASgEEg0KBXJlc2V0GAMgASgIEhYKCWV4aXRfY29kZRgEIAEoBUgAiAEBQgwKCl9leGl0X2NvZGUiWgoQU2VuZElucHV0UmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlucHV0X3NlcRgCIAEoBBIMCgRkYXRhGAMgASgMEhEKCWNsaWVudF9pZBgEIAEoCSITChFTZW5kSW5wdXRSZXNwb25zZSJHChVSZXNpemVUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iGAoWUmVzaXplVGVybWluYWxSZXNwb25zZSIqChRDbG9zZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJIhcKFUNsb3NlVGVybWluYWxSZXNwb25zZTK9BQoOQ29uc29sZVNlcnZpY2USVgoNTGlzdEVuZHBvaW50cxIhLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1Jlc3BvbnNlElIKDldhdGNoRW5kcG9pbnRzEiIuZ3JpZGVsdGEudjEuV2F0Y2hFbmRwb2ludHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuRW5kcG9pbnRFdmVudDABElMKDE9wZW5UZXJtaW5hbBIgLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlcXVlc3QaIS5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXNwb25zZRJWCg1MaXN0VGVybWluYWxzEiEuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVzcG9uc2USUwoOQXR0YWNoVGVybWluYWwSIi5ncmlkZWx0YS52MS5BdHRhY2hUZXJtaW5hbFJlcXVlc3QaGy5ncmlkZWx0YS52MS5UZXJtaW5hbE91dHB1dDABEkoKCVNlbmRJbnB1dBIdLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlcXVlc3QaHi5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXNwb25zZRJZCg5SZXNpemVUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2USVgoNQ2xvc2VUZXJtaW5hbBIhLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlc3BvbnNlQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
+  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLBAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkiFgoUTGlzdEVuZHBvaW50c1JlcXVlc3QiQQoVTGlzdEVuZHBvaW50c1Jlc3BvbnNlEigKCWVuZHBvaW50cxgBIAMoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IhcKFVdhdGNoRW5kcG9pbnRzUmVxdWVzdCI4Cg1FbmRwb2ludEV2ZW50EicKCGVuZHBvaW50GAEgASgLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiRgoTT3BlblRlcm1pbmFsUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iKgoUT3BlblRlcm1pbmFsUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCSJaCghUZXJtaW5hbBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhUKDWNyZWF0ZWRfYXRfbXMYAyABKAMSDgoGZXhpdGVkGAQgASgIIisKFExpc3RUZXJtaW5hbHNSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJIkEKFUxpc3RUZXJtaW5hbHNSZXNwb25zZRIoCgl0ZXJtaW5hbHMYASADKAsyFS5ncmlkZWx0YS52MS5UZXJtaW5hbCI9ChVBdHRhY2hUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIQCghmcm9tX3NlcRgCIAEoBCJgCg5UZXJtaW5hbE91dHB1dBIMCgRkYXRhGAEgASgMEgsKA3NlcRgCIAEoBBINCgVyZXNldBgDIAEoCBIWCglleGl0X2NvZGUYBCABKAVIAIgBAUIMCgpfZXhpdF9jb2RlIloKEFNlbmRJbnB1dFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIRCglpbnB1dF9zZXEYAiABKAQSDAoEZGF0YRgDIAEoDBIRCgljbGllbnRfaWQYBCABKAkiEwoRU2VuZElucHV0UmVzcG9uc2UiRwoVUmVzaXplVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIhgKFlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2UiKgoUQ2xvc2VUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSIXChVDbG9zZVRlcm1pbmFsUmVzcG9uc2UijgEKCEFwcHJvdmFsEgoKAmlkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhAKCGhvc3RuYW1lGAMgASgJEg8KB2NvbW1hbmQYBCABKAkSDgoGc3RhdHVzGAUgASgJEhUKDWNyZWF0ZWRfYXRfbXMYBiABKAMSFwoPY29udmVyc2F0aW9uX2lkGAcgASgJIhcKFVdhdGNoQXBwcm92YWxzUmVxdWVzdCI4Cg1BcHByb3ZhbEV2ZW50EicKCGFwcHJvdmFsGAEgASgLMhUuZ3JpZGVsdGEudjEuQXBwcm92YWwiNAoVRGVjaWRlQXBwcm92YWxSZXF1ZXN0EgoKAmlkGAEgASgJEg8KB2FwcHJvdmUYAiABKAgiGAoWRGVjaWRlQXBwcm92YWxSZXNwb25zZSI/ChhTZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDgoGcG9saWN5GAIgASgJIhsKGVNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2Uy0AcKDkNvbnNvbGVTZXJ2aWNlElYKDUxpc3RFbmRwb2ludHMSIS5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXNwb25zZRJSCg5XYXRjaEVuZHBvaW50cxIiLmdyaWRlbHRhLnYxLldhdGNoRW5kcG9pbnRzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkVuZHBvaW50RXZlbnQwARJTCgxPcGVuVGVybWluYWwSIC5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXF1ZXN0GiEuZ3JpZGVsdGEudjEuT3BlblRlcm1pbmFsUmVzcG9uc2USVgoNTGlzdFRlcm1pbmFscxIhLmdyaWRlbHRhLnYxLkxpc3RUZXJtaW5hbHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1Jlc3BvbnNlElMKDkF0dGFjaFRlcm1pbmFsEiIuZ3JpZGVsdGEudjEuQXR0YWNoVGVybWluYWxSZXF1ZXN0GhsuZ3JpZGVsdGEudjEuVGVybWluYWxPdXRwdXQwARJKCglTZW5kSW5wdXQSHS5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXF1ZXN0Gh4uZ3JpZGVsdGEudjEuU2VuZElucHV0UmVzcG9uc2USWQoOUmVzaXplVGVybWluYWwSIi5ncmlkZWx0YS52MS5SZXNpemVUZXJtaW5hbFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZXNpemVUZXJtaW5hbFJlc3BvbnNlElYKDUNsb3NlVGVybWluYWwSIS5ncmlkZWx0YS52MS5DbG9zZVRlcm1pbmFsUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXNwb25zZRJSCg5XYXRjaEFwcHJvdmFscxIiLmdyaWRlbHRhLnYxLldhdGNoQXBwcm92YWxzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkFwcHJvdmFsRXZlbnQwARJZCg5EZWNpZGVBcHByb3ZhbBIiLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVzcG9uc2USYgoRU2V0QXBwcm92YWxQb2xpY3kSJS5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QaJi5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlc3BvbnNlQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
 
 /**
  * @generated from message gridelta.v1.Endpoint
@@ -60,6 +60,13 @@ export type Endpoint = Message<"gridelta.v1.Endpoint"> & {
    * @generated from field: int64 last_seen_ms = 9;
    */
   lastSeenMs: bigint;
+
+  /**
+   * always | dangerous | auto
+   *
+   * @generated from field: string approval_policy = 10;
+   */
+  approvalPolicy: string;
 };
 
 /**
@@ -423,8 +430,161 @@ export const CloseTerminalResponseSchema: GenMessage<CloseTerminalResponse> = /*
   messageDesc(file_gridelta_v1_console, 17);
 
 /**
+ * @generated from message gridelta.v1.Approval
+ */
+export type Approval = Message<"gridelta.v1.Approval"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string endpoint_id = 2;
+   */
+  endpointId: string;
+
+  /**
+   * @generated from field: string hostname = 3;
+   */
+  hostname: string;
+
+  /**
+   * @generated from field: string command = 4;
+   */
+  command: string;
+
+  /**
+   * pending | approved | denied | expired
+   *
+   * @generated from field: string status = 5;
+   */
+  status: string;
+
+  /**
+   * @generated from field: int64 created_at_ms = 6;
+   */
+  createdAtMs: bigint;
+
+  /**
+   * 요청한 AI 대화 (Flue 인스턴스 id)
+   *
+   * @generated from field: string conversation_id = 7;
+   */
+  conversationId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.Approval.
+ * Use `create(ApprovalSchema)` to create a new message.
+ */
+export const ApprovalSchema: GenMessage<Approval> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 18);
+
+/**
+ * @generated from message gridelta.v1.WatchApprovalsRequest
+ */
+export type WatchApprovalsRequest = Message<"gridelta.v1.WatchApprovalsRequest"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.WatchApprovalsRequest.
+ * Use `create(WatchApprovalsRequestSchema)` to create a new message.
+ */
+export const WatchApprovalsRequestSchema: GenMessage<WatchApprovalsRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 19);
+
+/**
+ * @generated from message gridelta.v1.ApprovalEvent
+ */
+export type ApprovalEvent = Message<"gridelta.v1.ApprovalEvent"> & {
+  /**
+   * @generated from field: gridelta.v1.Approval approval = 1;
+   */
+  approval?: Approval | undefined;
+};
+
+/**
+ * Describes the message gridelta.v1.ApprovalEvent.
+ * Use `create(ApprovalEventSchema)` to create a new message.
+ */
+export const ApprovalEventSchema: GenMessage<ApprovalEvent> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 20);
+
+/**
+ * @generated from message gridelta.v1.DecideApprovalRequest
+ */
+export type DecideApprovalRequest = Message<"gridelta.v1.DecideApprovalRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: bool approve = 2;
+   */
+  approve: boolean;
+};
+
+/**
+ * Describes the message gridelta.v1.DecideApprovalRequest.
+ * Use `create(DecideApprovalRequestSchema)` to create a new message.
+ */
+export const DecideApprovalRequestSchema: GenMessage<DecideApprovalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 21);
+
+/**
+ * @generated from message gridelta.v1.DecideApprovalResponse
+ */
+export type DecideApprovalResponse = Message<"gridelta.v1.DecideApprovalResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.DecideApprovalResponse.
+ * Use `create(DecideApprovalResponseSchema)` to create a new message.
+ */
+export const DecideApprovalResponseSchema: GenMessage<DecideApprovalResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 22);
+
+/**
+ * @generated from message gridelta.v1.SetApprovalPolicyRequest
+ */
+export type SetApprovalPolicyRequest = Message<"gridelta.v1.SetApprovalPolicyRequest"> & {
+  /**
+   * @generated from field: string endpoint_id = 1;
+   */
+  endpointId: string;
+
+  /**
+   * always | dangerous | auto
+   *
+   * @generated from field: string policy = 2;
+   */
+  policy: string;
+};
+
+/**
+ * Describes the message gridelta.v1.SetApprovalPolicyRequest.
+ * Use `create(SetApprovalPolicyRequestSchema)` to create a new message.
+ */
+export const SetApprovalPolicyRequestSchema: GenMessage<SetApprovalPolicyRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 23);
+
+/**
+ * @generated from message gridelta.v1.SetApprovalPolicyResponse
+ */
+export type SetApprovalPolicyResponse = Message<"gridelta.v1.SetApprovalPolicyResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.SetApprovalPolicyResponse.
+ * Use `create(SetApprovalPolicyResponseSchema)` to create a new message.
+ */
+export const SetApprovalPolicyResponseSchema: GenMessage<SetApprovalPolicyResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 24);
+
+/**
  * 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
- * 승인·AI 설정 RPC 는 이후 마일스톤에서 추가한다.
+ * AI 설정 RPC 는 M6 에서 추가한다. AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
  *
  * @generated from service gridelta.v1.ConsoleService
  */
@@ -502,6 +662,34 @@ export const ConsoleService: GenService<{
     methodKind: "unary";
     input: typeof CloseTerminalRequestSchema;
     output: typeof CloseTerminalResponseSchema;
+  },
+  /**
+   * AI 명령 승인
+   *
+   * 구독 직후 대기 중인 요청을 보낸다
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.WatchApprovals
+   */
+  watchApprovals: {
+    methodKind: "server_streaming";
+    input: typeof WatchApprovalsRequestSchema;
+    output: typeof ApprovalEventSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.DecideApproval
+   */
+  decideApproval: {
+    methodKind: "unary";
+    input: typeof DecideApprovalRequestSchema;
+    output: typeof DecideApprovalResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.SetApprovalPolicy
+   */
+  setApprovalPolicy: {
+    methodKind: "unary";
+    input: typeof SetApprovalPolicyRequestSchema;
+    output: typeof SetApprovalPolicyResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_gridelta_v1_console, 0);

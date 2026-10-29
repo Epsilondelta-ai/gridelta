@@ -1,13 +1,9 @@
 import { Code, ConnectError } from '@connectrpc/connect';
 import { consoleClient, sleep } from './api.ts';
+import { randomId } from './random.ts';
 
 const INPUT_BATCH_MS = 16;
 const RESIZE_DEBOUNCE_MS = 100;
-
-/** crypto.randomUUID 는 HTTPS(보안 컨텍스트)에서만 있으므로 getRandomValues 로 만든다 */
-function randomId(): string {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 export interface TerminalSink {
   write(data: Uint8Array): void;

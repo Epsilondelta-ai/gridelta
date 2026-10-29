@@ -23,5 +23,10 @@ export const config = {
   /** 웹 UI 빌드 결과. 없으면 API 만 제공한다 */
   webDir: resolve(env.GRIDELTA_WEB_DIR ?? '../web/dist'),
 
+  /** Flue 모델 id (provider/model). M6 에서 웹 UI 설정으로 바꿀 수 있게 한다 */
+  aiModel: env.GRIDELTA_AI_MODEL ?? 'openai-codex/gpt-5.6-sol',
+  /** e2e 테스트용 정해진 응답 모델을 쓴다 */
+  aiFaux: env.GRIDELTA_AI_FAUX === '1',
+
   debug: env.GRIDELTA_DEBUG === '1',
 };

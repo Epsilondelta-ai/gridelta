@@ -11,6 +11,8 @@
     "@bufbuild/protobuf": "catalog:",
     "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-web": "catalog:",
+    "@flue/react": "catalog:",
+    "@flue/sdk": "catalog:",
     "@gridelta/proto": "workspace:*",
     "@xterm/addon-fit": "catalog:",
     "@xterm/addon-unicode11": "catalog:",

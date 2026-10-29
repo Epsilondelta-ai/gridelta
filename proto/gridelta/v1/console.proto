@@ -5,7 +5,7 @@ package gridelta.v1;
 option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
 
 // 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
-// 승인·AI 설정 RPC 는 이후 마일스톤에서 추가한다.
+// AI 설정 RPC 는 M6 에서 추가한다. AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
 service ConsoleService {
   rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
   rpc WatchEndpoints(WatchEndpointsRequest) returns (stream EndpointEvent); // 온라인/오프라인 변화
@@ -17,6 +17,11 @@ service ConsoleService {
   rpc SendInput(SendInputRequest) returns (SendInputResponse);
   rpc ResizeTerminal(ResizeTerminalRequest) returns (ResizeTerminalResponse);
   rpc CloseTerminal(CloseTerminalRequest) returns (CloseTerminalResponse);
+
+  // AI 명령 승인
+  rpc WatchApprovals(WatchApprovalsRequest) returns (stream ApprovalEvent); // 구독 직후 대기 중인 요청을 보낸다
+  rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse);
+  rpc SetApprovalPolicy(SetApprovalPolicyRequest) returns (SetApprovalPolicyResponse);
 }
 
 message Endpoint {
@@ -29,6 +34,7 @@ message Endpoint {
   string agent_version = 7;
   bool online = 8;
   int64 last_seen_ms = 9;
+  string approval_policy = 10; // always | dangerous | auto
 }
 
 message ListEndpointsRequest {}
@@ -102,3 +108,33 @@ message CloseTerminalRequest {
 }
 
 message CloseTerminalResponse {}
+
+message Approval {
+  string id = 1;
+  string endpoint_id = 2;
+  string hostname = 3;
+  string command = 4;
+  string status = 5; // pending | approved | denied | expired
+  int64 created_at_ms = 6;
+  string conversation_id = 7; // 요청한 AI 대화 (Flue 인스턴스 id)
+}
+
+message WatchApprovalsRequest {}
+
+message ApprovalEvent {
+  Approval approval = 1;
+}
+
+message DecideApprovalRequest {
+  string id = 1;
+  bool approve = 2;
+}
+
+message DecideApprovalResponse {}
+
+message SetApprovalPolicyRequest {
+  string endpoint_id = 1;
+  string policy = 2; // always | dangerous | auto
+}
+
+message SetApprovalPolicyResponse {}

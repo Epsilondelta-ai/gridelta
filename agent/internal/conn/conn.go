@@ -17,6 +17,7 @@ import (
 	grideltav1 "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1"
 	"github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1/grideltav1connect"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/exec"
+	"github.com/Epsilondelta-ai/gridelta/agent/internal/fs"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/pty"
 )
 
@@ -241,6 +242,21 @@ func (s *session) handle(req *grideltav1.Request) {
 		} else {
 			res.Error = &grideltav1.Error{Code: "not_found", Message: "no running request with that id"}
 		}
+	case *grideltav1.Request_FsRead:
+		r, err := fs.Read(op.FsRead)
+		setResult(res, err, func() { res.Result = &grideltav1.Response_FsRead{FsRead: r} })
+	case *grideltav1.Request_FsWrite:
+		setResult(res, fs.Write(op.FsWrite), okResult(res))
+	case *grideltav1.Request_FsStat:
+		r, err := fs.Stat(op.FsStat)
+		setResult(res, err, func() { res.Result = &grideltav1.Response_FsStat{FsStat: r} })
+	case *grideltav1.Request_FsReaddir:
+		r, err := fs.Readdir(op.FsReaddir)
+		setResult(res, err, func() { res.Result = &grideltav1.Response_FsReaddir{FsReaddir: r} })
+	case *grideltav1.Request_FsMkdir:
+		setResult(res, fs.Mkdir(op.FsMkdir), okResult(res))
+	case *grideltav1.Request_FsRm:
+		setResult(res, fs.Rm(op.FsRm), okResult(res))
 	case *grideltav1.Request_PtyOpen:
 		if pid, err := s.client.ptys.Open(op.PtyOpen); err != nil {
 			res.Error = &grideltav1.Error{Code: "internal", Message: err.Error()}
@@ -259,6 +275,24 @@ func (s *session) handle(req *grideltav1.Request) {
 		res.Error = &grideltav1.Error{Code: "unsupported", Message: fmt.Sprintf("%T is not supported yet", op)}
 	}
 	s.send(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_Response{Response: res}})
+}
+
+// setResult 는 err 가 있으면 Response.error 를, 없으면 ok() 로 결과를 채운다.
+func setResult(res *grideltav1.Response, err error, ok func()) {
+	if err == nil {
+		ok()
+		return
+	}
+	code := "internal"
+	var fe *fs.Error
+	if errors.As(err, &fe) {
+		code = fe.Code
+	}
+	res.Error = &grideltav1.Error{Code: code, Message: err.Error()}
+}
+
+func okResult(res *grideltav1.Response) func() {
+	return func() { res.Result = &grideltav1.Response_Ok{Ok: &grideltav1.Empty{}} }
 }
 
 func (s *session) handleExec(id string, req *grideltav1.ExecRequest, res *grideltav1.Response) {

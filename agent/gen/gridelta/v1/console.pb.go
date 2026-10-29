@@ -22,18 +22,19 @@ const (
 )
 
 type Endpoint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Hostname      string                 `protobuf:"bytes,2,opt,name=hostname,proto3" json:"hostname,omitempty"`
-	Os            string                 `protobuf:"bytes,3,opt,name=os,proto3" json:"os,omitempty"`
-	Arch          string                 `protobuf:"bytes,4,opt,name=arch,proto3" json:"arch,omitempty"`
-	HomeDir       string                 `protobuf:"bytes,5,opt,name=home_dir,json=homeDir,proto3" json:"home_dir,omitempty"`
-	DefaultShell  string                 `protobuf:"bytes,6,opt,name=default_shell,json=defaultShell,proto3" json:"default_shell,omitempty"`
-	AgentVersion  string                 `protobuf:"bytes,7,opt,name=agent_version,json=agentVersion,proto3" json:"agent_version,omitempty"`
-	Online        bool                   `protobuf:"varint,8,opt,name=online,proto3" json:"online,omitempty"`
-	LastSeenMs    int64                  `protobuf:"varint,9,opt,name=last_seen_ms,json=lastSeenMs,proto3" json:"last_seen_ms,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Hostname       string                 `protobuf:"bytes,2,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	Os             string                 `protobuf:"bytes,3,opt,name=os,proto3" json:"os,omitempty"`
+	Arch           string                 `protobuf:"bytes,4,opt,name=arch,proto3" json:"arch,omitempty"`
+	HomeDir        string                 `protobuf:"bytes,5,opt,name=home_dir,json=homeDir,proto3" json:"home_dir,omitempty"`
+	DefaultShell   string                 `protobuf:"bytes,6,opt,name=default_shell,json=defaultShell,proto3" json:"default_shell,omitempty"`
+	AgentVersion   string                 `protobuf:"bytes,7,opt,name=agent_version,json=agentVersion,proto3" json:"agent_version,omitempty"`
+	Online         bool                   `protobuf:"varint,8,opt,name=online,proto3" json:"online,omitempty"`
+	LastSeenMs     int64                  `protobuf:"varint,9,opt,name=last_seen_ms,json=lastSeenMs,proto3" json:"last_seen_ms,omitempty"`
+	ApprovalPolicy string                 `protobuf:"bytes,10,opt,name=approval_policy,json=approvalPolicy,proto3" json:"approval_policy,omitempty"` // always | dangerous | auto
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Endpoint) Reset() {
@@ -127,6 +128,13 @@ func (x *Endpoint) GetLastSeenMs() int64 {
 		return x.LastSeenMs
 	}
 	return 0
+}
+
+func (x *Endpoint) GetApprovalPolicy() string {
+	if x != nil {
+		return x.ApprovalPolicy
+	}
+	return ""
 }
 
 type ListEndpointsRequest struct {
@@ -949,11 +957,359 @@ func (*CloseTerminalResponse) Descriptor() ([]byte, []int) {
 	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{17}
 }
 
+type Approval struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	EndpointId     string                 `protobuf:"bytes,2,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Hostname       string                 `protobuf:"bytes,3,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	Command        string                 `protobuf:"bytes,4,opt,name=command,proto3" json:"command,omitempty"`
+	Status         string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"` // pending | approved | denied | expired
+	CreatedAtMs    int64                  `protobuf:"varint,6,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
+	ConversationId string                 `protobuf:"bytes,7,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 요청한 AI 대화 (Flue 인스턴스 id)
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Approval) Reset() {
+	*x = Approval{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Approval) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Approval) ProtoMessage() {}
+
+func (x *Approval) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Approval.ProtoReflect.Descriptor instead.
+func (*Approval) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *Approval) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Approval) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *Approval) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *Approval) GetCommand() string {
+	if x != nil {
+		return x.Command
+	}
+	return ""
+}
+
+func (x *Approval) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *Approval) GetCreatedAtMs() int64 {
+	if x != nil {
+		return x.CreatedAtMs
+	}
+	return 0
+}
+
+func (x *Approval) GetConversationId() string {
+	if x != nil {
+		return x.ConversationId
+	}
+	return ""
+}
+
+type WatchApprovalsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WatchApprovalsRequest) Reset() {
+	*x = WatchApprovalsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WatchApprovalsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WatchApprovalsRequest) ProtoMessage() {}
+
+func (x *WatchApprovalsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WatchApprovalsRequest.ProtoReflect.Descriptor instead.
+func (*WatchApprovalsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{19}
+}
+
+type ApprovalEvent struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Approval      *Approval              `protobuf:"bytes,1,opt,name=approval,proto3" json:"approval,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApprovalEvent) Reset() {
+	*x = ApprovalEvent{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApprovalEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApprovalEvent) ProtoMessage() {}
+
+func (x *ApprovalEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApprovalEvent.ProtoReflect.Descriptor instead.
+func (*ApprovalEvent) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ApprovalEvent) GetApproval() *Approval {
+	if x != nil {
+		return x.Approval
+	}
+	return nil
+}
+
+type DecideApprovalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Approve       bool                   `protobuf:"varint,2,opt,name=approve,proto3" json:"approve,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecideApprovalRequest) Reset() {
+	*x = DecideApprovalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecideApprovalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecideApprovalRequest) ProtoMessage() {}
+
+func (x *DecideApprovalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecideApprovalRequest.ProtoReflect.Descriptor instead.
+func (*DecideApprovalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *DecideApprovalRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DecideApprovalRequest) GetApprove() bool {
+	if x != nil {
+		return x.Approve
+	}
+	return false
+}
+
+type DecideApprovalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DecideApprovalResponse) Reset() {
+	*x = DecideApprovalResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DecideApprovalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecideApprovalResponse) ProtoMessage() {}
+
+func (x *DecideApprovalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecideApprovalResponse.ProtoReflect.Descriptor instead.
+func (*DecideApprovalResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{22}
+}
+
+type SetApprovalPolicyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Policy        string                 `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"` // always | dangerous | auto
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetApprovalPolicyRequest) Reset() {
+	*x = SetApprovalPolicyRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetApprovalPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetApprovalPolicyRequest) ProtoMessage() {}
+
+func (x *SetApprovalPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetApprovalPolicyRequest.ProtoReflect.Descriptor instead.
+func (*SetApprovalPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *SetApprovalPolicyRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *SetApprovalPolicyRequest) GetPolicy() string {
+	if x != nil {
+		return x.Policy
+	}
+	return ""
+}
+
+type SetApprovalPolicyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetApprovalPolicyResponse) Reset() {
+	*x = SetApprovalPolicyResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetApprovalPolicyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetApprovalPolicyResponse) ProtoMessage() {}
+
+func (x *SetApprovalPolicyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetApprovalPolicyResponse.ProtoReflect.Descriptor instead.
+func (*SetApprovalPolicyResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{24}
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\n" +
-	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xf9\x01\n" +
+	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xa2\x02\n" +
 	"\bEndpoint\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x0e\n" +
@@ -964,7 +1320,9 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\ragent_version\x18\a \x01(\tR\fagentVersion\x12\x16\n" +
 	"\x06online\x18\b \x01(\bR\x06online\x12 \n" +
 	"\flast_seen_ms\x18\t \x01(\x03R\n" +
-	"lastSeenMs\"\x16\n" +
+	"lastSeenMs\x12'\n" +
+	"\x0fapproval_policy\x18\n" +
+	" \x01(\tR\x0eapprovalPolicy\"\x16\n" +
 	"\x14ListEndpointsRequest\"L\n" +
 	"\x15ListEndpointsResponse\x123\n" +
 	"\tendpoints\x18\x01 \x03(\v2\x15.gridelta.v1.EndpointR\tendpoints\"\x17\n" +
@@ -1018,7 +1376,28 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x14CloseTerminalRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\"\x17\n" +
-	"\x15CloseTerminalResponse2\xbd\x05\n" +
+	"\x15CloseTerminalResponse\"\xd6\x01\n" +
+	"\bApproval\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
+	"\vendpoint_id\x18\x02 \x01(\tR\n" +
+	"endpointId\x12\x1a\n" +
+	"\bhostname\x18\x03 \x01(\tR\bhostname\x12\x18\n" +
+	"\acommand\x18\x04 \x01(\tR\acommand\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\"\n" +
+	"\rcreated_at_ms\x18\x06 \x01(\x03R\vcreatedAtMs\x12'\n" +
+	"\x0fconversation_id\x18\a \x01(\tR\x0econversationId\"\x17\n" +
+	"\x15WatchApprovalsRequest\"B\n" +
+	"\rApprovalEvent\x121\n" +
+	"\bapproval\x18\x01 \x01(\v2\x15.gridelta.v1.ApprovalR\bapproval\"A\n" +
+	"\x15DecideApprovalRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
+	"\aapprove\x18\x02 \x01(\bR\aapprove\"\x18\n" +
+	"\x16DecideApprovalResponse\"S\n" +
+	"\x18SetApprovalPolicyRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12\x16\n" +
+	"\x06policy\x18\x02 \x01(\tR\x06policy\"\x1b\n" +
+	"\x19SetApprovalPolicyResponse2\xd0\a\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
 	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12S\n" +
@@ -1027,7 +1406,10 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x0eAttachTerminal\x12\".gridelta.v1.AttachTerminalRequest\x1a\x1b.gridelta.v1.TerminalOutput0\x01\x12J\n" +
 	"\tSendInput\x12\x1d.gridelta.v1.SendInputRequest\x1a\x1e.gridelta.v1.SendInputResponse\x12Y\n" +
 	"\x0eResizeTerminal\x12\".gridelta.v1.ResizeTerminalRequest\x1a#.gridelta.v1.ResizeTerminalResponse\x12V\n" +
-	"\rCloseTerminal\x12!.gridelta.v1.CloseTerminalRequest\x1a\".gridelta.v1.CloseTerminalResponseBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
+	"\rCloseTerminal\x12!.gridelta.v1.CloseTerminalRequest\x1a\".gridelta.v1.CloseTerminalResponse\x12R\n" +
+	"\x0eWatchApprovals\x12\".gridelta.v1.WatchApprovalsRequest\x1a\x1a.gridelta.v1.ApprovalEvent0\x01\x12Y\n" +
+	"\x0eDecideApproval\x12\".gridelta.v1.DecideApprovalRequest\x1a#.gridelta.v1.DecideApprovalResponse\x12b\n" +
+	"\x11SetApprovalPolicy\x12%.gridelta.v1.SetApprovalPolicyRequest\x1a&.gridelta.v1.SetApprovalPolicyResponseBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
 
 var (
 	file_gridelta_v1_console_proto_rawDescOnce sync.Once
@@ -1041,52 +1423,66 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_gridelta_v1_console_proto_goTypes = []any{
-	(*Endpoint)(nil),               // 0: gridelta.v1.Endpoint
-	(*ListEndpointsRequest)(nil),   // 1: gridelta.v1.ListEndpointsRequest
-	(*ListEndpointsResponse)(nil),  // 2: gridelta.v1.ListEndpointsResponse
-	(*WatchEndpointsRequest)(nil),  // 3: gridelta.v1.WatchEndpointsRequest
-	(*EndpointEvent)(nil),          // 4: gridelta.v1.EndpointEvent
-	(*OpenTerminalRequest)(nil),    // 5: gridelta.v1.OpenTerminalRequest
-	(*OpenTerminalResponse)(nil),   // 6: gridelta.v1.OpenTerminalResponse
-	(*Terminal)(nil),               // 7: gridelta.v1.Terminal
-	(*ListTerminalsRequest)(nil),   // 8: gridelta.v1.ListTerminalsRequest
-	(*ListTerminalsResponse)(nil),  // 9: gridelta.v1.ListTerminalsResponse
-	(*AttachTerminalRequest)(nil),  // 10: gridelta.v1.AttachTerminalRequest
-	(*TerminalOutput)(nil),         // 11: gridelta.v1.TerminalOutput
-	(*SendInputRequest)(nil),       // 12: gridelta.v1.SendInputRequest
-	(*SendInputResponse)(nil),      // 13: gridelta.v1.SendInputResponse
-	(*ResizeTerminalRequest)(nil),  // 14: gridelta.v1.ResizeTerminalRequest
-	(*ResizeTerminalResponse)(nil), // 15: gridelta.v1.ResizeTerminalResponse
-	(*CloseTerminalRequest)(nil),   // 16: gridelta.v1.CloseTerminalRequest
-	(*CloseTerminalResponse)(nil),  // 17: gridelta.v1.CloseTerminalResponse
+	(*Endpoint)(nil),                  // 0: gridelta.v1.Endpoint
+	(*ListEndpointsRequest)(nil),      // 1: gridelta.v1.ListEndpointsRequest
+	(*ListEndpointsResponse)(nil),     // 2: gridelta.v1.ListEndpointsResponse
+	(*WatchEndpointsRequest)(nil),     // 3: gridelta.v1.WatchEndpointsRequest
+	(*EndpointEvent)(nil),             // 4: gridelta.v1.EndpointEvent
+	(*OpenTerminalRequest)(nil),       // 5: gridelta.v1.OpenTerminalRequest
+	(*OpenTerminalResponse)(nil),      // 6: gridelta.v1.OpenTerminalResponse
+	(*Terminal)(nil),                  // 7: gridelta.v1.Terminal
+	(*ListTerminalsRequest)(nil),      // 8: gridelta.v1.ListTerminalsRequest
+	(*ListTerminalsResponse)(nil),     // 9: gridelta.v1.ListTerminalsResponse
+	(*AttachTerminalRequest)(nil),     // 10: gridelta.v1.AttachTerminalRequest
+	(*TerminalOutput)(nil),            // 11: gridelta.v1.TerminalOutput
+	(*SendInputRequest)(nil),          // 12: gridelta.v1.SendInputRequest
+	(*SendInputResponse)(nil),         // 13: gridelta.v1.SendInputResponse
+	(*ResizeTerminalRequest)(nil),     // 14: gridelta.v1.ResizeTerminalRequest
+	(*ResizeTerminalResponse)(nil),    // 15: gridelta.v1.ResizeTerminalResponse
+	(*CloseTerminalRequest)(nil),      // 16: gridelta.v1.CloseTerminalRequest
+	(*CloseTerminalResponse)(nil),     // 17: gridelta.v1.CloseTerminalResponse
+	(*Approval)(nil),                  // 18: gridelta.v1.Approval
+	(*WatchApprovalsRequest)(nil),     // 19: gridelta.v1.WatchApprovalsRequest
+	(*ApprovalEvent)(nil),             // 20: gridelta.v1.ApprovalEvent
+	(*DecideApprovalRequest)(nil),     // 21: gridelta.v1.DecideApprovalRequest
+	(*DecideApprovalResponse)(nil),    // 22: gridelta.v1.DecideApprovalResponse
+	(*SetApprovalPolicyRequest)(nil),  // 23: gridelta.v1.SetApprovalPolicyRequest
+	(*SetApprovalPolicyResponse)(nil), // 24: gridelta.v1.SetApprovalPolicyResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
 	0,  // 1: gridelta.v1.EndpointEvent.endpoint:type_name -> gridelta.v1.Endpoint
 	7,  // 2: gridelta.v1.ListTerminalsResponse.terminals:type_name -> gridelta.v1.Terminal
-	1,  // 3: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3,  // 4: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	5,  // 5: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
-	8,  // 6: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
-	10, // 7: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
-	12, // 8: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
-	14, // 9: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
-	16, // 10: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	2,  // 11: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 12: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	6,  // 13: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 14: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 15: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 16: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 17: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 18: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	11, // [11:19] is the sub-list for method output_type
-	3,  // [3:11] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	18, // 3: gridelta.v1.ApprovalEvent.approval:type_name -> gridelta.v1.Approval
+	1,  // 4: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 5: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	5,  // 6: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 7: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 8: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 9: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 10: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 11: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	19, // 12: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 13: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 14: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	2,  // 15: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 16: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	6,  // 17: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 18: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 19: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 20: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 21: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 22: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	20, // 23: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 24: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 25: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	15, // [15:26] is the sub-list for method output_type
+	4,  // [4:15] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }
@@ -1101,7 +1497,7 @@ func file_gridelta_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

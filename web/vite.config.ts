@@ -8,6 +8,6 @@ const server = process.env.GRIDELTA_SERVER ?? 'http://localhost:3000';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    proxy: { '/rpc': server, '/api': server },
+    proxy: { '/rpc': server, '/api': server, '/agents': server },
   },
 });

@@ -1,6 +1,8 @@
 import type { Endpoint } from '@gridelta/proto/console';
 import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { AiPanel } from './AiPanel.tsx';
 import { consoleClient, fetchMe, isUnauthenticated, login, logout, sleep, type User } from './api.ts';
+import { Approvals } from './Approvals.tsx';
 import type { TerminalSession } from './terminal-session.ts';
 import { type TerminalStatus, TerminalView } from './TerminalView.tsx';
 
@@ -74,6 +76,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   const [error, setError] = useState('');
   const sessions = useRef(new Map<string, TerminalSession>());
   const [latency, setLatency] = useState<number>();
+  const [showAi, setShowAi] = useState(true);
 
   const handleError = useCallback(
     (err: unknown) => {
@@ -217,6 +220,9 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
       </aside>
 
       <main className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <Approvals onLoggedOut={onLoggedOut} />
+        <div className="flex min-h-0 flex-1 max-md:flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {!endpoint ? (
           <div className="grid flex-1 place-items-center p-6 text-muted">왼쪽에서 PC를 선택하세요.</div>
         ) : (
@@ -239,6 +245,14 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
                   </button>
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() => setShowAi((v) => !v)}
+                aria-pressed={showAi}
+                className="ml-auto shrink-0 px-3 py-2 text-sm text-accent order-last"
+              >
+                AI
+              </button>
               <button
                 type="button"
                 onClick={() => void openTerminal()}
@@ -266,6 +280,9 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
             </div>
           </>
         )}
+        </div>
+        {endpoint && showAi && <AiPanel endpoint={endpoint} />}
+        </div>
         <footer className="flex items-center gap-4 border-t border-line bg-panel px-4 py-1 text-xs text-muted">
           <span>{endpoint ? `${endpoint.hostname} · ${endpoint.defaultShell}` : ''}</span>
           {latency !== undefined && <span data-testid="latency">입력 지연 {Math.round(latency)} ms</span>}

@@ -1,11 +1,16 @@
 import { existsSync } from 'node:fs';
 import { serveStatic } from '@hono/node-server/serve-static';
+import { createAgentRouter } from '@flue/runtime/routing';
 import { Hono } from 'hono';
-import { mountAuth } from './auth/web.ts';
+import { Operator } from './agents/operator.ts';
+import { registerFauxProvider } from './ai/faux.ts';
+import { approvals } from './ai/index.ts';
+import { mountAuth, requireAuth } from './auth/web.ts';
 import { config } from './config.ts';
 import { certFingerprint, startGateway } from './gateway/gateway.ts';
 import { hub } from './hub/index.ts';
 import { startAdmin } from './rpc/admin.ts';
+import { endpointIdOf } from './sandboxes/remote-pc.ts';
 import { mountConsole } from './rpc/console.ts';
 import { mountDebug } from './rpc/debug.ts';
 import { store } from './store/index.ts';
@@ -26,6 +31,9 @@ g.__grideltaServers ??= (() => {
     });
   });
   setInterval(() => void store.deleteExpiredSessions(), 60 * 60 * 1000).unref();
+  // 재시작 전에 기다리던 AI 호출은 사라졌으므로 대기 중인 승인 요청을 만료 처리한다
+  void store.expirePendingApprovals();
+  if (config.aiFaux) registerFauxProvider();
 
   return {
     gateway: startGateway(hub, store, { port: config.gatewayPort, tlsCert: config.tlsCert, tlsKey: config.tlsKey }),
@@ -37,7 +45,22 @@ const app = new Hono();
 
 app.get('/healthz', (c) => c.text('ok'));
 mountAuth(app, store);
-mountConsole(app, hub, store);
+mountConsole(app, hub, store, approvals);
+
+// AI 대화: Flue 라우트 (/agents/operator/:id). 로그인한 사용자만, 등록된 PC 의 대화만 연다.
+// "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 둔다
+app.use('/agents/*', requireAuth(store));
+app.use('/agents/operator/:id/*', async (c, next) => {
+  const ep = await store.getEndpoint(endpointIdOf(c.req.param('id')));
+  if (!ep || ep.revokedAt) return c.json({ error: 'unknown endpoint' }, 404);
+  await next();
+});
+app.use('/agents/operator/:id', async (c, next) => {
+  const ep = await store.getEndpoint(endpointIdOf(c.req.param('id')));
+  if (!ep || ep.revokedAt) return c.json({ error: 'unknown endpoint' }, 404);
+  await next();
+});
+app.route('/agents/operator', createAgentRouter(Operator));
 if (config.debug) mountDebug(app, hub);
 
 // 웹 UI (SPA): 파일이 있으면 그대로, 없으면 index.html

@@ -47,6 +47,15 @@ const (
 	// ConsoleServiceCloseTerminalProcedure is the procedure name of the ConsoleService's CloseTerminal
 	// RPC.
 	ConsoleServiceCloseTerminalProcedure = "/gridelta.v1.ConsoleService/CloseTerminal"
+	// ConsoleServiceWatchApprovalsProcedure is the procedure name of the ConsoleService's
+	// WatchApprovals RPC.
+	ConsoleServiceWatchApprovalsProcedure = "/gridelta.v1.ConsoleService/WatchApprovals"
+	// ConsoleServiceDecideApprovalProcedure is the procedure name of the ConsoleService's
+	// DecideApproval RPC.
+	ConsoleServiceDecideApprovalProcedure = "/gridelta.v1.ConsoleService/DecideApproval"
+	// ConsoleServiceSetApprovalPolicyProcedure is the procedure name of the ConsoleService's
+	// SetApprovalPolicy RPC.
+	ConsoleServiceSetApprovalPolicyProcedure = "/gridelta.v1.ConsoleService/SetApprovalPolicy"
 )
 
 var (
@@ -106,6 +115,27 @@ var (
 			Procedure:  ConsoleServiceCloseTerminalProcedure,
 		}
 	})
+	consoleServiceWatchApprovalsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeServer,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("WatchApprovals"),
+			Procedure:  ConsoleServiceWatchApprovalsProcedure,
+		}
+	})
+	consoleServiceDecideApprovalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("DecideApproval"),
+			Procedure:  ConsoleServiceDecideApprovalProcedure,
+		}
+	})
+	consoleServiceSetApprovalPolicySpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("SetApprovalPolicy"),
+			Procedure:  ConsoleServiceSetApprovalPolicyProcedure,
+		}
+	})
 )
 
 // ConsoleServiceClient is a client for the gridelta.v1.ConsoleService service.
@@ -119,6 +149,10 @@ type ConsoleServiceClient interface {
 	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
 	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
 	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
+	// AI 명령 승인
+	WatchApprovals(context.Context, *v1.WatchApprovalsRequest) (ConsoleServiceWatchApprovalsClientStream, error)
+	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
+	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
 }
 
 // NewConsoleServiceClient constructs a client for the gridelta.v1.ConsoleService service. Multiple
@@ -169,6 +203,27 @@ func (s ConsoleServiceAttachTerminalClientStream) Close() error {
 	return s.stream.Close()
 }
 
+// ConsoleServiceWatchApprovalsClientStream is the client stream for the ConsoleService's
+// WatchApprovals RPC.
+type ConsoleServiceWatchApprovalsClientStream struct {
+	stream connect.ClientStream
+}
+
+// Receive returns the next response message from the server.
+func (s ConsoleServiceWatchApprovalsClientStream) Receive() (*v1.ApprovalEvent, error) {
+	var res v1.ApprovalEvent
+	if err := s.stream.Receive(&res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+// Close releases the stream's resources. It is idempotent and is typically deferred to clean up a
+// stream abandoned before io.EOF.
+func (s ConsoleServiceWatchApprovalsClientStream) Close() error {
+	return s.stream.Close()
+}
+
 // ConsoleServiceHandler is an implementation of the gridelta.v1.ConsoleService service.
 type ConsoleServiceHandler interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
@@ -180,6 +235,10 @@ type ConsoleServiceHandler interface {
 	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
 	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
 	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
+	// AI 명령 승인
+	WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error
+	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
+	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
 }
 
 // RegisterConsoleServiceHandler registers svc as the gridelta.v1.ConsoleService implementation on
@@ -195,6 +254,9 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 		connect.Method{Spec: consoleServiceSendInputSpec(), Handler: adapter.sendInput},
 		connect.Method{Spec: consoleServiceResizeTerminalSpec(), Handler: adapter.resizeTerminal},
 		connect.Method{Spec: consoleServiceCloseTerminalSpec(), Handler: adapter.closeTerminal},
+		connect.Method{Spec: consoleServiceWatchApprovalsSpec(), Handler: adapter.watchApprovals},
+		connect.Method{Spec: consoleServiceDecideApprovalSpec(), Handler: adapter.decideApproval},
+		connect.Method{Spec: consoleServiceSetApprovalPolicySpec(), Handler: adapter.setApprovalPolicy},
 	)
 }
 
@@ -227,6 +289,22 @@ func (s ConsoleServiceAttachTerminalServerStream) SendHeaders() error {
 
 // Send sends a response message to the client.
 func (s ConsoleServiceAttachTerminalServerStream) Send(res *v1.TerminalOutput) error {
+	return s.stream.Send(res)
+}
+
+// ConsoleServiceWatchApprovalsServerStream is the server stream for the ConsoleService's
+// WatchApprovals RPC.
+type ConsoleServiceWatchApprovalsServerStream struct {
+	stream connect.ServerStream
+}
+
+// SendHeaders flushes the response headers without a message. The first Send does this implicitly.
+func (s ConsoleServiceWatchApprovalsServerStream) SendHeaders() error {
+	return s.stream.SendHeaders()
+}
+
+// Send sends a response message to the client.
+func (s ConsoleServiceWatchApprovalsServerStream) Send(res *v1.ApprovalEvent) error {
 	return s.stream.Send(res)
 }
 
@@ -263,6 +341,18 @@ func (UnimplementedConsoleServiceHandler) ResizeTerminal(context.Context, *v1.Re
 
 func (UnimplementedConsoleServiceHandler) CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CloseTerminal is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error {
+	return connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.WatchApprovals is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.DecideApproval is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.SetApprovalPolicy is not implemented")
 }
 
 type consoleServiceClient struct {
@@ -328,6 +418,30 @@ func (c *consoleServiceClient) ResizeTerminal(ctx context.Context, req *v1.Resiz
 func (c *consoleServiceClient) CloseTerminal(ctx context.Context, req *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error) {
 	var res v1.CloseTerminalResponse
 	if err := c.client.CallUnary(ctx, consoleServiceCloseTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) WatchApprovals(ctx context.Context, req *v1.WatchApprovalsRequest) (ConsoleServiceWatchApprovalsClientStream, error) {
+	stream, err := c.client.CallServerStream(ctx, consoleServiceWatchApprovalsSpec(), req)
+	if err != nil {
+		return ConsoleServiceWatchApprovalsClientStream{}, err
+	}
+	return ConsoleServiceWatchApprovalsClientStream{stream: stream}, nil
+}
+
+func (c *consoleServiceClient) DecideApproval(ctx context.Context, req *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error) {
+	var res v1.DecideApprovalResponse
+	if err := c.client.CallUnary(ctx, consoleServiceDecideApprovalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) SetApprovalPolicy(ctx context.Context, req *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error) {
+	var res v1.SetApprovalPolicyResponse
+	if err := c.client.CallUnary(ctx, consoleServiceSetApprovalPolicySpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -417,6 +531,38 @@ func (h consoleServiceHandler) closeTerminal(ctx context.Context, _ connect.Spec
 		return err
 	}
 	res, err := h.svc.CloseTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) watchApprovals(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.WatchApprovalsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	return h.svc.WatchApprovals(ctx, &req, ConsoleServiceWatchApprovalsServerStream{stream: stream})
+}
+
+func (h consoleServiceHandler) decideApproval(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.DecideApprovalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.DecideApproval(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) setApprovalPolicy(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.SetApprovalPolicyRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.SetApprovalPolicy(ctx, &req)
 	if err != nil {
 		return err
 	}

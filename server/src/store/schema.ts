@@ -52,3 +52,15 @@ export const auditLog = sqliteTable('audit_log', {
   exitCode: integer('exit_code'),
   approvalId: text('approval_id'),
 });
+
+/** AI 가 요청한 위험 명령의 승인 대기열. */
+export const approvals = sqliteTable('approvals', {
+  id: text('id').primaryKey(),
+  endpointId: text('endpoint_id').notNull(),
+  command: text('command').notNull(),
+  requestedBy: text('requested_by').notNull(),
+  status: text('status', { enum: ['pending', 'approved', 'denied', 'expired'] }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  decidedBy: text('decided_by'),
+  decidedAt: integer('decided_at', { mode: 'timestamp_ms' }),
+});

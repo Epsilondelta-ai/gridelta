@@ -17,6 +17,9 @@ catalog:
   "@flue/vite": 2.3.0
   "@hono/node-server": 2.1.5
   "@clack/prompts": 1.8.1
+  "@earendil-works/pi-ai": 1.4.0
+  "@flue/react": 2.3.0
+  "@flue/sdk": 2.3.0
   "@node-rs/argon2": 2.2.2
   "@tailwindcss/vite": 4.3.3
   "@types/node": ^26.0.0
