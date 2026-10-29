@@ -166,6 +166,10 @@ pass "원격 PC 상태 확인: 승인 후 폴더 삭제됨, AI 가 쓴 파일 �
   console.log(statuses === 'denied,approved' && ai === 2);
 ")" == true ]] || fail "approvals/audit_log rows for AI commands"
 pass "승인 기록(거부·승인)과 AI 명령 감사 로그(approval_id 포함)"
+code=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/UpdateAiSettings" \
+  -H 'content-type: application/json' -d '{"model":"openai-codex/not-a-model"}')
+[[ "$code" == 400 ]] || fail "UpdateAiSettings with unknown model returned $code"
+pass "목록에 없는 모델로는 바꿀 수 없음"
 
 echo "== 재연결"
 # WatchEndpoints 서버 스트림을 HTTP/1.1 로 구독해 둔다 (Connect 스트리밍 envelope: flags 1B + length 4B)

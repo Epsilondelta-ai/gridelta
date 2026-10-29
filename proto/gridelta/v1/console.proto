@@ -5,7 +5,7 @@ package gridelta.v1;
 option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
 
 // 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
-// AI 설정 RPC 는 M6 에서 추가한다. AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
+// AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
 service ConsoleService {
   rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
   rpc WatchEndpoints(WatchEndpointsRequest) returns (stream EndpointEvent); // 온라인/오프라인 변화
@@ -22,6 +22,10 @@ service ConsoleService {
   rpc WatchApprovals(WatchApprovalsRequest) returns (stream ApprovalEvent); // 구독 직후 대기 중인 요청을 보낸다
   rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse);
   rpc SetApprovalPolicy(SetApprovalPolicyRequest) returns (SetApprovalPolicyResponse);
+
+  // AI 모델 선택. 바꾸면 새 대화부터 적용된다
+  rpc GetAiSettings(GetAiSettingsRequest) returns (AiSettings);
+  rpc UpdateAiSettings(UpdateAiSettingsRequest) returns (AiSettings);
 }
 
 message Endpoint {
@@ -138,3 +142,19 @@ message SetApprovalPolicyRequest {
 }
 
 message SetApprovalPolicyResponse {}
+
+message AiModel {
+  string id = 1; // provider/model (예: openai-codex/gpt-5.6-sol)
+  string name = 2;
+}
+
+message AiSettings {
+  string model = 1;
+  repeated AiModel models = 2; // 고를 수 있는 모델
+}
+
+message GetAiSettingsRequest {}
+
+message UpdateAiSettingsRequest {
+  string model = 1;
+}

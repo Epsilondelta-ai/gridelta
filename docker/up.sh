@@ -24,10 +24,15 @@ echo -n "서버 기다리는 중"
 until [[ "$(curl -sf "http://127.0.0.1:$GRIDELTA_E2E_PORT/healthz" 2>/dev/null)" == ok ]]; do echo -n .; sleep 1; done
 echo
 
-enroll() { # enroll <service>
+enroll() { # enroll <service>  컨테이너가 새로 만들어졌으면 다시 등록하고, 같은 이름의 예전 등록은 폐기한다
   if ! dc exec -T "$1" test -f /etc/gridelta/agent.yaml; then
     cmd=$(dc exec -T server gridelta enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*')
     dc exec -T "$1" sh -c "$cmd" >/dev/null
+    local host=$1
+    for id in $(dc exec -T server gridelta endpoints list --json |
+      node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).filter(e=>e.hostname===process.argv[1]&&!e.online).forEach(e=>console.log(e.id)))' "$host"); do
+      dc exec -T server gridelta endpoints revoke "$id" >/dev/null
+    done
   fi
 }
 enroll agent-debian

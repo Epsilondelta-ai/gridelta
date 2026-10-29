@@ -4,7 +4,7 @@ import { createAgentRouter } from '@flue/runtime/routing';
 import { Hono } from 'hono';
 import { Operator } from './agents/operator.ts';
 import { registerFauxProvider } from './ai/faux.ts';
-import { approvals } from './ai/index.ts';
+import { aiModels, approvals } from './ai/index.ts';
 import { OAuthVault, registerCodexProvider } from './auth/openai.ts';
 import { loadMasterKey } from './auth/secrets.ts';
 import { mountAuth, requireAuth } from './auth/web.ts';
@@ -39,9 +39,10 @@ g.__grideltaServers ??= (() => {
   // 재시작 전에 기다리던 AI 호출은 사라졌으므로 대기 중인 승인 요청을 만료 처리한다
   void store.expirePendingApprovals();
   const vault = new OAuthVault(store, loadMasterKey(config.masterKeyPath));
+  void aiModels.load();
   if (config.aiFaux) registerFauxProvider();
   // openai-codex 는 CLI 로그인(gridelta login openai)으로 저장한 자격 증명을 쓴다. openai/... 는 OPENAI_API_KEY
-  else if (config.aiModel.startsWith('openai-codex/')) registerCodexProvider(vault);
+  else registerCodexProvider(vault);
 
   return {
     gateway: startGateway(hub, store, { port: config.gatewayPort, tlsCert: config.tlsCert, tlsKey: config.tlsKey }),
@@ -49,7 +50,7 @@ g.__grideltaServers ??= (() => {
       gatewayUrl: config.gatewayUrl,
       caFingerprint,
       vault,
-      aiModel: config.aiFaux ? 'faux/scripted' : config.aiModel,
+      aiModel: () => aiModels.current(),
     }),
   };
 })();
@@ -58,7 +59,7 @@ const app = new Hono();
 
 app.get('/healthz', (c) => c.text('ok'));
 mountAuth(app, store);
-mountConsole(app, hub, store, approvals);
+mountConsole(app, hub, store, approvals, aiModels);
 
 // AI 대화: Flue 라우트 (/agents/operator/:id). 로그인한 사용자만, 등록된 PC 의 대화만 연다.
 // "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 둔다

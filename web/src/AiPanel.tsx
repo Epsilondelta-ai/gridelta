@@ -1,5 +1,5 @@
 import { type FlueConversationPart, useFlueAgent } from '@flue/react';
-import type { Endpoint } from '@gridelta/proto/console';
+import type { AiSettings, Endpoint } from '@gridelta/proto/console';
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { consoleClient } from './api.ts';
 import { randomId } from './random.ts';
@@ -40,6 +40,10 @@ export function AiPanel({ endpoint }: { endpoint: Endpoint }) {
   useEffect(() => {
     setPolicy(endpoint.approvalPolicy || 'dangerous');
   }, [endpoint.approvalPolicy]);
+  const [ai, setAi] = useState<AiSettings>();
+  useEffect(() => {
+    void consoleClient.getAiSettings({}).then(setAi, () => {});
+  }, []);
   const bottom = useRef<HTMLDivElement>(null);
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: 'end' });
@@ -69,6 +73,14 @@ export function AiPanel({ endpoint }: { endpoint: Endpoint }) {
     setConversation(id);
   }
 
+  async function changeModel(model: string) {
+    try {
+      setAi(await consoleClient.updateAiSettings({ model }));
+    } catch {
+      // 목록에 없는 모델이면 서버가 거부한다. 표시는 그대로 둔다
+    }
+  }
+
   async function changePolicy(value: string) {
     setPolicy(value);
     await consoleClient.setApprovalPolicy({ endpointId: endpoint.id, policy: value }).catch(() => setPolicy(policy));
@@ -78,6 +90,21 @@ export function AiPanel({ endpoint }: { endpoint: Endpoint }) {
     <section aria-label="AI" className="flex min-h-0 flex-col border-line bg-panel md:w-[26rem] md:border-l max-md:h-[50dvh] max-md:border-t">
       <header className="flex items-center gap-2 border-b border-line px-3 py-2">
         <h2 className="text-sm font-semibold">AI</h2>
+        {ai && (
+          <select
+            aria-label="AI 모델"
+            title="바꾸면 새 대화부터 적용됩니다"
+            value={ai.model}
+            onChange={(e) => void changeModel(e.target.value)}
+            className="min-w-0 rounded-md border border-line bg-bg px-2 py-1 text-xs"
+          >
+            {ai.models.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           aria-label="승인 정책"
           value={policy}

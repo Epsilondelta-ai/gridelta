@@ -1,15 +1,13 @@
 'use agent';
 import { type AgentProps, useModel, useSandbox } from '@flue/runtime';
-import { FAUX_MODEL } from '../ai/faux.ts';
-import { approvals } from '../ai/index.ts';
-import { config } from '../config.ts';
+import { aiModels, approvals } from '../ai/index.ts';
 import { hub } from '../hub/index.ts';
 import { endpointIdOf, remotePc } from '../sandboxes/remote-pc.ts';
 import { store } from '../store/index.ts';
 
 /** 원격 PC 하나를 맡는 운영자 에이전트. 인스턴스 id 는 `<endpoint_id>:<대화 id>` (설계 8.1). */
 export function Operator({ id }: AgentProps) {
-  useModel(config.aiFaux ? FAUX_MODEL : config.aiModel, { thinkingLevel: 'medium' });
+  useModel(aiModels.current(), { thinkingLevel: 'medium' });
   useSandbox(remotePc({ hub, store, approvals }));
 
   const pc = hub.list().find((e) => e.id === endpointIdOf(id));

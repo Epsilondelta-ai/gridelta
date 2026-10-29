@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/console.proto.
  */
 export const file_gridelta_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLBAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkiFgoUTGlzdEVuZHBvaW50c1JlcXVlc3QiQQoVTGlzdEVuZHBvaW50c1Jlc3BvbnNlEigKCWVuZHBvaW50cxgBIAMoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IhcKFVdhdGNoRW5kcG9pbnRzUmVxdWVzdCI4Cg1FbmRwb2ludEV2ZW50EicKCGVuZHBvaW50GAEgASgLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiRgoTT3BlblRlcm1pbmFsUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iKgoUT3BlblRlcm1pbmFsUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCSJaCghUZXJtaW5hbBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhUKDWNyZWF0ZWRfYXRfbXMYAyABKAMSDgoGZXhpdGVkGAQgASgIIisKFExpc3RUZXJtaW5hbHNSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJIkEKFUxpc3RUZXJtaW5hbHNSZXNwb25zZRIoCgl0ZXJtaW5hbHMYASADKAsyFS5ncmlkZWx0YS52MS5UZXJtaW5hbCI9ChVBdHRhY2hUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIQCghmcm9tX3NlcRgCIAEoBCJgCg5UZXJtaW5hbE91dHB1dBIMCgRkYXRhGAEgASgMEgsKA3NlcRgCIAEoBBINCgVyZXNldBgDIAEoCBIWCglleGl0X2NvZGUYBCABKAVIAIgBAUIMCgpfZXhpdF9jb2RlIloKEFNlbmRJbnB1dFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIRCglpbnB1dF9zZXEYAiABKAQSDAoEZGF0YRgDIAEoDBIRCgljbGllbnRfaWQYBCABKAkiEwoRU2VuZElucHV0UmVzcG9uc2UiRwoVUmVzaXplVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIhgKFlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2UiKgoUQ2xvc2VUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSIXChVDbG9zZVRlcm1pbmFsUmVzcG9uc2UijgEKCEFwcHJvdmFsEgoKAmlkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhAKCGhvc3RuYW1lGAMgASgJEg8KB2NvbW1hbmQYBCABKAkSDgoGc3RhdHVzGAUgASgJEhUKDWNyZWF0ZWRfYXRfbXMYBiABKAMSFwoPY29udmVyc2F0aW9uX2lkGAcgASgJIhcKFVdhdGNoQXBwcm92YWxzUmVxdWVzdCI4Cg1BcHByb3ZhbEV2ZW50EicKCGFwcHJvdmFsGAEgASgLMhUuZ3JpZGVsdGEudjEuQXBwcm92YWwiNAoVRGVjaWRlQXBwcm92YWxSZXF1ZXN0EgoKAmlkGAEgASgJEg8KB2FwcHJvdmUYAiABKAgiGAoWRGVjaWRlQXBwcm92YWxSZXNwb25zZSI/ChhTZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDgoGcG9saWN5GAIgASgJIhsKGVNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2Uy0AcKDkNvbnNvbGVTZXJ2aWNlElYKDUxpc3RFbmRwb2ludHMSIS5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXNwb25zZRJSCg5XYXRjaEVuZHBvaW50cxIiLmdyaWRlbHRhLnYxLldhdGNoRW5kcG9pbnRzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkVuZHBvaW50RXZlbnQwARJTCgxPcGVuVGVybWluYWwSIC5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXF1ZXN0GiEuZ3JpZGVsdGEudjEuT3BlblRlcm1pbmFsUmVzcG9uc2USVgoNTGlzdFRlcm1pbmFscxIhLmdyaWRlbHRhLnYxLkxpc3RUZXJtaW5hbHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1Jlc3BvbnNlElMKDkF0dGFjaFRlcm1pbmFsEiIuZ3JpZGVsdGEudjEuQXR0YWNoVGVybWluYWxSZXF1ZXN0GhsuZ3JpZGVsdGEudjEuVGVybWluYWxPdXRwdXQwARJKCglTZW5kSW5wdXQSHS5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXF1ZXN0Gh4uZ3JpZGVsdGEudjEuU2VuZElucHV0UmVzcG9uc2USWQoOUmVzaXplVGVybWluYWwSIi5ncmlkZWx0YS52MS5SZXNpemVUZXJtaW5hbFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZXNpemVUZXJtaW5hbFJlc3BvbnNlElYKDUNsb3NlVGVybWluYWwSIS5ncmlkZWx0YS52MS5DbG9zZVRlcm1pbmFsUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXNwb25zZRJSCg5XYXRjaEFwcHJvdmFscxIiLmdyaWRlbHRhLnYxLldhdGNoQXBwcm92YWxzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkFwcHJvdmFsRXZlbnQwARJZCg5EZWNpZGVBcHByb3ZhbBIiLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVzcG9uc2USYgoRU2V0QXBwcm92YWxQb2xpY3kSJS5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QaJi5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlc3BvbnNlQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
+  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLBAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkiFgoUTGlzdEVuZHBvaW50c1JlcXVlc3QiQQoVTGlzdEVuZHBvaW50c1Jlc3BvbnNlEigKCWVuZHBvaW50cxgBIAMoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IhcKFVdhdGNoRW5kcG9pbnRzUmVxdWVzdCI4Cg1FbmRwb2ludEV2ZW50EicKCGVuZHBvaW50GAEgASgLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiRgoTT3BlblRlcm1pbmFsUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iKgoUT3BlblRlcm1pbmFsUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCSJaCghUZXJtaW5hbBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhUKDWNyZWF0ZWRfYXRfbXMYAyABKAMSDgoGZXhpdGVkGAQgASgIIisKFExpc3RUZXJtaW5hbHNSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJIkEKFUxpc3RUZXJtaW5hbHNSZXNwb25zZRIoCgl0ZXJtaW5hbHMYASADKAsyFS5ncmlkZWx0YS52MS5UZXJtaW5hbCI9ChVBdHRhY2hUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIQCghmcm9tX3NlcRgCIAEoBCJgCg5UZXJtaW5hbE91dHB1dBIMCgRkYXRhGAEgASgMEgsKA3NlcRgCIAEoBBINCgVyZXNldBgDIAEoCBIWCglleGl0X2NvZGUYBCABKAVIAIgBAUIMCgpfZXhpdF9jb2RlIloKEFNlbmRJbnB1dFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIRCglpbnB1dF9zZXEYAiABKAQSDAoEZGF0YRgDIAEoDBIRCgljbGllbnRfaWQYBCABKAkiEwoRU2VuZElucHV0UmVzcG9uc2UiRwoVUmVzaXplVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIhgKFlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2UiKgoUQ2xvc2VUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSIXChVDbG9zZVRlcm1pbmFsUmVzcG9uc2UijgEKCEFwcHJvdmFsEgoKAmlkGAEgASgJEhMKC2VuZHBvaW50X2lkGAIgASgJEhAKCGhvc3RuYW1lGAMgASgJEg8KB2NvbW1hbmQYBCABKAkSDgoGc3RhdHVzGAUgASgJEhUKDWNyZWF0ZWRfYXRfbXMYBiABKAMSFwoPY29udmVyc2F0aW9uX2lkGAcgASgJIhcKFVdhdGNoQXBwcm92YWxzUmVxdWVzdCI4Cg1BcHByb3ZhbEV2ZW50EicKCGFwcHJvdmFsGAEgASgLMhUuZ3JpZGVsdGEudjEuQXBwcm92YWwiNAoVRGVjaWRlQXBwcm92YWxSZXF1ZXN0EgoKAmlkGAEgASgJEg8KB2FwcHJvdmUYAiABKAgiGAoWRGVjaWRlQXBwcm92YWxSZXNwb25zZSI/ChhTZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDgoGcG9saWN5GAIgASgJIhsKGVNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2UiIwoHQWlNb2RlbBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIkEKCkFpU2V0dGluZ3MSDQoFbW9kZWwYASABKAkSJAoGbW9kZWxzGAIgAygLMhQuZ3JpZGVsdGEudjEuQWlNb2RlbCIWChRHZXRBaVNldHRpbmdzUmVxdWVzdCIoChdVcGRhdGVBaVNldHRpbmdzUmVxdWVzdBINCgVtb2RlbBgBIAEoCTLwCAoOQ29uc29sZVNlcnZpY2USVgoNTGlzdEVuZHBvaW50cxIhLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1Jlc3BvbnNlElIKDldhdGNoRW5kcG9pbnRzEiIuZ3JpZGVsdGEudjEuV2F0Y2hFbmRwb2ludHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuRW5kcG9pbnRFdmVudDABElMKDE9wZW5UZXJtaW5hbBIgLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlcXVlc3QaIS5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXNwb25zZRJWCg1MaXN0VGVybWluYWxzEiEuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVzcG9uc2USUwoOQXR0YWNoVGVybWluYWwSIi5ncmlkZWx0YS52MS5BdHRhY2hUZXJtaW5hbFJlcXVlc3QaGy5ncmlkZWx0YS52MS5UZXJtaW5hbE91dHB1dDABEkoKCVNlbmRJbnB1dBIdLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlcXVlc3QaHi5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXNwb25zZRJZCg5SZXNpemVUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2USVgoNQ2xvc2VUZXJtaW5hbBIhLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlc3BvbnNlElIKDldhdGNoQXBwcm92YWxzEiIuZ3JpZGVsdGEudjEuV2F0Y2hBcHByb3ZhbHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuQXBwcm92YWxFdmVudDABElkKDkRlY2lkZUFwcHJvdmFsEiIuZ3JpZGVsdGEudjEuRGVjaWRlQXBwcm92YWxSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuRGVjaWRlQXBwcm92YWxSZXNwb25zZRJiChFTZXRBcHByb3ZhbFBvbGljeRIlLmdyaWRlbHRhLnYxLlNldEFwcHJvdmFsUG9saWN5UmVxdWVzdBomLmdyaWRlbHRhLnYxLlNldEFwcHJvdmFsUG9saWN5UmVzcG9uc2USSwoNR2V0QWlTZXR0aW5ncxIhLmdyaWRlbHRhLnYxLkdldEFpU2V0dGluZ3NSZXF1ZXN0GhcuZ3JpZGVsdGEudjEuQWlTZXR0aW5ncxJRChBVcGRhdGVBaVNldHRpbmdzEiQuZ3JpZGVsdGEudjEuVXBkYXRlQWlTZXR0aW5nc1JlcXVlc3QaFy5ncmlkZWx0YS52MS5BaVNldHRpbmdzQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
 
 /**
  * @generated from message gridelta.v1.Endpoint
@@ -583,8 +583,86 @@ export const SetApprovalPolicyResponseSchema: GenMessage<SetApprovalPolicyRespon
   messageDesc(file_gridelta_v1_console, 24);
 
 /**
+ * @generated from message gridelta.v1.AiModel
+ */
+export type AiModel = Message<"gridelta.v1.AiModel"> & {
+  /**
+   * provider/model (예: openai-codex/gpt-5.6-sol)
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message gridelta.v1.AiModel.
+ * Use `create(AiModelSchema)` to create a new message.
+ */
+export const AiModelSchema: GenMessage<AiModel> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 25);
+
+/**
+ * @generated from message gridelta.v1.AiSettings
+ */
+export type AiSettings = Message<"gridelta.v1.AiSettings"> & {
+  /**
+   * @generated from field: string model = 1;
+   */
+  model: string;
+
+  /**
+   * 고를 수 있는 모델
+   *
+   * @generated from field: repeated gridelta.v1.AiModel models = 2;
+   */
+  models: AiModel[];
+};
+
+/**
+ * Describes the message gridelta.v1.AiSettings.
+ * Use `create(AiSettingsSchema)` to create a new message.
+ */
+export const AiSettingsSchema: GenMessage<AiSettings> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 26);
+
+/**
+ * @generated from message gridelta.v1.GetAiSettingsRequest
+ */
+export type GetAiSettingsRequest = Message<"gridelta.v1.GetAiSettingsRequest"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.GetAiSettingsRequest.
+ * Use `create(GetAiSettingsRequestSchema)` to create a new message.
+ */
+export const GetAiSettingsRequestSchema: GenMessage<GetAiSettingsRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 27);
+
+/**
+ * @generated from message gridelta.v1.UpdateAiSettingsRequest
+ */
+export type UpdateAiSettingsRequest = Message<"gridelta.v1.UpdateAiSettingsRequest"> & {
+  /**
+   * @generated from field: string model = 1;
+   */
+  model: string;
+};
+
+/**
+ * Describes the message gridelta.v1.UpdateAiSettingsRequest.
+ * Use `create(UpdateAiSettingsRequestSchema)` to create a new message.
+ */
+export const UpdateAiSettingsRequestSchema: GenMessage<UpdateAiSettingsRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 28);
+
+/**
  * 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
- * AI 설정 RPC 는 M6 에서 추가한다. AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
+ * AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
  *
  * @generated from service gridelta.v1.ConsoleService
  */
@@ -690,6 +768,24 @@ export const ConsoleService: GenService<{
     methodKind: "unary";
     input: typeof SetApprovalPolicyRequestSchema;
     output: typeof SetApprovalPolicyResponseSchema;
+  },
+  /**
+   * AI 모델 선택. 바꾸면 새 대화부터 적용된다
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.GetAiSettings
+   */
+  getAiSettings: {
+    methodKind: "unary";
+    input: typeof GetAiSettingsRequestSchema;
+    output: typeof AiSettingsSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.UpdateAiSettings
+   */
+  updateAiSettings: {
+    methodKind: "unary";
+    input: typeof UpdateAiSettingsRequestSchema;
+    output: typeof AiSettingsSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_gridelta_v1_console, 0);

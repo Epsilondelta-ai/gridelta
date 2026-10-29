@@ -2,7 +2,7 @@ import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
 import { and, eq, gt, isNull, lt } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, users } from './schema.ts';
+import { approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, settings, users } from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -220,5 +220,16 @@ export class Store {
   async deleteOAuthToken(provider: string): Promise<boolean> {
     const result = await this.db.delete(oauthTokens).where(eq(oauthTokens.provider, provider));
     return Number(result.changes) === 1;
+  }
+
+  // --- 설정 ---
+
+  async getSetting(key: string): Promise<string | undefined> {
+    const [row] = await this.db.select().from(settings).where(eq(settings.key, key)).limit(1);
+    return row?.value;
+  }
+
+  async setSetting(key: string, value: string): Promise<void> {
+    await this.db.insert(settings).values({ key, value }).onConflictDoUpdate({ target: settings.key, set: { value } });
   }
 }

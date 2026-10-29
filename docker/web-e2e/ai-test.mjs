@@ -24,6 +24,10 @@ try {
   await page.getByRole('button', { name: '로그인' }).click();
   await page.getByRole('navigation', { name: 'PC 목록' }).getByRole('button', { name: new RegExp(PC) }).click();
   await ai.waitFor();
+  const modelSelect = ai.getByLabel('AI 모델');
+  await modelSelect.waitFor();
+  if ((await modelSelect.inputValue()) !== 'faux/scripted') throw new Error(`model select: ${await modelSelect.inputValue()}`);
+  pass('AI 패널에 현재 모델 표시 (faux/scripted)');
 
   // 1. 읽기 전용 명령은 바로 실행
   await ask('디스크 사용량이 큰 폴더 5개 알려줘');

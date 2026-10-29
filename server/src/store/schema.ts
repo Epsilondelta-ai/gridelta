@@ -74,3 +74,9 @@ export const oauthTokens = sqliteTable('oauth_tokens', {
   expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
 });
+
+/** 서버 설정 (AI 모델 등). 값은 JSON 이 아닌 문자열이다 */
+export const settings = sqliteTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+});

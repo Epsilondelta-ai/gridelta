@@ -11,7 +11,8 @@ import { endpointsView } from './endpoints-view.ts';
 export interface AdminOptions {
   gatewayUrl: string;
   vault: OAuthVault;
-  aiModel: string;
+  /** 현재 AI 모델 (웹 UI 에서 바꿀 수 있다) */
+  aiModel: () => string;
   /** 자체 서명 인증서일 때만 등록 명령줄에 넣을 지문 */
   caFingerprint?: string;
 }
@@ -71,7 +72,7 @@ export function adminRoutes(hub: AgentHub, store: Store, opts: AdminOptions) {
           provider: row?.provider ?? '',
           account: row?.account ?? '',
           expiresAtMs: BigInt(row?.expiresAt.getTime() ?? 0),
-          model: opts.aiModel,
+          model: opts.aiModel(),
         };
       },
 

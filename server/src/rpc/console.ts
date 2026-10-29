@@ -35,6 +35,7 @@ import {
 } from '../hub/index.ts';
 import type { PtySession } from '../hub/pty.ts';
 import type { ApprovalCenter } from '../ai/approvals.ts';
+import { type AiModels, UnknownModelError } from '../ai/models.ts';
 import { APPROVAL_POLICIES, type ApprovalPolicy, type ApprovalRow, type SessionUser, type Store } from '../store/index.ts';
 import { endpointsView } from './endpoints-view.ts';
 
@@ -68,7 +69,7 @@ function toTerminal(pty: PtySession): Terminal {
   });
 }
 
-export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter) {
+export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels) {
   const view = endpointsView(hub, store);
   const toApproval = (row: ApprovalRow): Approval =>
     create(ApprovalSchema, {
@@ -180,6 +181,20 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         return {};
       },
 
+      async getAiSettings() {
+        return { model: aiModels.current(), models: await aiModels.list() };
+      },
+
+      async updateAiSettings(req) {
+        try {
+          await aiModels.set(req.model);
+        } catch (err) {
+          if (err instanceof UnknownModelError) throw new ConnectError(err.message, Code.InvalidArgument);
+          throw err;
+        }
+        return { model: aiModels.current(), models: await aiModels.list() };
+      },
+
       async setApprovalPolicy(req) {
         if (!APPROVAL_POLICIES.includes(req.policy as ApprovalPolicy)) {
           throw new ConnectError(`policy must be one of ${APPROVAL_POLICIES.join(', ')}`, Code.InvalidArgument);
@@ -197,9 +212,9 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
  * ConsoleService 를 Flue 의 Hono 앱에 마운트한다. 로그인한 사용자만 호출할 수 있다.
  * Flue 빌드 서버는 교체할 수 없으므로 Connect 를 fetch 핸들러로 바꿔 Hono 라우트로 붙인다.
  */
-export function mountConsole(app: Hono, hub: AgentHub, store: Store, approvals: ApprovalCenter): void {
+export function mountConsole(app: Hono, hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels): void {
   const router = createConnectRouter();
-  consoleRoutes(hub, store, approvals)(router);
+  consoleRoutes(hub, store, approvals, aiModels)(router);
   for (const handler of router.handlers) {
     app.post(RPC_PREFIX + handler.requestPath, requireAuth(store), async (c) => {
       // 로그인 사용자를 Connect 핸들러의 context 로 넘긴다 (감사 로그용)

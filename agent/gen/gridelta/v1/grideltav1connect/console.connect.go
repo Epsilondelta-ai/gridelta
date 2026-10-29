@@ -56,6 +56,12 @@ const (
 	// ConsoleServiceSetApprovalPolicyProcedure is the procedure name of the ConsoleService's
 	// SetApprovalPolicy RPC.
 	ConsoleServiceSetApprovalPolicyProcedure = "/gridelta.v1.ConsoleService/SetApprovalPolicy"
+	// ConsoleServiceGetAiSettingsProcedure is the procedure name of the ConsoleService's GetAiSettings
+	// RPC.
+	ConsoleServiceGetAiSettingsProcedure = "/gridelta.v1.ConsoleService/GetAiSettings"
+	// ConsoleServiceUpdateAiSettingsProcedure is the procedure name of the ConsoleService's
+	// UpdateAiSettings RPC.
+	ConsoleServiceUpdateAiSettingsProcedure = "/gridelta.v1.ConsoleService/UpdateAiSettings"
 )
 
 var (
@@ -136,6 +142,20 @@ var (
 			Procedure:  ConsoleServiceSetApprovalPolicyProcedure,
 		}
 	})
+	consoleServiceGetAiSettingsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("GetAiSettings"),
+			Procedure:  ConsoleServiceGetAiSettingsProcedure,
+		}
+	})
+	consoleServiceUpdateAiSettingsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("UpdateAiSettings"),
+			Procedure:  ConsoleServiceUpdateAiSettingsProcedure,
+		}
+	})
 )
 
 // ConsoleServiceClient is a client for the gridelta.v1.ConsoleService service.
@@ -153,6 +173,9 @@ type ConsoleServiceClient interface {
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest) (ConsoleServiceWatchApprovalsClientStream, error)
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
 	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
+	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
+	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
+	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
 }
 
 // NewConsoleServiceClient constructs a client for the gridelta.v1.ConsoleService service. Multiple
@@ -239,6 +262,9 @@ type ConsoleServiceHandler interface {
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
 	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
+	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
+	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
+	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
 }
 
 // RegisterConsoleServiceHandler registers svc as the gridelta.v1.ConsoleService implementation on
@@ -257,6 +283,8 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 		connect.Method{Spec: consoleServiceWatchApprovalsSpec(), Handler: adapter.watchApprovals},
 		connect.Method{Spec: consoleServiceDecideApprovalSpec(), Handler: adapter.decideApproval},
 		connect.Method{Spec: consoleServiceSetApprovalPolicySpec(), Handler: adapter.setApprovalPolicy},
+		connect.Method{Spec: consoleServiceGetAiSettingsSpec(), Handler: adapter.getAiSettings},
+		connect.Method{Spec: consoleServiceUpdateAiSettingsSpec(), Handler: adapter.updateAiSettings},
 	)
 }
 
@@ -355,6 +383,14 @@ func (UnimplementedConsoleServiceHandler) SetApprovalPolicy(context.Context, *v1
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.SetApprovalPolicy is not implemented")
 }
 
+func (UnimplementedConsoleServiceHandler) GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.GetAiSettings is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.UpdateAiSettings is not implemented")
+}
+
 type consoleServiceClient struct {
 	client *connect.Client
 }
@@ -442,6 +478,22 @@ func (c *consoleServiceClient) DecideApproval(ctx context.Context, req *v1.Decid
 func (c *consoleServiceClient) SetApprovalPolicy(ctx context.Context, req *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error) {
 	var res v1.SetApprovalPolicyResponse
 	if err := c.client.CallUnary(ctx, consoleServiceSetApprovalPolicySpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) GetAiSettings(ctx context.Context, req *v1.GetAiSettingsRequest) (*v1.AiSettings, error) {
+	var res v1.AiSettings
+	if err := c.client.CallUnary(ctx, consoleServiceGetAiSettingsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) UpdateAiSettings(ctx context.Context, req *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error) {
+	var res v1.AiSettings
+	if err := c.client.CallUnary(ctx, consoleServiceUpdateAiSettingsSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -563,6 +615,30 @@ func (h consoleServiceHandler) setApprovalPolicy(ctx context.Context, _ connect.
 		return err
 	}
 	res, err := h.svc.SetApprovalPolicy(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) getAiSettings(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.GetAiSettingsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetAiSettings(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) updateAiSettings(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.UpdateAiSettingsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.UpdateAiSettings(ctx, &req)
 	if err != nil {
 		return err
 	}
