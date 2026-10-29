@@ -39,3 +39,14 @@ services:
       target: plain
     hostname: agent-alpine
     depends_on: [server]
+
+  # 웹 터미널 확인용 브라우저 (e2e.sh 가 docker compose run 으로 실행)
+  browser:
+    image: mcr.microsoft.com/playwright:v1.64.1-noble
+    profiles: [browser]
+    working_dir: /e2e
+    volumes:
+      - ./web-e2e:/e2e
+    environment:
+      BASE_URL: http://server:3000
+    depends_on: [server]

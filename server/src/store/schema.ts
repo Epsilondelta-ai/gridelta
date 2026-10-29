@@ -29,3 +29,26 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
 });
+
+/** 웹 로그인 세션. 쿠키에는 원문 토큰, DB 에는 해시만 둔다. */
+export const sessions = sqliteTable('sessions', {
+  tokenHash: text('token_hash').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+});
+
+/** 사람·AI 가 실행한 작업 기록. PTY 는 입력 내용 없이 시작/종료만 남긴다. */
+export const auditLog = sqliteTable('audit_log', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  at: integer('at', { mode: 'timestamp_ms' }).notNull(),
+  actor: text('actor', { enum: ['user', 'ai'] }).notNull(),
+  userId: text('user_id'),
+  endpointId: text('endpoint_id').notNull(),
+  kind: text('kind', { enum: ['exec', 'pty', 'fs'] }).notNull(),
+  command: text('command').notNull(),
+  exitCode: integer('exit_code'),
+  approvalId: text('approval_id'),
+});

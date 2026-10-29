@@ -289,6 +289,666 @@ func (x *EndpointEvent) GetEndpoint() *Endpoint {
 	return nil
 }
 
+type OpenTerminalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Cols          uint32                 `protobuf:"varint,2,opt,name=cols,proto3" json:"cols,omitempty"`
+	Rows          uint32                 `protobuf:"varint,3,opt,name=rows,proto3" json:"rows,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpenTerminalRequest) Reset() {
+	*x = OpenTerminalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpenTerminalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpenTerminalRequest) ProtoMessage() {}
+
+func (x *OpenTerminalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpenTerminalRequest.ProtoReflect.Descriptor instead.
+func (*OpenTerminalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *OpenTerminalRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *OpenTerminalRequest) GetCols() uint32 {
+	if x != nil {
+		return x.Cols
+	}
+	return 0
+}
+
+func (x *OpenTerminalRequest) GetRows() uint32 {
+	if x != nil {
+		return x.Rows
+	}
+	return 0
+}
+
+type OpenTerminalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OpenTerminalResponse) Reset() {
+	*x = OpenTerminalResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OpenTerminalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OpenTerminalResponse) ProtoMessage() {}
+
+func (x *OpenTerminalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OpenTerminalResponse.ProtoReflect.Descriptor instead.
+func (*OpenTerminalResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *OpenTerminalResponse) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+type Terminal struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	EndpointId    string                 `protobuf:"bytes,2,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	CreatedAtMs   int64                  `protobuf:"varint,3,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
+	Exited        bool                   `protobuf:"varint,4,opt,name=exited,proto3" json:"exited,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Terminal) Reset() {
+	*x = Terminal{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Terminal) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Terminal) ProtoMessage() {}
+
+func (x *Terminal) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Terminal.ProtoReflect.Descriptor instead.
+func (*Terminal) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Terminal) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *Terminal) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *Terminal) GetCreatedAtMs() int64 {
+	if x != nil {
+		return x.CreatedAtMs
+	}
+	return 0
+}
+
+func (x *Terminal) GetExited() bool {
+	if x != nil {
+		return x.Exited
+	}
+	return false
+}
+
+type ListTerminalsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"` // 비우면 전체
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTerminalsRequest) Reset() {
+	*x = ListTerminalsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTerminalsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTerminalsRequest) ProtoMessage() {}
+
+func (x *ListTerminalsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTerminalsRequest.ProtoReflect.Descriptor instead.
+func (*ListTerminalsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListTerminalsRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+type ListTerminalsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Terminals     []*Terminal            `protobuf:"bytes,1,rep,name=terminals,proto3" json:"terminals,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTerminalsResponse) Reset() {
+	*x = ListTerminalsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTerminalsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTerminalsResponse) ProtoMessage() {}
+
+func (x *ListTerminalsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTerminalsResponse.ProtoReflect.Descriptor instead.
+func (*ListTerminalsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListTerminalsResponse) GetTerminals() []*Terminal {
+	if x != nil {
+		return x.Terminals
+	}
+	return nil
+}
+
+type AttachTerminalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	FromSeq       uint64                 `protobuf:"varint,2,opt,name=from_seq,json=fromSeq,proto3" json:"from_seq,omitempty"` // 받은 마지막 seq + 1, 처음은 0
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AttachTerminalRequest) Reset() {
+	*x = AttachTerminalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AttachTerminalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AttachTerminalRequest) ProtoMessage() {}
+
+func (x *AttachTerminalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AttachTerminalRequest.ProtoReflect.Descriptor instead.
+func (*AttachTerminalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AttachTerminalRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *AttachTerminalRequest) GetFromSeq() uint64 {
+	if x != nil {
+		return x.FromSeq
+	}
+	return 0
+}
+
+type TerminalOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Data          []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Seq           uint64                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
+	Reset_        bool                   `protobuf:"varint,3,opt,name=reset,proto3" json:"reset,omitempty"`                             // true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
+	ExitCode      *int32                 `protobuf:"varint,4,opt,name=exit_code,json=exitCode,proto3,oneof" json:"exit_code,omitempty"` // 셸 종료 시 마지막 메시지에 담고 스트림 종료
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TerminalOutput) Reset() {
+	*x = TerminalOutput{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TerminalOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TerminalOutput) ProtoMessage() {}
+
+func (x *TerminalOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TerminalOutput.ProtoReflect.Descriptor instead.
+func (*TerminalOutput) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *TerminalOutput) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *TerminalOutput) GetSeq() uint64 {
+	if x != nil {
+		return x.Seq
+	}
+	return 0
+}
+
+func (x *TerminalOutput) GetReset_() bool {
+	if x != nil {
+		return x.Reset_
+	}
+	return false
+}
+
+func (x *TerminalOutput) GetExitCode() int32 {
+	if x != nil && x.ExitCode != nil {
+		return *x.ExitCode
+	}
+	return 0
+}
+
+type SendInputRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	InputSeq      uint64                 `protobuf:"varint,2,opt,name=input_seq,json=inputSeq,proto3" json:"input_seq,omitempty"` // client_id 별 0부터 1씩 증가. 이미 처리한 값은 무시한다(재시도 안전)
+	Data          []byte                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	ClientId      string                 `protobuf:"bytes,4,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"` // 입력을 보내는 탭마다 새로 만드는 랜덤 id. 새로고침하면 바뀐다
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SendInputRequest) Reset() {
+	*x = SendInputRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SendInputRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendInputRequest) ProtoMessage() {}
+
+func (x *SendInputRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendInputRequest.ProtoReflect.Descriptor instead.
+func (*SendInputRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *SendInputRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *SendInputRequest) GetInputSeq() uint64 {
+	if x != nil {
+		return x.InputSeq
+	}
+	return 0
+}
+
+func (x *SendInputRequest) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *SendInputRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+type SendInputResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SendInputResponse) Reset() {
+	*x = SendInputResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SendInputResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendInputResponse) ProtoMessage() {}
+
+func (x *SendInputResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendInputResponse.ProtoReflect.Descriptor instead.
+func (*SendInputResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{13}
+}
+
+type ResizeTerminalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Cols          uint32                 `protobuf:"varint,2,opt,name=cols,proto3" json:"cols,omitempty"`
+	Rows          uint32                 `protobuf:"varint,3,opt,name=rows,proto3" json:"rows,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResizeTerminalRequest) Reset() {
+	*x = ResizeTerminalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeTerminalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeTerminalRequest) ProtoMessage() {}
+
+func (x *ResizeTerminalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeTerminalRequest.ProtoReflect.Descriptor instead.
+func (*ResizeTerminalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ResizeTerminalRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *ResizeTerminalRequest) GetCols() uint32 {
+	if x != nil {
+		return x.Cols
+	}
+	return 0
+}
+
+func (x *ResizeTerminalRequest) GetRows() uint32 {
+	if x != nil {
+		return x.Rows
+	}
+	return 0
+}
+
+type ResizeTerminalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResizeTerminalResponse) Reset() {
+	*x = ResizeTerminalResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResizeTerminalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResizeTerminalResponse) ProtoMessage() {}
+
+func (x *ResizeTerminalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResizeTerminalResponse.ProtoReflect.Descriptor instead.
+func (*ResizeTerminalResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{15}
+}
+
+type CloseTerminalRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CloseTerminalRequest) Reset() {
+	*x = CloseTerminalRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CloseTerminalRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CloseTerminalRequest) ProtoMessage() {}
+
+func (x *CloseTerminalRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CloseTerminalRequest.ProtoReflect.Descriptor instead.
+func (*CloseTerminalRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *CloseTerminalRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+type CloseTerminalResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CloseTerminalResponse) Reset() {
+	*x = CloseTerminalResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CloseTerminalResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CloseTerminalResponse) ProtoMessage() {}
+
+func (x *CloseTerminalResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CloseTerminalResponse.ProtoReflect.Descriptor instead.
+func (*CloseTerminalResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{17}
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
@@ -310,10 +970,64 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\tendpoints\x18\x01 \x03(\v2\x15.gridelta.v1.EndpointR\tendpoints\"\x17\n" +
 	"\x15WatchEndpointsRequest\"B\n" +
 	"\rEndpointEvent\x121\n" +
-	"\bendpoint\x18\x01 \x01(\v2\x15.gridelta.v1.EndpointR\bendpoint2\xbc\x01\n" +
+	"\bendpoint\x18\x01 \x01(\v2\x15.gridelta.v1.EndpointR\bendpoint\"^\n" +
+	"\x13OpenTerminalRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12\x12\n" +
+	"\x04cols\x18\x02 \x01(\rR\x04cols\x12\x12\n" +
+	"\x04rows\x18\x03 \x01(\rR\x04rows\"5\n" +
+	"\x14OpenTerminalResponse\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"\x86\x01\n" +
+	"\bTerminal\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1f\n" +
+	"\vendpoint_id\x18\x02 \x01(\tR\n" +
+	"endpointId\x12\"\n" +
+	"\rcreated_at_ms\x18\x03 \x01(\x03R\vcreatedAtMs\x12\x16\n" +
+	"\x06exited\x18\x04 \x01(\bR\x06exited\"7\n" +
+	"\x14ListTerminalsRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\"L\n" +
+	"\x15ListTerminalsResponse\x123\n" +
+	"\tterminals\x18\x01 \x03(\v2\x15.gridelta.v1.TerminalR\tterminals\"Q\n" +
+	"\x15AttachTerminalRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x19\n" +
+	"\bfrom_seq\x18\x02 \x01(\x04R\afromSeq\"|\n" +
+	"\x0eTerminalOutput\x12\x12\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data\x12\x10\n" +
+	"\x03seq\x18\x02 \x01(\x04R\x03seq\x12\x14\n" +
+	"\x05reset\x18\x03 \x01(\bR\x05reset\x12 \n" +
+	"\texit_code\x18\x04 \x01(\x05H\x00R\bexitCode\x88\x01\x01B\f\n" +
+	"\n" +
+	"_exit_code\"\x7f\n" +
+	"\x10SendInputRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1b\n" +
+	"\tinput_seq\x18\x02 \x01(\x04R\binputSeq\x12\x12\n" +
+	"\x04data\x18\x03 \x01(\fR\x04data\x12\x1b\n" +
+	"\tclient_id\x18\x04 \x01(\tR\bclientId\"\x13\n" +
+	"\x11SendInputResponse\"^\n" +
+	"\x15ResizeTerminalRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x12\n" +
+	"\x04cols\x18\x02 \x01(\rR\x04cols\x12\x12\n" +
+	"\x04rows\x18\x03 \x01(\rR\x04rows\"\x18\n" +
+	"\x16ResizeTerminalResponse\"5\n" +
+	"\x14CloseTerminalRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"\x17\n" +
+	"\x15CloseTerminalResponse2\xbd\x05\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
-	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01BFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
+	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12S\n" +
+	"\fOpenTerminal\x12 .gridelta.v1.OpenTerminalRequest\x1a!.gridelta.v1.OpenTerminalResponse\x12V\n" +
+	"\rListTerminals\x12!.gridelta.v1.ListTerminalsRequest\x1a\".gridelta.v1.ListTerminalsResponse\x12S\n" +
+	"\x0eAttachTerminal\x12\".gridelta.v1.AttachTerminalRequest\x1a\x1b.gridelta.v1.TerminalOutput0\x01\x12J\n" +
+	"\tSendInput\x12\x1d.gridelta.v1.SendInputRequest\x1a\x1e.gridelta.v1.SendInputResponse\x12Y\n" +
+	"\x0eResizeTerminal\x12\".gridelta.v1.ResizeTerminalRequest\x1a#.gridelta.v1.ResizeTerminalResponse\x12V\n" +
+	"\rCloseTerminal\x12!.gridelta.v1.CloseTerminalRequest\x1a\".gridelta.v1.CloseTerminalResponseBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
 
 var (
 	file_gridelta_v1_console_proto_rawDescOnce sync.Once
@@ -327,26 +1041,52 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_gridelta_v1_console_proto_goTypes = []any{
-	(*Endpoint)(nil),              // 0: gridelta.v1.Endpoint
-	(*ListEndpointsRequest)(nil),  // 1: gridelta.v1.ListEndpointsRequest
-	(*ListEndpointsResponse)(nil), // 2: gridelta.v1.ListEndpointsResponse
-	(*WatchEndpointsRequest)(nil), // 3: gridelta.v1.WatchEndpointsRequest
-	(*EndpointEvent)(nil),         // 4: gridelta.v1.EndpointEvent
+	(*Endpoint)(nil),               // 0: gridelta.v1.Endpoint
+	(*ListEndpointsRequest)(nil),   // 1: gridelta.v1.ListEndpointsRequest
+	(*ListEndpointsResponse)(nil),  // 2: gridelta.v1.ListEndpointsResponse
+	(*WatchEndpointsRequest)(nil),  // 3: gridelta.v1.WatchEndpointsRequest
+	(*EndpointEvent)(nil),          // 4: gridelta.v1.EndpointEvent
+	(*OpenTerminalRequest)(nil),    // 5: gridelta.v1.OpenTerminalRequest
+	(*OpenTerminalResponse)(nil),   // 6: gridelta.v1.OpenTerminalResponse
+	(*Terminal)(nil),               // 7: gridelta.v1.Terminal
+	(*ListTerminalsRequest)(nil),   // 8: gridelta.v1.ListTerminalsRequest
+	(*ListTerminalsResponse)(nil),  // 9: gridelta.v1.ListTerminalsResponse
+	(*AttachTerminalRequest)(nil),  // 10: gridelta.v1.AttachTerminalRequest
+	(*TerminalOutput)(nil),         // 11: gridelta.v1.TerminalOutput
+	(*SendInputRequest)(nil),       // 12: gridelta.v1.SendInputRequest
+	(*SendInputResponse)(nil),      // 13: gridelta.v1.SendInputResponse
+	(*ResizeTerminalRequest)(nil),  // 14: gridelta.v1.ResizeTerminalRequest
+	(*ResizeTerminalResponse)(nil), // 15: gridelta.v1.ResizeTerminalResponse
+	(*CloseTerminalRequest)(nil),   // 16: gridelta.v1.CloseTerminalRequest
+	(*CloseTerminalResponse)(nil),  // 17: gridelta.v1.CloseTerminalResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
-	0, // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
-	0, // 1: gridelta.v1.EndpointEvent.endpoint:type_name -> gridelta.v1.Endpoint
-	1, // 2: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3, // 3: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	2, // 4: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4, // 5: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
+	0,  // 1: gridelta.v1.EndpointEvent.endpoint:type_name -> gridelta.v1.Endpoint
+	7,  // 2: gridelta.v1.ListTerminalsResponse.terminals:type_name -> gridelta.v1.Terminal
+	1,  // 3: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 4: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	5,  // 5: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 6: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 7: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 8: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 9: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 10: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	2,  // 11: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 12: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	6,  // 13: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 14: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 15: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 16: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 17: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 18: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }
@@ -354,13 +1094,14 @@ func file_gridelta_v1_console_proto_init() {
 	if File_gridelta_v1_console_proto != nil {
 		return
 	}
+	file_gridelta_v1_console_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

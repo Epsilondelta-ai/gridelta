@@ -20,5 +20,8 @@ export const config = {
   /** 자체 서명 인증서면 등록 토큰과 함께 CA 지문을 내보내 에이전트가 고정하게 한다 */
   tlsSelfSigned: env.GRIDELTA_TLS_SELF_SIGNED === '1',
 
+  /** 웹 UI 빌드 결과. 없으면 API 만 제공한다 */
+  webDir: resolve(env.GRIDELTA_WEB_DIR ?? '../web/dist'),
+
   debug: env.GRIDELTA_DEBUG === '1',
 };

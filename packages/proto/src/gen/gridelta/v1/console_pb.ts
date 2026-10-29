@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/console.proto.
  */
 export const file_gridelta_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSKoAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAyIWChRMaXN0RW5kcG9pbnRzUmVxdWVzdCJBChVMaXN0RW5kcG9pbnRzUmVzcG9uc2USKAoJZW5kcG9pbnRzGAEgAygLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiFwoVV2F0Y2hFbmRwb2ludHNSZXF1ZXN0IjgKDUVuZHBvaW50RXZlbnQSJwoIZW5kcG9pbnQYASABKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludDK8AQoOQ29uc29sZVNlcnZpY2USVgoNTGlzdEVuZHBvaW50cxIhLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1Jlc3BvbnNlElIKDldhdGNoRW5kcG9pbnRzEiIuZ3JpZGVsdGEudjEuV2F0Y2hFbmRwb2ludHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuRW5kcG9pbnRFdmVudDABQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
+  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSKoAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAyIWChRMaXN0RW5kcG9pbnRzUmVxdWVzdCJBChVMaXN0RW5kcG9pbnRzUmVzcG9uc2USKAoJZW5kcG9pbnRzGAEgAygLMhUuZ3JpZGVsdGEudjEuRW5kcG9pbnQiFwoVV2F0Y2hFbmRwb2ludHNSZXF1ZXN0IjgKDUVuZHBvaW50RXZlbnQSJwoIZW5kcG9pbnQYASABKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludCJGChNPcGVuVGVybWluYWxSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJEgwKBGNvbHMYAiABKA0SDAoEcm93cxgDIAEoDSIqChRPcGVuVGVybWluYWxSZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJIloKCFRlcm1pbmFsEhIKCnNlc3Npb25faWQYASABKAkSEwoLZW5kcG9pbnRfaWQYAiABKAkSFQoNY3JlYXRlZF9hdF9tcxgDIAEoAxIOCgZleGl0ZWQYBCABKAgiKwoUTGlzdFRlcm1pbmFsc1JlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkiQQoVTGlzdFRlcm1pbmFsc1Jlc3BvbnNlEigKCXRlcm1pbmFscxgBIAMoCzIVLmdyaWRlbHRhLnYxLlRlcm1pbmFsIj0KFUF0dGFjaFRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhAKCGZyb21fc2VxGAIgASgEImAKDlRlcm1pbmFsT3V0cHV0EgwKBGRhdGEYASABKAwSCwoDc2VxGAIgASgEEg0KBXJlc2V0GAMgASgIEhYKCWV4aXRfY29kZRgEIAEoBUgAiAEBQgwKCl9leGl0X2NvZGUiWgoQU2VuZElucHV0UmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlucHV0X3NlcRgCIAEoBBIMCgRkYXRhGAMgASgMEhEKCWNsaWVudF9pZBgEIAEoCSITChFTZW5kSW5wdXRSZXNwb25zZSJHChVSZXNpemVUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iGAoWUmVzaXplVGVybWluYWxSZXNwb25zZSIqChRDbG9zZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJIhcKFUNsb3NlVGVybWluYWxSZXNwb25zZTK9BQoOQ29uc29sZVNlcnZpY2USVgoNTGlzdEVuZHBvaW50cxIhLmdyaWRlbHRhLnYxLkxpc3RFbmRwb2ludHNSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1Jlc3BvbnNlElIKDldhdGNoRW5kcG9pbnRzEiIuZ3JpZGVsdGEudjEuV2F0Y2hFbmRwb2ludHNSZXF1ZXN0GhouZ3JpZGVsdGEudjEuRW5kcG9pbnRFdmVudDABElMKDE9wZW5UZXJtaW5hbBIgLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlcXVlc3QaIS5ncmlkZWx0YS52MS5PcGVuVGVybWluYWxSZXNwb25zZRJWCg1MaXN0VGVybWluYWxzEiEuZ3JpZGVsdGEudjEuTGlzdFRlcm1pbmFsc1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVzcG9uc2USUwoOQXR0YWNoVGVybWluYWwSIi5ncmlkZWx0YS52MS5BdHRhY2hUZXJtaW5hbFJlcXVlc3QaGy5ncmlkZWx0YS52MS5UZXJtaW5hbE91dHB1dDABEkoKCVNlbmRJbnB1dBIdLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlcXVlc3QaHi5ncmlkZWx0YS52MS5TZW5kSW5wdXRSZXNwb25zZRJZCg5SZXNpemVUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLlJlc2l6ZVRlcm1pbmFsUmVzcG9uc2USVgoNQ2xvc2VUZXJtaW5hbBIhLmdyaWRlbHRhLnYxLkNsb3NlVGVybWluYWxSZXF1ZXN0GiIuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlc3BvbnNlQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
 
 /**
  * @generated from message gridelta.v1.Endpoint
@@ -132,8 +132,299 @@ export const EndpointEventSchema: GenMessage<EndpointEvent> = /*@__PURE__*/
   messageDesc(file_gridelta_v1_console, 4);
 
 /**
+ * @generated from message gridelta.v1.OpenTerminalRequest
+ */
+export type OpenTerminalRequest = Message<"gridelta.v1.OpenTerminalRequest"> & {
+  /**
+   * @generated from field: string endpoint_id = 1;
+   */
+  endpointId: string;
+
+  /**
+   * @generated from field: uint32 cols = 2;
+   */
+  cols: number;
+
+  /**
+   * @generated from field: uint32 rows = 3;
+   */
+  rows: number;
+};
+
+/**
+ * Describes the message gridelta.v1.OpenTerminalRequest.
+ * Use `create(OpenTerminalRequestSchema)` to create a new message.
+ */
+export const OpenTerminalRequestSchema: GenMessage<OpenTerminalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 5);
+
+/**
+ * @generated from message gridelta.v1.OpenTerminalResponse
+ */
+export type OpenTerminalResponse = Message<"gridelta.v1.OpenTerminalResponse"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.OpenTerminalResponse.
+ * Use `create(OpenTerminalResponseSchema)` to create a new message.
+ */
+export const OpenTerminalResponseSchema: GenMessage<OpenTerminalResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 6);
+
+/**
+ * @generated from message gridelta.v1.Terminal
+ */
+export type Terminal = Message<"gridelta.v1.Terminal"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: string endpoint_id = 2;
+   */
+  endpointId: string;
+
+  /**
+   * @generated from field: int64 created_at_ms = 3;
+   */
+  createdAtMs: bigint;
+
+  /**
+   * @generated from field: bool exited = 4;
+   */
+  exited: boolean;
+};
+
+/**
+ * Describes the message gridelta.v1.Terminal.
+ * Use `create(TerminalSchema)` to create a new message.
+ */
+export const TerminalSchema: GenMessage<Terminal> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 7);
+
+/**
+ * @generated from message gridelta.v1.ListTerminalsRequest
+ */
+export type ListTerminalsRequest = Message<"gridelta.v1.ListTerminalsRequest"> & {
+  /**
+   * 비우면 전체
+   *
+   * @generated from field: string endpoint_id = 1;
+   */
+  endpointId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.ListTerminalsRequest.
+ * Use `create(ListTerminalsRequestSchema)` to create a new message.
+ */
+export const ListTerminalsRequestSchema: GenMessage<ListTerminalsRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 8);
+
+/**
+ * @generated from message gridelta.v1.ListTerminalsResponse
+ */
+export type ListTerminalsResponse = Message<"gridelta.v1.ListTerminalsResponse"> & {
+  /**
+   * @generated from field: repeated gridelta.v1.Terminal terminals = 1;
+   */
+  terminals: Terminal[];
+};
+
+/**
+ * Describes the message gridelta.v1.ListTerminalsResponse.
+ * Use `create(ListTerminalsResponseSchema)` to create a new message.
+ */
+export const ListTerminalsResponseSchema: GenMessage<ListTerminalsResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 9);
+
+/**
+ * @generated from message gridelta.v1.AttachTerminalRequest
+ */
+export type AttachTerminalRequest = Message<"gridelta.v1.AttachTerminalRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * 받은 마지막 seq + 1, 처음은 0
+   *
+   * @generated from field: uint64 from_seq = 2;
+   */
+  fromSeq: bigint;
+};
+
+/**
+ * Describes the message gridelta.v1.AttachTerminalRequest.
+ * Use `create(AttachTerminalRequestSchema)` to create a new message.
+ */
+export const AttachTerminalRequestSchema: GenMessage<AttachTerminalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 10);
+
+/**
+ * @generated from message gridelta.v1.TerminalOutput
+ */
+export type TerminalOutput = Message<"gridelta.v1.TerminalOutput"> & {
+  /**
+   * @generated from field: bytes data = 1;
+   */
+  data: Uint8Array;
+
+  /**
+   * @generated from field: uint64 seq = 2;
+   */
+  seq: bigint;
+
+  /**
+   * true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
+   *
+   * @generated from field: bool reset = 3;
+   */
+  reset: boolean;
+
+  /**
+   * 셸 종료 시 마지막 메시지에 담고 스트림 종료
+   *
+   * @generated from field: optional int32 exit_code = 4;
+   */
+  exitCode?: number | undefined;
+};
+
+/**
+ * Describes the message gridelta.v1.TerminalOutput.
+ * Use `create(TerminalOutputSchema)` to create a new message.
+ */
+export const TerminalOutputSchema: GenMessage<TerminalOutput> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 11);
+
+/**
+ * @generated from message gridelta.v1.SendInputRequest
+ */
+export type SendInputRequest = Message<"gridelta.v1.SendInputRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * client_id 별 0부터 1씩 증가. 이미 처리한 값은 무시한다(재시도 안전)
+   *
+   * @generated from field: uint64 input_seq = 2;
+   */
+  inputSeq: bigint;
+
+  /**
+   * @generated from field: bytes data = 3;
+   */
+  data: Uint8Array;
+
+  /**
+   * 입력을 보내는 탭마다 새로 만드는 랜덤 id. 새로고침하면 바뀐다
+   *
+   * @generated from field: string client_id = 4;
+   */
+  clientId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.SendInputRequest.
+ * Use `create(SendInputRequestSchema)` to create a new message.
+ */
+export const SendInputRequestSchema: GenMessage<SendInputRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 12);
+
+/**
+ * @generated from message gridelta.v1.SendInputResponse
+ */
+export type SendInputResponse = Message<"gridelta.v1.SendInputResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.SendInputResponse.
+ * Use `create(SendInputResponseSchema)` to create a new message.
+ */
+export const SendInputResponseSchema: GenMessage<SendInputResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 13);
+
+/**
+ * @generated from message gridelta.v1.ResizeTerminalRequest
+ */
+export type ResizeTerminalRequest = Message<"gridelta.v1.ResizeTerminalRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: uint32 cols = 2;
+   */
+  cols: number;
+
+  /**
+   * @generated from field: uint32 rows = 3;
+   */
+  rows: number;
+};
+
+/**
+ * Describes the message gridelta.v1.ResizeTerminalRequest.
+ * Use `create(ResizeTerminalRequestSchema)` to create a new message.
+ */
+export const ResizeTerminalRequestSchema: GenMessage<ResizeTerminalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 14);
+
+/**
+ * @generated from message gridelta.v1.ResizeTerminalResponse
+ */
+export type ResizeTerminalResponse = Message<"gridelta.v1.ResizeTerminalResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.ResizeTerminalResponse.
+ * Use `create(ResizeTerminalResponseSchema)` to create a new message.
+ */
+export const ResizeTerminalResponseSchema: GenMessage<ResizeTerminalResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 15);
+
+/**
+ * @generated from message gridelta.v1.CloseTerminalRequest
+ */
+export type CloseTerminalRequest = Message<"gridelta.v1.CloseTerminalRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.CloseTerminalRequest.
+ * Use `create(CloseTerminalRequestSchema)` to create a new message.
+ */
+export const CloseTerminalRequestSchema: GenMessage<CloseTerminalRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 16);
+
+/**
+ * @generated from message gridelta.v1.CloseTerminalResponse
+ */
+export type CloseTerminalResponse = Message<"gridelta.v1.CloseTerminalResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.CloseTerminalResponse.
+ * Use `create(CloseTerminalResponseSchema)` to create a new message.
+ */
+export const CloseTerminalResponseSchema: GenMessage<CloseTerminalResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 17);
+
+/**
  * 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
- * M1 에서는 PC 목록만 두고, 터미널·승인·AI 설정 RPC 는 이후 마일스톤에서 추가한다.
+ * 승인·AI 설정 RPC 는 이후 마일스톤에서 추가한다.
  *
  * @generated from service gridelta.v1.ConsoleService
  */
@@ -155,6 +446,62 @@ export const ConsoleService: GenService<{
     methodKind: "server_streaming";
     input: typeof WatchEndpointsRequestSchema;
     output: typeof EndpointEventSchema;
+  },
+  /**
+   * 웹 터미널
+   *
+   * session_id 발급
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.OpenTerminal
+   */
+  openTerminal: {
+    methodKind: "unary";
+    input: typeof OpenTerminalRequestSchema;
+    output: typeof OpenTerminalResponseSchema;
+  },
+  /**
+   * 새로고침 후 탭 복원용
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.ListTerminals
+   */
+  listTerminals: {
+    methodKind: "unary";
+    input: typeof ListTerminalsRequestSchema;
+    output: typeof ListTerminalsResponseSchema;
+  },
+  /**
+   * 출력 스트림, from_seq 로 재접속
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.AttachTerminal
+   */
+  attachTerminal: {
+    methodKind: "server_streaming";
+    input: typeof AttachTerminalRequestSchema;
+    output: typeof TerminalOutputSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.SendInput
+   */
+  sendInput: {
+    methodKind: "unary";
+    input: typeof SendInputRequestSchema;
+    output: typeof SendInputResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.ResizeTerminal
+   */
+  resizeTerminal: {
+    methodKind: "unary";
+    input: typeof ResizeTerminalRequestSchema;
+    output: typeof ResizeTerminalResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.CloseTerminal
+   */
+  closeTerminal: {
+    methodKind: "unary";
+    input: typeof CloseTerminalRequestSchema;
+    output: typeof CloseTerminalResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_gridelta_v1_console, 0);

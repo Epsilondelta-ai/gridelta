@@ -12,10 +12,12 @@ import (
 	"time"
 
 	"connectrpc.com/connect/v2"
+	"google.golang.org/protobuf/proto"
 
 	grideltav1 "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1"
 	"github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1/grideltav1connect"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/exec"
+	"github.com/Epsilondelta-ai/gridelta/agent/internal/pty"
 )
 
 const (
@@ -25,6 +27,8 @@ const (
 	stableAfter = 30 * time.Second
 	// 버전 비호환이거나 자격 증명이 폐기되면 이 간격으로만 재시도한다
 	rejectedRetry = time.Hour
+	// 연결이 끊긴 뒤 이 시간 안에 다시 연결되지 않으면 PTY 세션을 모두 닫는다
+	ptyGrace = 30 * time.Second
 )
 
 // Config 는 에이전트 연결 설정이다.
@@ -41,10 +45,40 @@ type Client struct {
 	cfg    Config
 	gw     grideltav1connect.AgentGatewayClient
 	logger *slog.Logger
+	ptys   *pty.Manager
+
+	mu  sync.Mutex
+	cur *session // 현재 연결. 끊겨 있으면 nil
 }
 
 func New(cfg Config, logger *slog.Logger) *Client {
-	return &Client{cfg: cfg, gw: NewGatewayClient(cfg.ServerURL, cfg.CAFingerprint), logger: logger}
+	c := &Client{cfg: cfg, gw: NewGatewayClient(cfg.ServerURL, cfg.CAFingerprint), logger: logger}
+	c.ptys = pty.NewManager(c, cfg.Hello.GetDefaultShell())
+	return c
+}
+
+// sendCurrent 는 현재 연결로 보낸다. 연결이 없으면 버린다(PTY 출력 등 비동기 메시지).
+func (c *Client) sendCurrent(msg *grideltav1.AgentMessage) {
+	c.mu.Lock()
+	s := c.cur
+	c.mu.Unlock()
+	if s != nil {
+		s.send(msg)
+	}
+}
+
+// PtyOutput 은 pty.Sink 구현이다.
+func (c *Client) PtyOutput(sessionID string, data []byte) {
+	c.sendCurrent(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_PtyOutput{
+		PtyOutput: &grideltav1.PtyOutput{SessionId: sessionID, Data: data},
+	}})
+}
+
+// PtyExit 은 pty.Sink 구현이다.
+func (c *Client) PtyExit(sessionID string, exitCode int) {
+	c.sendCurrent(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_PtyExit{
+		PtyExit: &grideltav1.PtyExit{SessionId: sessionID, ExitCode: int32(exitCode)},
+	}})
 }
 
 // Run 은 ctx 가 끝날 때까지 연결을 유지하고, 끊기면 백오프 후 재연결한다.
@@ -94,6 +128,15 @@ func (c *Client) session(parent context.Context) error {
 		running: map[string]context.CancelFunc{},
 	}
 	s.lastRecv.Store(time.Now().UnixNano())
+	c.mu.Lock()
+	c.cur = s
+	c.mu.Unlock()
+	defer func() {
+		c.mu.Lock()
+		c.cur = nil
+		c.mu.Unlock()
+		c.ptys.CloseAllAfter(ptyGrace)
+	}()
 
 	// 단일 writer: 스트림 송신은 이 goroutine 에서만 한다
 	writeErr := make(chan error, 1)
@@ -113,7 +156,9 @@ func (c *Client) session(parent context.Context) error {
 		}
 	}()
 
-	s.send(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_Hello{Hello: c.cfg.Hello}})
+	hello := proto.CloneOf(c.cfg.Hello)
+	hello.PtySessionIds = c.ptys.IDs()
+	s.send(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_Hello{Hello: hello}})
 
 	go s.watchIdle(cancel)
 
@@ -171,12 +216,17 @@ func (s *session) dispatch(msg *grideltav1.ServerMessage) {
 	switch m := msg.Msg.(type) {
 	case *grideltav1.ServerMessage_Welcome:
 		s.client.logger.Info("connected", "server_version", m.Welcome.GetServerVersion())
+		s.client.ptys.CancelCloseAll()
 	case *grideltav1.ServerMessage_Ping:
 		s.send(&grideltav1.AgentMessage{Msg: &grideltav1.AgentMessage_Heartbeat{
 			Heartbeat: &grideltav1.Heartbeat{Nonce: m.Ping.GetNonce()},
 		}})
 	case *grideltav1.ServerMessage_Request:
 		go s.handle(m.Request)
+	case *grideltav1.ServerMessage_PtyInput:
+		_ = s.client.ptys.Input(m.PtyInput.GetSessionId(), m.PtyInput.GetData())
+	case *grideltav1.ServerMessage_PtyResize:
+		_ = s.client.ptys.Resize(m.PtyResize.GetSessionId(), m.PtyResize.GetCols(), m.PtyResize.GetRows())
 	}
 }
 
@@ -190,6 +240,20 @@ func (s *session) handle(req *grideltav1.Request) {
 			res.Result = &grideltav1.Response_Ok{Ok: &grideltav1.Empty{}}
 		} else {
 			res.Error = &grideltav1.Error{Code: "not_found", Message: "no running request with that id"}
+		}
+	case *grideltav1.Request_PtyOpen:
+		if pid, err := s.client.ptys.Open(op.PtyOpen); err != nil {
+			res.Error = &grideltav1.Error{Code: "internal", Message: err.Error()}
+		} else {
+			res.Result = &grideltav1.Response_PtyOpen{PtyOpen: &grideltav1.PtyOpenResult{Pid: int32(pid)}}
+		}
+	case *grideltav1.Request_PtyClose:
+		if err := s.client.ptys.Close(op.PtyClose.GetSessionId()); errors.Is(err, pty.ErrNotFound) {
+			res.Error = &grideltav1.Error{Code: "not_found", Message: err.Error()}
+		} else if err != nil {
+			res.Error = &grideltav1.Error{Code: "internal", Message: err.Error()}
+		} else {
+			res.Result = &grideltav1.Response_Ok{Ok: &grideltav1.Empty{}}
 		}
 	default:
 		res.Error = &grideltav1.Error{Code: "unsupported", Message: fmt.Sprintf("%T is not supported yet", op)}

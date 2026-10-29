@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+@import '@xterm/xterm/css/xterm.css';
+
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --hover: #f1f5f9;
+  --accent: #0284c7;
+  --accent-soft: #e0f2fe;
+  --ok: #16a34a;
+  --danger: #dc2626;
+  --term: #0b0f14;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0b0f14;
+    --panel: #111820;
+    --fg: #e2e8f0;
+    --muted: #94a3b8;
+    --line: #1f2a37;
+    --hover: #18212b;
+    --accent: #38bdf8;
+    --accent-soft: #0c2a3d;
+    --ok: #22c55e;
+    --danger: #f87171;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-hover: var(--hover);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-danger: var(--danger);
+  --color-term: var(--term);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-md border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent;
+  }
+  .btn-primary {
+    @apply rounded-md bg-accent px-3 py-2 text-sm font-medium text-white disabled:opacity-60;
+  }
+}
+
+.xterm {
+  height: 100%;
+}

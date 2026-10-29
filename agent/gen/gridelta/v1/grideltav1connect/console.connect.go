@@ -30,6 +30,23 @@ const (
 	// ConsoleServiceWatchEndpointsProcedure is the procedure name of the ConsoleService's
 	// WatchEndpoints RPC.
 	ConsoleServiceWatchEndpointsProcedure = "/gridelta.v1.ConsoleService/WatchEndpoints"
+	// ConsoleServiceOpenTerminalProcedure is the procedure name of the ConsoleService's OpenTerminal
+	// RPC.
+	ConsoleServiceOpenTerminalProcedure = "/gridelta.v1.ConsoleService/OpenTerminal"
+	// ConsoleServiceListTerminalsProcedure is the procedure name of the ConsoleService's ListTerminals
+	// RPC.
+	ConsoleServiceListTerminalsProcedure = "/gridelta.v1.ConsoleService/ListTerminals"
+	// ConsoleServiceAttachTerminalProcedure is the procedure name of the ConsoleService's
+	// AttachTerminal RPC.
+	ConsoleServiceAttachTerminalProcedure = "/gridelta.v1.ConsoleService/AttachTerminal"
+	// ConsoleServiceSendInputProcedure is the procedure name of the ConsoleService's SendInput RPC.
+	ConsoleServiceSendInputProcedure = "/gridelta.v1.ConsoleService/SendInput"
+	// ConsoleServiceResizeTerminalProcedure is the procedure name of the ConsoleService's
+	// ResizeTerminal RPC.
+	ConsoleServiceResizeTerminalProcedure = "/gridelta.v1.ConsoleService/ResizeTerminal"
+	// ConsoleServiceCloseTerminalProcedure is the procedure name of the ConsoleService's CloseTerminal
+	// RPC.
+	ConsoleServiceCloseTerminalProcedure = "/gridelta.v1.ConsoleService/CloseTerminal"
 )
 
 var (
@@ -47,12 +64,61 @@ var (
 			Procedure:  ConsoleServiceWatchEndpointsProcedure,
 		}
 	})
+	consoleServiceOpenTerminalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("OpenTerminal"),
+			Procedure:  ConsoleServiceOpenTerminalProcedure,
+		}
+	})
+	consoleServiceListTerminalsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListTerminals"),
+			Procedure:  ConsoleServiceListTerminalsProcedure,
+		}
+	})
+	consoleServiceAttachTerminalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeServer,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("AttachTerminal"),
+			Procedure:  ConsoleServiceAttachTerminalProcedure,
+		}
+	})
+	consoleServiceSendInputSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("SendInput"),
+			Procedure:  ConsoleServiceSendInputProcedure,
+		}
+	})
+	consoleServiceResizeTerminalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ResizeTerminal"),
+			Procedure:  ConsoleServiceResizeTerminalProcedure,
+		}
+	})
+	consoleServiceCloseTerminalSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("CloseTerminal"),
+			Procedure:  ConsoleServiceCloseTerminalProcedure,
+		}
+	})
 )
 
 // ConsoleServiceClient is a client for the gridelta.v1.ConsoleService service.
 type ConsoleServiceClient interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	WatchEndpoints(context.Context, *v1.WatchEndpointsRequest) (ConsoleServiceWatchEndpointsClientStream, error)
+	// 웹 터미널
+	OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error)
+	ListTerminals(context.Context, *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error)
+	AttachTerminal(context.Context, *v1.AttachTerminalRequest) (ConsoleServiceAttachTerminalClientStream, error)
+	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
+	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
+	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
 }
 
 // NewConsoleServiceClient constructs a client for the gridelta.v1.ConsoleService service. Multiple
@@ -82,10 +148,38 @@ func (s ConsoleServiceWatchEndpointsClientStream) Close() error {
 	return s.stream.Close()
 }
 
+// ConsoleServiceAttachTerminalClientStream is the client stream for the ConsoleService's
+// AttachTerminal RPC.
+type ConsoleServiceAttachTerminalClientStream struct {
+	stream connect.ClientStream
+}
+
+// Receive returns the next response message from the server.
+func (s ConsoleServiceAttachTerminalClientStream) Receive() (*v1.TerminalOutput, error) {
+	var res v1.TerminalOutput
+	if err := s.stream.Receive(&res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+// Close releases the stream's resources. It is idempotent and is typically deferred to clean up a
+// stream abandoned before io.EOF.
+func (s ConsoleServiceAttachTerminalClientStream) Close() error {
+	return s.stream.Close()
+}
+
 // ConsoleServiceHandler is an implementation of the gridelta.v1.ConsoleService service.
 type ConsoleServiceHandler interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	WatchEndpoints(context.Context, *v1.WatchEndpointsRequest, ConsoleServiceWatchEndpointsServerStream) error
+	// 웹 터미널
+	OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error)
+	ListTerminals(context.Context, *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error)
+	AttachTerminal(context.Context, *v1.AttachTerminalRequest, ConsoleServiceAttachTerminalServerStream) error
+	SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error)
+	ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error)
+	CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error)
 }
 
 // RegisterConsoleServiceHandler registers svc as the gridelta.v1.ConsoleService implementation on
@@ -95,6 +189,12 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 	server.Register(
 		connect.Method{Spec: consoleServiceListEndpointsSpec(), Handler: adapter.listEndpoints},
 		connect.Method{Spec: consoleServiceWatchEndpointsSpec(), Handler: adapter.watchEndpoints},
+		connect.Method{Spec: consoleServiceOpenTerminalSpec(), Handler: adapter.openTerminal},
+		connect.Method{Spec: consoleServiceListTerminalsSpec(), Handler: adapter.listTerminals},
+		connect.Method{Spec: consoleServiceAttachTerminalSpec(), Handler: adapter.attachTerminal},
+		connect.Method{Spec: consoleServiceSendInputSpec(), Handler: adapter.sendInput},
+		connect.Method{Spec: consoleServiceResizeTerminalSpec(), Handler: adapter.resizeTerminal},
+		connect.Method{Spec: consoleServiceCloseTerminalSpec(), Handler: adapter.closeTerminal},
 	)
 }
 
@@ -114,6 +214,22 @@ func (s ConsoleServiceWatchEndpointsServerStream) Send(res *v1.EndpointEvent) er
 	return s.stream.Send(res)
 }
 
+// ConsoleServiceAttachTerminalServerStream is the server stream for the ConsoleService's
+// AttachTerminal RPC.
+type ConsoleServiceAttachTerminalServerStream struct {
+	stream connect.ServerStream
+}
+
+// SendHeaders flushes the response headers without a message. The first Send does this implicitly.
+func (s ConsoleServiceAttachTerminalServerStream) SendHeaders() error {
+	return s.stream.SendHeaders()
+}
+
+// Send sends a response message to the client.
+func (s ConsoleServiceAttachTerminalServerStream) Send(res *v1.TerminalOutput) error {
+	return s.stream.Send(res)
+}
+
 // UnimplementedConsoleServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedConsoleServiceHandler struct{}
 
@@ -123,6 +239,30 @@ func (UnimplementedConsoleServiceHandler) ListEndpoints(context.Context, *v1.Lis
 
 func (UnimplementedConsoleServiceHandler) WatchEndpoints(context.Context, *v1.WatchEndpointsRequest, ConsoleServiceWatchEndpointsServerStream) error {
 	return connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.WatchEndpoints is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.OpenTerminal is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListTerminals(context.Context, *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListTerminals is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) AttachTerminal(context.Context, *v1.AttachTerminalRequest, ConsoleServiceAttachTerminalServerStream) error {
+	return connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.AttachTerminal is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) SendInput(context.Context, *v1.SendInputRequest) (*v1.SendInputResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.SendInput is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ResizeTerminal(context.Context, *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ResizeTerminal is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) CloseTerminal(context.Context, *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CloseTerminal is not implemented")
 }
 
 type consoleServiceClient struct {
@@ -145,6 +285,54 @@ func (c *consoleServiceClient) WatchEndpoints(ctx context.Context, req *v1.Watch
 	return ConsoleServiceWatchEndpointsClientStream{stream: stream}, nil
 }
 
+func (c *consoleServiceClient) OpenTerminal(ctx context.Context, req *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error) {
+	var res v1.OpenTerminalResponse
+	if err := c.client.CallUnary(ctx, consoleServiceOpenTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListTerminals(ctx context.Context, req *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error) {
+	var res v1.ListTerminalsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListTerminalsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) AttachTerminal(ctx context.Context, req *v1.AttachTerminalRequest) (ConsoleServiceAttachTerminalClientStream, error) {
+	stream, err := c.client.CallServerStream(ctx, consoleServiceAttachTerminalSpec(), req)
+	if err != nil {
+		return ConsoleServiceAttachTerminalClientStream{}, err
+	}
+	return ConsoleServiceAttachTerminalClientStream{stream: stream}, nil
+}
+
+func (c *consoleServiceClient) SendInput(ctx context.Context, req *v1.SendInputRequest) (*v1.SendInputResponse, error) {
+	var res v1.SendInputResponse
+	if err := c.client.CallUnary(ctx, consoleServiceSendInputSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ResizeTerminal(ctx context.Context, req *v1.ResizeTerminalRequest) (*v1.ResizeTerminalResponse, error) {
+	var res v1.ResizeTerminalResponse
+	if err := c.client.CallUnary(ctx, consoleServiceResizeTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) CloseTerminal(ctx context.Context, req *v1.CloseTerminalRequest) (*v1.CloseTerminalResponse, error) {
+	var res v1.CloseTerminalResponse
+	if err := c.client.CallUnary(ctx, consoleServiceCloseTerminalSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 type consoleServiceHandler struct{ svc ConsoleServiceHandler }
 
 func (h consoleServiceHandler) listEndpoints(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
@@ -165,4 +353,72 @@ func (h consoleServiceHandler) watchEndpoints(ctx context.Context, _ connect.Spe
 		return err
 	}
 	return h.svc.WatchEndpoints(ctx, &req, ConsoleServiceWatchEndpointsServerStream{stream: stream})
+}
+
+func (h consoleServiceHandler) openTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.OpenTerminalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.OpenTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listTerminals(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListTerminalsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListTerminals(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) attachTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.AttachTerminalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	return h.svc.AttachTerminal(ctx, &req, ConsoleServiceAttachTerminalServerStream{stream: stream})
+}
+
+func (h consoleServiceHandler) sendInput(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.SendInputRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.SendInput(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) resizeTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ResizeTerminalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ResizeTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) closeTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CloseTerminalRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CloseTerminal(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
 }

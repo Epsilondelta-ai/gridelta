@@ -1,8 +1,8 @@
-import { hash as argon2Hash } from '@node-rs/argon2';
-import { and, eq, gt, isNull } from 'drizzle-orm';
+import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
+import { and, eq, gt, isNull, lt } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { endpoints, enrollTokens, users } from './schema.ts';
+import { auditLog, endpoints, enrollTokens, sessions, users } from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -16,6 +16,16 @@ export interface HelloInfo {
 }
 
 export class UsernameTakenError extends Error {}
+
+export interface SessionUser {
+  id: string;
+  username: string;
+}
+
+export type AuditEntry = Omit<typeof auditLog.$inferInsert, 'id' | 'at'>;
+
+// 사용자 없음과 비밀번호 틀림의 응답 시간을 비슷하게 맞추기 위한 더미 해시
+let dummyHash: Promise<string> | undefined;
 
 /** 앱 DB 접근. DB 를 직접 만지는 코드는 store/ 밖에 두지 않는다. */
 export class Store {
@@ -108,5 +118,47 @@ export class Store {
       .insert(users)
       .values({ id, username, passwordHash: await argon2Hash(password), createdAt: new Date() });
     return id;
+  }
+
+  /** 아이디·비밀번호가 맞으면 사용자를 돌려준다. */
+  async verifyPassword(username: string, password: string): Promise<SessionUser | undefined> {
+    const [row] = await this.db.select().from(users).where(eq(users.username, username)).limit(1);
+    const hash = row?.passwordHash ?? (await (dummyHash ??= argon2Hash('not-a-real-password')));
+    const ok = await argon2Verify(hash, password).catch(() => false);
+    return row && ok ? { id: row.id, username: row.username } : undefined;
+  }
+
+  // --- 웹 세션 ---
+
+  async createSession(userId: string, ttlMs: number): Promise<{ token: string; expiresAt: Date }> {
+    const token = randomToken();
+    const now = Date.now();
+    const expiresAt = new Date(now + ttlMs);
+    await this.db.insert(sessions).values({ tokenHash: hashToken(token), userId, createdAt: new Date(now), expiresAt });
+    return { token, expiresAt };
+  }
+
+  async getSessionUser(token: string): Promise<SessionUser | undefined> {
+    const [row] = await this.db
+      .select({ id: users.id, username: users.username })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(and(eq(sessions.tokenHash, hashToken(token)), gt(sessions.expiresAt, new Date())))
+      .limit(1);
+    return row;
+  }
+
+  async deleteSession(token: string): Promise<void> {
+    await this.db.delete(sessions).where(eq(sessions.tokenHash, hashToken(token)));
+  }
+
+  async deleteExpiredSessions(): Promise<void> {
+    await this.db.delete(sessions).where(lt(sessions.expiresAt, new Date()));
+  }
+
+  // --- 감사 로그 ---
+
+  async audit(entry: AuditEntry): Promise<void> {
+    await this.db.insert(auditLog).values({ ...entry, at: new Date() });
   }
 }

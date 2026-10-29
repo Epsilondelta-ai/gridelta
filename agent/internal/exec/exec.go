@@ -36,7 +36,7 @@ func Run(ctx context.Context, req *grideltav1.ExecRequest, defaultShell string, 
 
 	cmd := osexec.CommandContext(runCtx, shell, shellArgs(shell, req.GetCommand())...)
 	cmd.Dir = req.GetCwd()
-	cmd.Env = buildEnv(req.GetEnv())
+	cmd.Env = BuildEnv(req.GetEnv())
 	configureProcessTree(cmd)
 
 	out := &limitedOutput{limit: outputLimit}
@@ -67,8 +67,8 @@ func Run(ctx context.Context, req *grideltav1.ExecRequest, defaultShell string, 
 	return res, nil
 }
 
-// buildEnv 는 에이전트 환경을 상속하되 자격 증명 관련 변수는 제거하고, 요청의 env 를 덮어쓴다.
-func buildEnv(extra map[string]string) []string {
+// BuildEnv 는 에이전트 환경을 상속하되 자격 증명 관련 변수는 제거하고, 요청의 env 를 덮어쓴다.
+func BuildEnv(extra map[string]string) []string {
 	env := make([]string, 0, len(os.Environ())+len(extra))
 	for _, kv := range os.Environ() {
 		if isSecretEnv(kv) {

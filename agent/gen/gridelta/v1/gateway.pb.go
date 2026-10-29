@@ -411,6 +411,7 @@ type Hello struct {
 	HomeDir       string                 `protobuf:"bytes,6,opt,name=home_dir,json=homeDir,proto3" json:"home_dir,omitempty"`
 	DefaultShell  string                 `protobuf:"bytes,7,opt,name=default_shell,json=defaultShell,proto3" json:"default_shell,omitempty"` // /bin/zsh, /bin/bash, powershell.exe ...
 	OsUser        string                 `protobuf:"bytes,8,opt,name=os_user,json=osUser,proto3" json:"os_user,omitempty"`
+	PtySessionIds []string               `protobuf:"bytes,9,rep,name=pty_session_ids,json=ptySessionIds,proto3" json:"pty_session_ids,omitempty"` // 에이전트에 살아 있는 PTY 세션. 서버는 여기 없는 세션을 종료 처리한다
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -499,6 +500,13 @@ func (x *Hello) GetOsUser() string {
 		return x.OsUser
 	}
 	return ""
+}
+
+func (x *Hello) GetPtySessionIds() []string {
+	if x != nil {
+		return x.PtySessionIds
+	}
+	return nil
 }
 
 type Welcome struct {
@@ -2185,7 +2193,7 @@ const file_gridelta_v1_gateway_proto_rawDesc = "" +
 	"\n" +
 	"pty_resize\x18\x04 \x01(\v2\x16.gridelta.v1.PtyResizeH\x00R\tptyResize\x12'\n" +
 	"\x04ping\x18\x05 \x01(\v2\x11.gridelta.v1.PingH\x00R\x04pingB\x05\n" +
-	"\x03msg\"\xe0\x01\n" +
+	"\x03msg\"\x88\x02\n" +
 	"\x05Hello\x12\x19\n" +
 	"\bagent_id\x18\x01 \x01(\tR\aagentId\x12\x0e\n" +
 	"\x02os\x18\x02 \x01(\tR\x02os\x12\x12\n" +
@@ -2194,7 +2202,8 @@ const file_gridelta_v1_gateway_proto_rawDesc = "" +
 	"\ragent_version\x18\x05 \x01(\tR\fagentVersion\x12\x19\n" +
 	"\bhome_dir\x18\x06 \x01(\tR\ahomeDir\x12#\n" +
 	"\rdefault_shell\x18\a \x01(\tR\fdefaultShell\x12\x17\n" +
-	"\aos_user\x18\b \x01(\tR\x06osUser\"\x86\x01\n" +
+	"\aos_user\x18\b \x01(\tR\x06osUser\x12&\n" +
+	"\x0fpty_session_ids\x18\t \x03(\tR\rptySessionIds\"\x86\x01\n" +
 	"\aWelcome\x12%\n" +
 	"\x0eserver_version\x18\x01 \x01(\tR\rserverVersion\x12*\n" +
 	"\x11min_agent_version\x18\x02 \x01(\tR\x0fminAgentVersion\x12(\n" +

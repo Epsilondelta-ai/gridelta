@@ -11,7 +11,7 @@ RUN CGO_ENABLED=0 go build -o /out/gridelta-agent ./cmd/gridelta-agent
 
 FROM debian:trixie-slim AS systemd
 RUN apt-get update \
- && apt-get install -y --no-install-recommends systemd systemd-sysv procps \
+ && apt-get install -y --no-install-recommends systemd systemd-sysv procps vim \
  && rm -rf /var/lib/apt/lists/*
 COPY --from=build /out/gridelta-agent /usr/local/bin/gridelta-agent
 STOPSIGNAL SIGRTMIN+3

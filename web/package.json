@@ -1,0 +1,32 @@
+{
+  "name": "@gridelta/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-web": "catalog:",
+    "@gridelta/proto": "workspace:*",
+    "@xterm/addon-fit": "catalog:",
+    "@xterm/addon-unicode11": "catalog:",
+    "@xterm/addon-web-links": "catalog:",
+    "@xterm/addon-webgl": "catalog:",
+    "@xterm/xterm": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

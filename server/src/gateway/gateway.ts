@@ -38,7 +38,17 @@ export function gatewayRoutes(hub: AgentHub, store: Store) {
             for (let r = await it.next(); !r.done; r = await it.next()) {
               conn.lastRecv = Date.now();
               const msg = r.value.msg;
-              if (msg.case === 'response') hub.resolveResponse(conn, msg.value);
+              switch (msg.case) {
+                case 'response':
+                  hub.resolveResponse(conn, msg.value);
+                  break;
+                case 'ptyOutput':
+                  hub.ptyOutput(conn, msg.value.sessionId, msg.value.data);
+                  break;
+                case 'ptyExit':
+                  hub.ptyExit(conn, msg.value.sessionId, msg.value.exitCode);
+                  break;
+              }
             }
           } catch {
             // 연결 끊김. 아래 finally 에서 정리한다

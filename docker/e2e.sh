@@ -23,7 +23,10 @@ pass() { echo "PASS: $*"; }
 json_str() { node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$1"; }
 jget() { node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const v=new Function("d","return ("+process.argv[1]+")")(JSON.parse(s));process.stdout.write(String(v))})' "$1"; }
 
-list() { curl -sf -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/ListEndpoints" -H 'content-type: application/json' -d '{}'; }
+USERNAME=admin
+PASSWORD=correct-horse-battery
+JAR="$WORK/cookies"
+list() { curl -sf -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/ListEndpoints" -H 'content-type: application/json' -d '{}'; }
 id_of() { list | jget "((d.endpoints||[]).find(e => e.hostname === '$1') || {}).id || ''"; }
 is_online() { list 2>/dev/null | jget "(d.endpoints||[]).some(e => e.id === '$1' && e.online === true)" 2>/dev/null; }
 is_offline() { [[ "$(is_online "$1")" == false ]] && echo true || echo false; }
@@ -54,11 +57,18 @@ dc up -d --build >/dev/null 2>&1 || { dc up -d --build; exit 1; }
 wait_for "server healthy" 60 healthy
 
 echo "== M2: 계정·등록·인증"
-out=$(echo 'correct-horse-battery' | cli user create admin --password-stdin)
+out=$(echo "$PASSWORD" | cli user create "$USERNAME" --password-stdin)
 [[ "$out" == *"계정을 만들었습니다"* ]] || fail "user create: $out"
-if out=$(echo 'correct-horse-battery' | cli user create admin --password-stdin 2>&1); then fail "duplicate user accepted"; fi
+if out=$(echo "$PASSWORD" | cli user create "$USERNAME" --password-stdin 2>&1); then fail "duplicate user accepted"; fi
 [[ "$out" == *"already exists"* ]] || fail "duplicate user message: $out"
 pass "CLI user create (argon2 저장, 중복 거부)"
+
+code=$(curl -s -o /dev/null -w '%{http_code}' -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/ListEndpoints" -H 'content-type: application/json' -d '{}')
+[[ "$code" == 401 ]] || fail "ConsoleService without login returned $code"
+curl -sf -c "$JAR" -XPOST "$BASE/api/login" -H 'content-type: application/json' \
+  -d "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}" >/dev/null || fail "login failed"
+grep -q gridelta_session "$JAR" || fail "no session cookie"
+pass "ConsoleService 는 로그인 필요 (미로그인 401, 로그인 후 세션 쿠키)"
 
 cmd=$(enroll_cmd)
 [[ "$cmd" == *"--ca-fingerprint "* ]] || fail "enroll command has no fingerprint: $cmd"
@@ -129,9 +139,20 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -XPOST "$BASE/_debug/exec" -H 'con
 [[ "$code" == 404 ]] || fail "unknown endpoint returned $code"
 pass "연결되지 않은 PC → EndpointOfflineError"
 
+echo "== M3: 웹 터미널 (브라우저)"
+dc run --rm -T -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
+  sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node test.mjs' || fail "web terminal e2e"
+[[ "$(dc exec -T server node -e "
+  const { DatabaseSync } = require('node:sqlite');
+  const db = new DatabaseSync('/var/lib/gridelta/gridelta.db');
+  const rows = db.prepare(\"select command from audit_log where kind = 'pty'\").all().map(r => r.command.split(' ')[0]);
+  console.log(rows.includes('open') && rows.includes('exit'));
+")" == true ]] || fail "PTY open/exit not in audit_log"
+pass "PTY 세션 시작·종료가 감사 로그에 기록"
+
 echo "== 재연결"
 # WatchEndpoints 서버 스트림을 HTTP/1.1 로 구독해 둔다 (Connect 스트리밍 envelope: flags 1B + length 4B)
-printf '\x00\x00\x00\x00\x02{}' | curl -sN -m 90 -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/WatchEndpoints" \
+printf '\x00\x00\x00\x00\x02{}' | curl -sN -m 90 -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/WatchEndpoints" \
   -H 'content-type: application/connect+json' --data-binary @- >"$WORK/watch.bin" &
 WATCH_PID=$!
 sleep 1

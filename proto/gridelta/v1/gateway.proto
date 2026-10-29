@@ -54,6 +54,7 @@ message Hello {
   string home_dir = 6;
   string default_shell = 7; // /bin/zsh, /bin/bash, powershell.exe ...
   string os_user = 8;
+  repeated string pty_session_ids = 9; // 에이전트에 살아 있는 PTY 세션. 서버는 여기 없는 세션을 종료 처리한다
 }
 
 message Welcome {

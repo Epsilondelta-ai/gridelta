@@ -16,6 +16,7 @@
     "@connectrpc/connect-node": "catalog:",
     "@flue/runtime": "catalog:",
     "@gridelta/proto": "workspace:*",
+    "@hono/node-server": "catalog:",
     "@node-rs/argon2": "catalog:",
     "drizzle-orm": "catalog:",
     "hono": "catalog:"
