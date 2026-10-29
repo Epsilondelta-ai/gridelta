@@ -4,7 +4,8 @@
 #   ./docker/up.sh down   내리기 (데이터도 지움)
 set -euo pipefail
 cd "$(dirname "$0")"
-export GRIDELTA_WEB_AUTH=off GRIDELTA_AI_FAUX=0 GRIDELTA_E2E_PORT=${GRIDELTA_PORT:-3900}
+# 인증서는 e2e(.e2e/certs, 실행마다 새로 만듦)와 따로 둔다. 바뀌면 에이전트가 고정한 지문과 달라 연결을 거부한다
+export GRIDELTA_WEB_AUTH=off GRIDELTA_AI_FAUX=0 GRIDELTA_E2E_PORT=${GRIDELTA_PORT:-3900} GRIDELTA_CERT_DIR=./.local/certs
 dc() { docker compose -p gridelta-local -f compose.yaml "$@"; }
 
 if [[ "${1:-}" == down ]]; then
@@ -12,11 +13,11 @@ if [[ "${1:-}" == down ]]; then
   exit 0
 fi
 
-mkdir -p .e2e/certs
-if [[ ! -f .e2e/certs/server.crt ]]; then
-  openssl req -x509 -newkey rsa:2048 -nodes -days 30 -subj /CN=gridelta-local \
-    -addext subjectAltName=DNS:server -keyout .e2e/certs/server.key -out .e2e/certs/server.crt 2>/dev/null
-  chmod 644 .e2e/certs/server.key
+mkdir -p .local/certs
+if [[ ! -f .local/certs/server.crt ]]; then
+  openssl req -x509 -newkey rsa:2048 -nodes -days 365 -subj /CN=gridelta-local \
+    -addext subjectAltName=DNS:server -keyout .local/certs/server.key -out .local/certs/server.crt 2>/dev/null
+  chmod 644 .local/certs/server.key
 fi
 
 dc up -d --build server agent-debian agent-alpine
@@ -28,9 +29,10 @@ enroll() { # enroll <service>  컨테이너가 새로 만들어졌으면 다시 
   if ! dc exec -T "$1" test -f /etc/gridelta/agent.yaml; then
     cmd=$(dc exec -T server gridelta enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*')
     dc exec -T "$1" sh -c "$cmd" >/dev/null
-    local host=$1
+    local host=$1 mine
+    mine=$(dc exec -T "$1" sed -n 's/^agent_id: //p' /etc/gridelta/agent.yaml)
     for id in $(dc exec -T server gridelta endpoints list --json |
-      node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).filter(e=>e.hostname===process.argv[1]&&!e.online).forEach(e=>console.log(e.id)))' "$host"); do
+      node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).filter(e=>e.hostname===process.argv[1]&&e.id!==process.argv[2]&&!e.online).forEach(e=>console.log(e.id)))' "$host" "$mine"); do
       dc exec -T server gridelta endpoints revoke "$id" >/dev/null
     done
   fi
