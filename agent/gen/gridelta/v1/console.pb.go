@@ -34,6 +34,7 @@ type Endpoint struct {
 	LastSeenMs     int64                  `protobuf:"varint,9,opt,name=last_seen_ms,json=lastSeenMs,proto3" json:"last_seen_ms,omitempty"`
 	ApprovalPolicy string                 `protobuf:"bytes,10,opt,name=approval_policy,json=approvalPolicy,proto3" json:"approval_policy,omitempty"` // always | dangerous | auto
 	DisplayName    string                 `protobuf:"bytes,11,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`          // 사용자가 붙인 이름. 비어 있으면 hostname 을 쓴다
+	GroupId        string                 `protobuf:"bytes,12,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -141,6 +142,13 @@ func (x *Endpoint) GetApprovalPolicy() string {
 func (x *Endpoint) GetDisplayName() string {
 	if x != nil {
 		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *Endpoint) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
 	}
 	return ""
 }
@@ -2075,11 +2083,847 @@ func (*DeleteAiSessionResponse) Descriptor() ([]byte, []int) {
 	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{40}
 }
 
+type Group struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"` // "default" 는 지울 수 없는 기본 그룹
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	EndpointCount uint32                 `protobuf:"varint,3,opt,name=endpoint_count,json=endpointCount,proto3" json:"endpoint_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Group) Reset() {
+	*x = Group{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Group) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Group) ProtoMessage() {}
+
+func (x *Group) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Group.ProtoReflect.Descriptor instead.
+func (*Group) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *Group) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Group) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Group) GetEndpointCount() uint32 {
+	if x != nil {
+		return x.EndpointCount
+	}
+	return 0
+}
+
+type ListGroupsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGroupsRequest) Reset() {
+	*x = ListGroupsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGroupsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGroupsRequest) ProtoMessage() {}
+
+func (x *ListGroupsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGroupsRequest.ProtoReflect.Descriptor instead.
+func (*ListGroupsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{42}
+}
+
+type ListGroupsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Groups        []*Group               `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGroupsResponse) Reset() {
+	*x = ListGroupsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGroupsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGroupsResponse) ProtoMessage() {}
+
+func (x *ListGroupsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGroupsResponse.ProtoReflect.Descriptor instead.
+func (*ListGroupsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *ListGroupsResponse) GetGroups() []*Group {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
+type CreateGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateGroupRequest) Reset() {
+	*x = CreateGroupRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateGroupRequest) ProtoMessage() {}
+
+func (x *CreateGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateGroupRequest.ProtoReflect.Descriptor instead.
+func (*CreateGroupRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *CreateGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type RenameGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameGroupRequest) Reset() {
+	*x = RenameGroupRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameGroupRequest) ProtoMessage() {}
+
+func (x *RenameGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameGroupRequest.ProtoReflect.Descriptor instead.
+func (*RenameGroupRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *RenameGroupRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *RenameGroupRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type RenameGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameGroupResponse) Reset() {
+	*x = RenameGroupResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameGroupResponse) ProtoMessage() {}
+
+func (x *RenameGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameGroupResponse.ProtoReflect.Descriptor instead.
+func (*RenameGroupResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{46}
+}
+
+type DeleteGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteGroupRequest) Reset() {
+	*x = DeleteGroupRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteGroupRequest) ProtoMessage() {}
+
+func (x *DeleteGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteGroupRequest.ProtoReflect.Descriptor instead.
+func (*DeleteGroupRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *DeleteGroupRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteGroupResponse) Reset() {
+	*x = DeleteGroupResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteGroupResponse) ProtoMessage() {}
+
+func (x *DeleteGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteGroupResponse.ProtoReflect.Descriptor instead.
+func (*DeleteGroupResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{48}
+}
+
+type MoveEndpointRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	GroupId       string                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveEndpointRequest) Reset() {
+	*x = MoveEndpointRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveEndpointRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveEndpointRequest) ProtoMessage() {}
+
+func (x *MoveEndpointRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveEndpointRequest.ProtoReflect.Descriptor instead.
+func (*MoveEndpointRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *MoveEndpointRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *MoveEndpointRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type MoveEndpointResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MoveEndpointResponse) Reset() {
+	*x = MoveEndpointResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MoveEndpointResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveEndpointResponse) ProtoMessage() {}
+
+func (x *MoveEndpointResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveEndpointResponse.ProtoReflect.Descriptor instead.
+func (*MoveEndpointResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{50}
+}
+
+type CreateEnrollTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`           // 비우면 기본 그룹
+	TtlSeconds    uint32                 `protobuf:"varint,2,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"` // 0 이면 3600
+	MaxUses       uint32                 `protobuf:"varint,3,opt,name=max_uses,json=maxUses,proto3" json:"max_uses,omitempty"`          // 0 이면 만료 전까지 무제한
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateEnrollTokenRequest) Reset() {
+	*x = CreateEnrollTokenRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateEnrollTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateEnrollTokenRequest) ProtoMessage() {}
+
+func (x *CreateEnrollTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateEnrollTokenRequest.ProtoReflect.Descriptor instead.
+func (*CreateEnrollTokenRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *CreateEnrollTokenRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *CreateEnrollTokenRequest) GetTtlSeconds() uint32 {
+	if x != nil {
+		return x.TtlSeconds
+	}
+	return 0
+}
+
+func (x *CreateEnrollTokenRequest) GetMaxUses() uint32 {
+	if x != nil {
+		return x.MaxUses
+	}
+	return 0
+}
+
+type CreateEnrollTokenResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Token          string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"` // 원문은 이때만 볼 수 있다
+	ExpiresAtMs    int64                  `protobuf:"varint,2,opt,name=expires_at_ms,json=expiresAtMs,proto3" json:"expires_at_ms,omitempty"`
+	ServerUrl      string                 `protobuf:"bytes,3,opt,name=server_url,json=serverUrl,proto3" json:"server_url,omitempty"`
+	CaFingerprint  string                 `protobuf:"bytes,4,opt,name=ca_fingerprint,json=caFingerprint,proto3" json:"ca_fingerprint,omitempty"`    // 자체 서명 인증서일 때만
+	UnixCommand    string                 `protobuf:"bytes,5,opt,name=unix_command,json=unixCommand,proto3" json:"unix_command,omitempty"`          // macOS·Linux 에서 root 로 실행할 등록·설치 명령
+	WindowsCommand string                 `protobuf:"bytes,6,opt,name=windows_command,json=windowsCommand,proto3" json:"windows_command,omitempty"` // 관리자 PowerShell 에서 실행할 명령
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CreateEnrollTokenResponse) Reset() {
+	*x = CreateEnrollTokenResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateEnrollTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateEnrollTokenResponse) ProtoMessage() {}
+
+func (x *CreateEnrollTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateEnrollTokenResponse.ProtoReflect.Descriptor instead.
+func (*CreateEnrollTokenResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *CreateEnrollTokenResponse) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *CreateEnrollTokenResponse) GetExpiresAtMs() int64 {
+	if x != nil {
+		return x.ExpiresAtMs
+	}
+	return 0
+}
+
+func (x *CreateEnrollTokenResponse) GetServerUrl() string {
+	if x != nil {
+		return x.ServerUrl
+	}
+	return ""
+}
+
+func (x *CreateEnrollTokenResponse) GetCaFingerprint() string {
+	if x != nil {
+		return x.CaFingerprint
+	}
+	return ""
+}
+
+func (x *CreateEnrollTokenResponse) GetUnixCommand() string {
+	if x != nil {
+		return x.UnixCommand
+	}
+	return ""
+}
+
+func (x *CreateEnrollTokenResponse) GetWindowsCommand() string {
+	if x != nil {
+		return x.WindowsCommand
+	}
+	return ""
+}
+
+type EnrollToken struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"` // 토큰의 해시 (원문은 저장하지 않는다)
+	GroupId       string                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	CreatedAtMs   int64                  `protobuf:"varint,3,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
+	ExpiresAtMs   int64                  `protobuf:"varint,4,opt,name=expires_at_ms,json=expiresAtMs,proto3" json:"expires_at_ms,omitempty"`
+	MaxUses       uint32                 `protobuf:"varint,5,opt,name=max_uses,json=maxUses,proto3" json:"max_uses,omitempty"`
+	Uses          uint32                 `protobuf:"varint,6,opt,name=uses,proto3" json:"uses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnrollToken) Reset() {
+	*x = EnrollToken{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnrollToken) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnrollToken) ProtoMessage() {}
+
+func (x *EnrollToken) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnrollToken.ProtoReflect.Descriptor instead.
+func (*EnrollToken) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *EnrollToken) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *EnrollToken) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *EnrollToken) GetCreatedAtMs() int64 {
+	if x != nil {
+		return x.CreatedAtMs
+	}
+	return 0
+}
+
+func (x *EnrollToken) GetExpiresAtMs() int64 {
+	if x != nil {
+		return x.ExpiresAtMs
+	}
+	return 0
+}
+
+func (x *EnrollToken) GetMaxUses() uint32 {
+	if x != nil {
+		return x.MaxUses
+	}
+	return 0
+}
+
+func (x *EnrollToken) GetUses() uint32 {
+	if x != nil {
+		return x.Uses
+	}
+	return 0
+}
+
+type ListEnrollTokensRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"` // 비우면 전체
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListEnrollTokensRequest) Reset() {
+	*x = ListEnrollTokensRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListEnrollTokensRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListEnrollTokensRequest) ProtoMessage() {}
+
+func (x *ListEnrollTokensRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListEnrollTokensRequest.ProtoReflect.Descriptor instead.
+func (*ListEnrollTokensRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *ListEnrollTokensRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type ListEnrollTokensResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tokens        []*EnrollToken         `protobuf:"bytes,1,rep,name=tokens,proto3" json:"tokens,omitempty"` // 아직 쓸 수 있는 것만
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListEnrollTokensResponse) Reset() {
+	*x = ListEnrollTokensResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListEnrollTokensResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListEnrollTokensResponse) ProtoMessage() {}
+
+func (x *ListEnrollTokensResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListEnrollTokensResponse.ProtoReflect.Descriptor instead.
+func (*ListEnrollTokensResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *ListEnrollTokensResponse) GetTokens() []*EnrollToken {
+	if x != nil {
+		return x.Tokens
+	}
+	return nil
+}
+
+type RevokeEnrollTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeEnrollTokenRequest) Reset() {
+	*x = RevokeEnrollTokenRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeEnrollTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeEnrollTokenRequest) ProtoMessage() {}
+
+func (x *RevokeEnrollTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeEnrollTokenRequest.ProtoReflect.Descriptor instead.
+func (*RevokeEnrollTokenRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *RevokeEnrollTokenRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type RevokeEnrollTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RevokeEnrollTokenResponse) Reset() {
+	*x = RevokeEnrollTokenResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RevokeEnrollTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevokeEnrollTokenResponse) ProtoMessage() {}
+
+func (x *RevokeEnrollTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevokeEnrollTokenResponse.ProtoReflect.Descriptor instead.
+func (*RevokeEnrollTokenResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{57}
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\n" +
-	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xc5\x02\n" +
+	"\x19gridelta/v1/console.proto\x12\vgridelta.v1\"\xe0\x02\n" +
 	"\bEndpoint\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x0e\n" +
@@ -2093,7 +2937,8 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"lastSeenMs\x12'\n" +
 	"\x0fapproval_policy\x18\n" +
 	" \x01(\tR\x0eapprovalPolicy\x12!\n" +
-	"\fdisplay_name\x18\v \x01(\tR\vdisplayName\"\x16\n" +
+	"\fdisplay_name\x18\v \x01(\tR\vdisplayName\x12\x19\n" +
+	"\bgroup_id\x18\f \x01(\tR\agroupId\"\x16\n" +
 	"\x14ListEndpointsRequest\"L\n" +
 	"\x15ListEndpointsResponse\x123\n" +
 	"\tendpoints\x18\x01 \x03(\v2\x15.gridelta.v1.EndpointR\tendpoints\"\x17\n" +
@@ -2211,10 +3056,67 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x17RenameAiSessionResponse\"(\n" +
 	"\x16DeleteAiSessionRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x19\n" +
-	"\x17DeleteAiSessionResponse2\x8d\r\n" +
+	"\x17DeleteAiSessionResponse\"R\n" +
+	"\x05Group\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\x0eendpoint_count\x18\x03 \x01(\rR\rendpointCount\"\x13\n" +
+	"\x11ListGroupsRequest\"@\n" +
+	"\x12ListGroupsResponse\x12*\n" +
+	"\x06groups\x18\x01 \x03(\v2\x12.gridelta.v1.GroupR\x06groups\"(\n" +
+	"\x12CreateGroupRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"8\n" +
+	"\x12RenameGroupRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x15\n" +
+	"\x13RenameGroupResponse\"$\n" +
+	"\x12DeleteGroupRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x15\n" +
+	"\x13DeleteGroupResponse\"Q\n" +
+	"\x13MoveEndpointRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12\x19\n" +
+	"\bgroup_id\x18\x02 \x01(\tR\agroupId\"\x16\n" +
+	"\x14MoveEndpointResponse\"q\n" +
+	"\x18CreateEnrollTokenRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\x12\x1f\n" +
+	"\vttl_seconds\x18\x02 \x01(\rR\n" +
+	"ttlSeconds\x12\x19\n" +
+	"\bmax_uses\x18\x03 \x01(\rR\amaxUses\"\xe7\x01\n" +
+	"\x19CreateEnrollTokenResponse\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\"\n" +
+	"\rexpires_at_ms\x18\x02 \x01(\x03R\vexpiresAtMs\x12\x1d\n" +
+	"\n" +
+	"server_url\x18\x03 \x01(\tR\tserverUrl\x12%\n" +
+	"\x0eca_fingerprint\x18\x04 \x01(\tR\rcaFingerprint\x12!\n" +
+	"\funix_command\x18\x05 \x01(\tR\vunixCommand\x12'\n" +
+	"\x0fwindows_command\x18\x06 \x01(\tR\x0ewindowsCommand\"\xaf\x01\n" +
+	"\vEnrollToken\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\bgroup_id\x18\x02 \x01(\tR\agroupId\x12\"\n" +
+	"\rcreated_at_ms\x18\x03 \x01(\x03R\vcreatedAtMs\x12\"\n" +
+	"\rexpires_at_ms\x18\x04 \x01(\x03R\vexpiresAtMs\x12\x19\n" +
+	"\bmax_uses\x18\x05 \x01(\rR\amaxUses\x12\x12\n" +
+	"\x04uses\x18\x06 \x01(\rR\x04uses\"4\n" +
+	"\x17ListEnrollTokensRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\"L\n" +
+	"\x18ListEnrollTokensResponse\x120\n" +
+	"\x06tokens\x18\x01 \x03(\v2\x18.gridelta.v1.EnrollTokenR\x06tokens\"*\n" +
+	"\x18RevokeEnrollTokenRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x1b\n" +
+	"\x19RevokeEnrollTokenResponse2\xc2\x12\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
-	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12S\n" +
+	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12M\n" +
+	"\n" +
+	"ListGroups\x12\x1e.gridelta.v1.ListGroupsRequest\x1a\x1f.gridelta.v1.ListGroupsResponse\x12B\n" +
+	"\vCreateGroup\x12\x1f.gridelta.v1.CreateGroupRequest\x1a\x12.gridelta.v1.Group\x12P\n" +
+	"\vRenameGroup\x12\x1f.gridelta.v1.RenameGroupRequest\x1a .gridelta.v1.RenameGroupResponse\x12P\n" +
+	"\vDeleteGroup\x12\x1f.gridelta.v1.DeleteGroupRequest\x1a .gridelta.v1.DeleteGroupResponse\x12S\n" +
+	"\fMoveEndpoint\x12 .gridelta.v1.MoveEndpointRequest\x1a!.gridelta.v1.MoveEndpointResponse\x12b\n" +
+	"\x11CreateEnrollToken\x12%.gridelta.v1.CreateEnrollTokenRequest\x1a&.gridelta.v1.CreateEnrollTokenResponse\x12_\n" +
+	"\x10ListEnrollTokens\x12$.gridelta.v1.ListEnrollTokensRequest\x1a%.gridelta.v1.ListEnrollTokensResponse\x12b\n" +
+	"\x11RevokeEnrollToken\x12%.gridelta.v1.RevokeEnrollTokenRequest\x1a&.gridelta.v1.RevokeEnrollTokenResponse\x12S\n" +
 	"\fOpenTerminal\x12 .gridelta.v1.OpenTerminalRequest\x1a!.gridelta.v1.OpenTerminalResponse\x12V\n" +
 	"\rListTerminals\x12!.gridelta.v1.ListTerminalsRequest\x1a\".gridelta.v1.ListTerminalsResponse\x12S\n" +
 	"\x0eAttachTerminal\x12\".gridelta.v1.AttachTerminalRequest\x1a\x1b.gridelta.v1.TerminalOutput0\x01\x12J\n" +
@@ -2245,7 +3147,7 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 58)
 var file_gridelta_v1_console_proto_goTypes = []any{
 	(*Endpoint)(nil),                  // 0: gridelta.v1.Endpoint
 	(*ListEndpointsRequest)(nil),      // 1: gridelta.v1.ListEndpointsRequest
@@ -2288,6 +3190,23 @@ var file_gridelta_v1_console_proto_goTypes = []any{
 	(*RenameAiSessionResponse)(nil),   // 38: gridelta.v1.RenameAiSessionResponse
 	(*DeleteAiSessionRequest)(nil),    // 39: gridelta.v1.DeleteAiSessionRequest
 	(*DeleteAiSessionResponse)(nil),   // 40: gridelta.v1.DeleteAiSessionResponse
+	(*Group)(nil),                     // 41: gridelta.v1.Group
+	(*ListGroupsRequest)(nil),         // 42: gridelta.v1.ListGroupsRequest
+	(*ListGroupsResponse)(nil),        // 43: gridelta.v1.ListGroupsResponse
+	(*CreateGroupRequest)(nil),        // 44: gridelta.v1.CreateGroupRequest
+	(*RenameGroupRequest)(nil),        // 45: gridelta.v1.RenameGroupRequest
+	(*RenameGroupResponse)(nil),       // 46: gridelta.v1.RenameGroupResponse
+	(*DeleteGroupRequest)(nil),        // 47: gridelta.v1.DeleteGroupRequest
+	(*DeleteGroupResponse)(nil),       // 48: gridelta.v1.DeleteGroupResponse
+	(*MoveEndpointRequest)(nil),       // 49: gridelta.v1.MoveEndpointRequest
+	(*MoveEndpointResponse)(nil),      // 50: gridelta.v1.MoveEndpointResponse
+	(*CreateEnrollTokenRequest)(nil),  // 51: gridelta.v1.CreateEnrollTokenRequest
+	(*CreateEnrollTokenResponse)(nil), // 52: gridelta.v1.CreateEnrollTokenResponse
+	(*EnrollToken)(nil),               // 53: gridelta.v1.EnrollToken
+	(*ListEnrollTokensRequest)(nil),   // 54: gridelta.v1.ListEnrollTokensRequest
+	(*ListEnrollTokensResponse)(nil),  // 55: gridelta.v1.ListEnrollTokensResponse
+	(*RevokeEnrollTokenRequest)(nil),  // 56: gridelta.v1.RevokeEnrollTokenRequest
+	(*RevokeEnrollTokenResponse)(nil), // 57: gridelta.v1.RevokeEnrollTokenResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
@@ -2296,49 +3215,67 @@ var file_gridelta_v1_console_proto_depIdxs = []int32{
 	18, // 3: gridelta.v1.ApprovalEvent.approval:type_name -> gridelta.v1.Approval
 	25, // 4: gridelta.v1.AiSettings.models:type_name -> gridelta.v1.AiModel
 	33, // 5: gridelta.v1.ListAiSessionsResponse.sessions:type_name -> gridelta.v1.AiSession
-	1,  // 6: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3,  // 7: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	5,  // 8: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
-	8,  // 9: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
-	10, // 10: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
-	12, // 11: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
-	14, // 12: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
-	16, // 13: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	29, // 14: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
-	31, // 15: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
-	19, // 16: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
-	21, // 17: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
-	23, // 18: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
-	34, // 19: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
-	36, // 20: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
-	37, // 21: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
-	39, // 22: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
-	27, // 23: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
-	28, // 24: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
-	2,  // 25: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 26: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	6,  // 27: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 28: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 29: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 30: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 31: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 32: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	30, // 33: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
-	32, // 34: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
-	20, // 35: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
-	22, // 36: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
-	24, // 37: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
-	35, // 38: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
-	33, // 39: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
-	38, // 40: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
-	40, // 41: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
-	26, // 42: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
-	26, // 43: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
-	25, // [25:44] is the sub-list for method output_type
-	6,  // [6:25] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	41, // 6: gridelta.v1.ListGroupsResponse.groups:type_name -> gridelta.v1.Group
+	53, // 7: gridelta.v1.ListEnrollTokensResponse.tokens:type_name -> gridelta.v1.EnrollToken
+	1,  // 8: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 9: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	42, // 10: gridelta.v1.ConsoleService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
+	44, // 11: gridelta.v1.ConsoleService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
+	45, // 12: gridelta.v1.ConsoleService.RenameGroup:input_type -> gridelta.v1.RenameGroupRequest
+	47, // 13: gridelta.v1.ConsoleService.DeleteGroup:input_type -> gridelta.v1.DeleteGroupRequest
+	49, // 14: gridelta.v1.ConsoleService.MoveEndpoint:input_type -> gridelta.v1.MoveEndpointRequest
+	51, // 15: gridelta.v1.ConsoleService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
+	54, // 16: gridelta.v1.ConsoleService.ListEnrollTokens:input_type -> gridelta.v1.ListEnrollTokensRequest
+	56, // 17: gridelta.v1.ConsoleService.RevokeEnrollToken:input_type -> gridelta.v1.RevokeEnrollTokenRequest
+	5,  // 18: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 19: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 20: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 21: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 22: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 23: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	29, // 24: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
+	31, // 25: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
+	19, // 26: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 27: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 28: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	34, // 29: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
+	36, // 30: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
+	37, // 31: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
+	39, // 32: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
+	27, // 33: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
+	28, // 34: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
+	2,  // 35: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 36: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	43, // 37: gridelta.v1.ConsoleService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
+	41, // 38: gridelta.v1.ConsoleService.CreateGroup:output_type -> gridelta.v1.Group
+	46, // 39: gridelta.v1.ConsoleService.RenameGroup:output_type -> gridelta.v1.RenameGroupResponse
+	48, // 40: gridelta.v1.ConsoleService.DeleteGroup:output_type -> gridelta.v1.DeleteGroupResponse
+	50, // 41: gridelta.v1.ConsoleService.MoveEndpoint:output_type -> gridelta.v1.MoveEndpointResponse
+	52, // 42: gridelta.v1.ConsoleService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
+	55, // 43: gridelta.v1.ConsoleService.ListEnrollTokens:output_type -> gridelta.v1.ListEnrollTokensResponse
+	57, // 44: gridelta.v1.ConsoleService.RevokeEnrollToken:output_type -> gridelta.v1.RevokeEnrollTokenResponse
+	6,  // 45: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 46: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 47: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 48: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 49: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 50: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	30, // 51: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
+	32, // 52: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
+	20, // 53: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 54: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 55: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	35, // 56: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
+	33, // 57: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
+	38, // 58: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
+	40, // 59: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
+	26, // 60: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
+	26, // 61: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
+	35, // [35:62] is the sub-list for method output_type
+	8,  // [8:35] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }
@@ -2353,7 +3290,7 @@ func file_gridelta_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   41,
+			NumMessages:   58,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -34,6 +34,10 @@ const (
 	AdminServiceRevokeEndpointProcedure = "/gridelta.v1.AdminService/RevokeEndpoint"
 	// AdminServiceCreateUserProcedure is the procedure name of the AdminService's CreateUser RPC.
 	AdminServiceCreateUserProcedure = "/gridelta.v1.AdminService/CreateUser"
+	// AdminServiceListGroupsProcedure is the procedure name of the AdminService's ListGroups RPC.
+	AdminServiceListGroupsProcedure = "/gridelta.v1.AdminService/ListGroups"
+	// AdminServiceCreateGroupProcedure is the procedure name of the AdminService's CreateGroup RPC.
+	AdminServiceCreateGroupProcedure = "/gridelta.v1.AdminService/CreateGroup"
 	// AdminServiceStoreOAuthTokenProcedure is the procedure name of the AdminService's StoreOAuthToken
 	// RPC.
 	AdminServiceStoreOAuthTokenProcedure = "/gridelta.v1.AdminService/StoreOAuthToken"
@@ -73,6 +77,20 @@ var (
 			Procedure:  AdminServiceCreateUserProcedure,
 		}
 	})
+	adminServiceListGroupsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_admin_proto.Services().ByName("AdminService").Methods().ByName("ListGroups"),
+			Procedure:  AdminServiceListGroupsProcedure,
+		}
+	})
+	adminServiceCreateGroupSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_admin_proto.Services().ByName("AdminService").Methods().ByName("CreateGroup"),
+			Procedure:  AdminServiceCreateGroupProcedure,
+		}
+	})
 	adminServiceStoreOAuthTokenSpec = sync.OnceValue(func() connect.Spec {
 		return connect.Spec{
 			StreamType: connect.StreamTypeUnary,
@@ -102,6 +120,8 @@ type AdminServiceClient interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	RevokeEndpoint(context.Context, *v1.RevokeEndpointRequest) (*v1.RevokeEndpointResponse, error)
 	CreateUser(context.Context, *v1.CreateUserRequest) (*v1.CreateUserResponse, error)
+	ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error)
+	CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error)
 	// OpenAI 로그인: CLI 가 받은 OAuth 자격 증명을 서버 DB 에 암호화해 저장한다
 	StoreOAuthToken(context.Context, *v1.StoreOAuthTokenRequest) (*v1.StoreOAuthTokenResponse, error)
 	DeleteOAuthToken(context.Context, *v1.DeleteOAuthTokenRequest) (*v1.DeleteOAuthTokenResponse, error)
@@ -120,6 +140,8 @@ type AdminServiceHandler interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	RevokeEndpoint(context.Context, *v1.RevokeEndpointRequest) (*v1.RevokeEndpointResponse, error)
 	CreateUser(context.Context, *v1.CreateUserRequest) (*v1.CreateUserResponse, error)
+	ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error)
+	CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error)
 	// OpenAI 로그인: CLI 가 받은 OAuth 자격 증명을 서버 DB 에 암호화해 저장한다
 	StoreOAuthToken(context.Context, *v1.StoreOAuthTokenRequest) (*v1.StoreOAuthTokenResponse, error)
 	DeleteOAuthToken(context.Context, *v1.DeleteOAuthTokenRequest) (*v1.DeleteOAuthTokenResponse, error)
@@ -135,6 +157,8 @@ func RegisterAdminServiceHandler(server *connect.Server, svc AdminServiceHandler
 		connect.Method{Spec: adminServiceListEndpointsSpec(), Handler: adapter.listEndpoints},
 		connect.Method{Spec: adminServiceRevokeEndpointSpec(), Handler: adapter.revokeEndpoint},
 		connect.Method{Spec: adminServiceCreateUserSpec(), Handler: adapter.createUser},
+		connect.Method{Spec: adminServiceListGroupsSpec(), Handler: adapter.listGroups},
+		connect.Method{Spec: adminServiceCreateGroupSpec(), Handler: adapter.createGroup},
 		connect.Method{Spec: adminServiceStoreOAuthTokenSpec(), Handler: adapter.storeOAuthToken},
 		connect.Method{Spec: adminServiceDeleteOAuthTokenSpec(), Handler: adapter.deleteOAuthToken},
 		connect.Method{Spec: adminServiceGetAuthStatusSpec(), Handler: adapter.getAuthStatus},
@@ -158,6 +182,14 @@ func (UnimplementedAdminServiceHandler) RevokeEndpoint(context.Context, *v1.Revo
 
 func (UnimplementedAdminServiceHandler) CreateUser(context.Context, *v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.AdminService.CreateUser is not implemented")
+}
+
+func (UnimplementedAdminServiceHandler) ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.AdminService.ListGroups is not implemented")
+}
+
+func (UnimplementedAdminServiceHandler) CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.AdminService.CreateGroup is not implemented")
 }
 
 func (UnimplementedAdminServiceHandler) StoreOAuthToken(context.Context, *v1.StoreOAuthTokenRequest) (*v1.StoreOAuthTokenResponse, error) {
@@ -203,6 +235,22 @@ func (c *adminServiceClient) RevokeEndpoint(ctx context.Context, req *v1.RevokeE
 func (c *adminServiceClient) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
 	var res v1.CreateUserResponse
 	if err := c.client.CallUnary(ctx, adminServiceCreateUserSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *adminServiceClient) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error) {
+	var res v1.ListGroupsResponse
+	if err := c.client.CallUnary(ctx, adminServiceListGroupsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *adminServiceClient) CreateGroup(ctx context.Context, req *v1.CreateGroupRequest) (*v1.Group, error) {
+	var res v1.Group
+	if err := c.client.CallUnary(ctx, adminServiceCreateGroupSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -276,6 +324,30 @@ func (h adminServiceHandler) createUser(ctx context.Context, _ connect.Spec, str
 		return err
 	}
 	res, err := h.svc.CreateUser(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h adminServiceHandler) listGroups(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListGroupsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListGroups(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h adminServiceHandler) createGroup(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CreateGroupRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CreateGroup(ctx, &req)
 	if err != nil {
 		return err
 	}

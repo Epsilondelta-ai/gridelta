@@ -87,11 +87,10 @@ export function gatewayRoutes(hub: AgentHub, store: Store) {
       },
 
       async enroll(req) {
-        if (!(await store.consumeEnrollToken(req.enrollToken))) {
-          throw new ConnectError('invalid, used or expired enroll token', Code.PermissionDenied);
-        }
-        const { id, credential } = await store.enrollEndpoint(req);
-        console.info(`[gateway] enrolled ${id} (${req.os}/${req.arch}, ${req.hostname})`);
+        const groupId = await store.consumeEnrollToken(req.enrollToken);
+        if (!groupId) throw new ConnectError('invalid, used or expired enroll token', Code.PermissionDenied);
+        const { id, credential } = await store.enrollEndpoint(req, groupId);
+        console.info(`[gateway] enrolled ${id} (${req.os}/${req.arch}, ${req.hostname}) into group ${groupId}`);
         return { agentId: id, credential };
       },
     });

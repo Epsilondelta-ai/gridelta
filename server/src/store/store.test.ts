@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { openDb } from './db.ts';
 import { users } from './schema.ts';
-import { Store, UsernameTakenError } from './store.ts';
+import { NameTakenError, Store, UsernameTakenError } from './store.ts';
 
 let store: Store;
 
@@ -13,20 +13,59 @@ beforeEach(() => {
 });
 
 describe('enroll tokens', () => {
-  it('can be used exactly once', async () => {
+  it('can be used exactly once by default and returns the target group', async () => {
     const { token } = await store.createEnrollToken(60_000);
-    expect(await store.consumeEnrollToken(token)).toBe(true);
-    expect(await store.consumeEnrollToken(token)).toBe(false);
+    expect(await store.consumeEnrollToken(token)).toBe('default');
+    expect(await store.consumeEnrollToken(token)).toBeUndefined();
   });
 
-  it('cannot be used after expiry', async () => {
+  it('cannot be used after expiry or revocation', async () => {
     const now = Date.now();
-    const { token } = await store.createEnrollToken(1_000, now);
-    expect(await store.consumeEnrollToken(token, now + 2_000)).toBe(false);
+    const { token } = await store.createEnrollToken(1_000, {}, now);
+    expect(await store.consumeEnrollToken(token, now + 2_000)).toBeUndefined();
+    const second = await store.createEnrollToken(60_000);
+    expect(await store.revokeEnrollToken(second.tokenHash)).toBe(true);
+    expect(await store.consumeEnrollToken(second.token)).toBeUndefined();
+  });
+
+  it('allows max_uses PCs, or unlimited with 0, and is listed until exhausted', async () => {
+    const group = await store.createGroup('dev');
+    const twice = await store.createEnrollToken(60_000, { groupId: group.id, maxUses: 2 });
+    expect(await store.consumeEnrollToken(twice.token)).toBe(group.id);
+    expect((await store.listEnrollTokens(group.id)).map((t) => t.uses)).toEqual([1]);
+    expect(await store.consumeEnrollToken(twice.token)).toBe(group.id);
+    expect(await store.consumeEnrollToken(twice.token)).toBeUndefined();
+    expect(await store.listEnrollTokens(group.id)).toEqual([]);
+
+    const unlimited = await store.createEnrollToken(60_000, { maxUses: 0 });
+    for (let i = 0; i < 5; i++) expect(await store.consumeEnrollToken(unlimited.token)).toBe('default');
   });
 
   it('rejects unknown tokens', async () => {
-    expect(await store.consumeEnrollToken('nope')).toBe(false);
+    expect(await store.consumeEnrollToken('nope')).toBeUndefined();
+  });
+});
+
+describe('groups', () => {
+  it('moves PCs back to the default group and revokes tokens when deleted', async () => {
+    const g = await store.createGroup('ops');
+    await expect(store.createGroup('ops')).rejects.toBeInstanceOf(NameTakenError);
+    const { id } = await store.enrollEndpoint({ hostname: 'h', os: 'linux', arch: 'arm64' }, g.id);
+    const { token } = await store.createEnrollToken(60_000, { groupId: g.id, maxUses: 0 });
+    expect((await store.listGroups()).find((x) => x.id === g.id)?.endpointCount).toBe(1);
+
+    expect(await store.deleteGroup(g.id)).toBe(true);
+    expect((await store.getEndpoint(id))?.groupId).toBe('default');
+    expect(await store.consumeEnrollToken(token)).toBeUndefined();
+    await expect(store.deleteGroup('default')).rejects.toThrow();
+  });
+
+  it('finds groups by id or name and renames them', async () => {
+    const g = await store.createGroup('a');
+    expect((await store.findGroup('a'))?.id).toBe(g.id);
+    expect(await store.renameGroup(g.id, 'b')).toBe(true);
+    expect((await store.findGroup(g.id))?.name).toBe('b');
+    expect((await store.findGroup('기본'))?.id).toBe('default');
   });
 });
 

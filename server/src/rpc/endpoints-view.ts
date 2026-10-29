@@ -18,6 +18,7 @@ export function endpointsView(hub: AgentHub, store: Store) {
       lastSeenMs: BigInt(row.lastSeen?.getTime() ?? 0),
       approvalPolicy: row.approvalPolicy,
       displayName: row.displayName,
+      groupId: row.groupId,
     });
 
   return {

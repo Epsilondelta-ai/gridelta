@@ -45,7 +45,7 @@ wait_for() { # wait_for <설명> <초> <명령...>  명령이 "true" 를 출력�
 }
 healthy() { [[ "$(curl -sf "$BASE/healthz" 2>/dev/null)" == ok ]] && echo true || echo false; }
 cli() { dc exec -T server gridelta "$@"; }
-enroll_cmd() { cli enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*'; }
+enroll_cmd() { cli enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*' | head -1; }
 
 echo "== TLS 인증서 생성 (자체 서명)"
 mkdir -p .e2e/certs
@@ -108,6 +108,24 @@ out=$(dc exec -T agent-alpine sh -c "timeout 5 gridelta-agent run --config /tmp/
 [[ "$out" == *"invalid or revoked agent credential"* ]] || fail "forged credential: $out"
 pass "위조한 자격 증명으로는 연결 거부"
 
+echo "== 그룹 등록"
+cli groups create 개발 >/dev/null
+if out=$(cli groups create 개발 2>&1); then fail "duplicate group accepted"; fi
+DEV=$(cli groups list | awk '$2 == "개발" {print $1}')
+gout=$(cli enroll-token create --group 개발 --uses 2)
+[[ "$gout" == *"sudo sh -c"*"gridelta-agent install && gridelta-agent start"* && "$gout" == *"gridelta-agent.exe install"* ]] ||
+  fail "one-shot install commands missing: $gout"
+gcmd=$(grep -o 'gridelta-agent enroll .*' <<<"$gout" | head -1)
+for n in 1 2; do
+  out=$(dc exec -T agent-alpine sh -c "${gcmd} --config /tmp/group-$n.yaml")
+  [[ "$out" == enrolled* ]] || fail "group enroll $n: $out"
+done
+if out=$(dc exec -T agent-alpine sh -c "${gcmd} --config /tmp/group-3.yaml" 2>&1); then fail "third use of a 2-use token accepted"; fi
+in_dev=$(cli endpoints list --json | jget "d.filter(e => e.groupId === '$DEV').map(e => e.id).join(' ')")
+[[ $(wc -w <<<"$in_dev") -eq 2 ]] || fail "PCs in group 개발: $in_dev"
+for id in $in_dev; do cli endpoints revoke "$id" >/dev/null; done
+pass "그룹 토큰(2회)으로 PC 2대가 그 그룹에 등록, 3번째는 거부, OS 별 한 번에 설치 명령 출력"
+
 echo "== M1: TLS 위 왕복 exec"
 out=$(exec_on "$DEBIAN" "uname -a")
 [[ "$(jget 'd.exitCode' <<<"$out")" == 0 && "$(jget 'd.stdout' <<<"$out")" == Linux* ]] || fail "uname -a: $out"
@@ -150,6 +168,9 @@ dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=a
   console.log(rows.includes('open') && rows.includes('exit'));
 ")" == true ]] || fail "PTY open/exit not in audit_log"
 pass "PTY 세션 시작·종료가 감사 로그에 기록"
+
+dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" browser \
+  sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node group-test.mjs' || fail "group UI e2e"
 
 echo "== M5: AI 컨트롤 (정해진 응답 모델 + 브라우저)"
 exec_on "$DEBIAN" "mkdir -p /tmp/gridelta-ai-test /tmp/gridelta-ai-test2 && touch /tmp/gridelta-ai-test/keep" >/dev/null

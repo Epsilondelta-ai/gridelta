@@ -1,9 +1,17 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+/** PC 그룹. 'default' 는 처음부터 있는 "기본" 그룹이며 지울 수 없다 */
+export const groups = sqliteTable('groups', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+});
+
 export const endpoints = sqliteTable('endpoints', {
   id: text('id').primaryKey(),
   hostname: text('hostname').notNull(),
   displayName: text('display_name').notNull().default(''),
+  groupId: text('group_id').notNull().default('default'),
   os: text('os').notNull(),
   arch: text('arch').notNull(),
   homeDir: text('home_dir').notNull().default(''),
@@ -19,9 +27,16 @@ export const endpoints = sqliteTable('endpoints', {
 
 export const enrollTokens = sqliteTable('enroll_tokens', {
   tokenHash: text('token_hash').primaryKey(),
+  /** 이 토큰으로 등록한 PC 가 들어갈 그룹 */
+  groupId: text('group_id').notNull().default('default'),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
   expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+  /** 마지막으로 쓴 시각 */
   usedAt: integer('used_at', { mode: 'timestamp_ms' }),
+  /** 0 이면 만료 전까지 무제한 */
+  maxUses: integer('max_uses').notNull().default(1),
+  uses: integer('uses').notNull().default(0),
+  revokedAt: integer('revoked_at', { mode: 'timestamp_ms' }),
 });
 
 export const users = sqliteTable('users', {

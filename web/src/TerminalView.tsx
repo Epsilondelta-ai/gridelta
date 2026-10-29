@@ -105,10 +105,12 @@ export function TerminalView({ sessionId, active, onStatus, onSession }: Props) 
       return;
     }
     session?.resume();
-    // 보이게 된 뒤에 크기를 맞추고 포커스를 준다
+    // 보이게 된 뒤에 크기를 맞추고 포커스를 준다. 다른 입력칸(탭 이름 편집 등)에 포커스가 있으면 뺏지 않는다
     requestAnimationFrame(() => {
       fitRef.current?.fit();
-      termRef.current?.focus();
+      const el = document.activeElement;
+      const typing = el instanceof HTMLElement && el.matches('input, select, textarea:not(.xterm-helper-textarea)');
+      if (!typing) termRef.current?.focus();
     });
   }, [active, sessionId]);
 

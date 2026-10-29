@@ -21,118 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CreateEnrollTokenRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TtlSeconds    uint32                 `protobuf:"varint,1,opt,name=ttl_seconds,json=ttlSeconds,proto3" json:"ttl_seconds,omitempty"` // 0 이면 3600
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateEnrollTokenRequest) Reset() {
-	*x = CreateEnrollTokenRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateEnrollTokenRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateEnrollTokenRequest) ProtoMessage() {}
-
-func (x *CreateEnrollTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateEnrollTokenRequest.ProtoReflect.Descriptor instead.
-func (*CreateEnrollTokenRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *CreateEnrollTokenRequest) GetTtlSeconds() uint32 {
-	if x != nil {
-		return x.TtlSeconds
-	}
-	return 0
-}
-
-type CreateEnrollTokenResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	ExpiresAtMs   int64                  `protobuf:"varint,2,opt,name=expires_at_ms,json=expiresAtMs,proto3" json:"expires_at_ms,omitempty"`
-	ServerUrl     string                 `protobuf:"bytes,3,opt,name=server_url,json=serverUrl,proto3" json:"server_url,omitempty"`             // 에이전트가 접속할 게이트웨이 주소
-	CaFingerprint string                 `protobuf:"bytes,4,opt,name=ca_fingerprint,json=caFingerprint,proto3" json:"ca_fingerprint,omitempty"` // 자체 서명 인증서일 때만. SHA-256 hex
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateEnrollTokenResponse) Reset() {
-	*x = CreateEnrollTokenResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateEnrollTokenResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateEnrollTokenResponse) ProtoMessage() {}
-
-func (x *CreateEnrollTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateEnrollTokenResponse.ProtoReflect.Descriptor instead.
-func (*CreateEnrollTokenResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreateEnrollTokenResponse) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
-func (x *CreateEnrollTokenResponse) GetExpiresAtMs() int64 {
-	if x != nil {
-		return x.ExpiresAtMs
-	}
-	return 0
-}
-
-func (x *CreateEnrollTokenResponse) GetServerUrl() string {
-	if x != nil {
-		return x.ServerUrl
-	}
-	return ""
-}
-
-func (x *CreateEnrollTokenResponse) GetCaFingerprint() string {
-	if x != nil {
-		return x.CaFingerprint
-	}
-	return ""
-}
-
 type RevokeEndpointRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
@@ -142,7 +30,7 @@ type RevokeEndpointRequest struct {
 
 func (x *RevokeEndpointRequest) Reset() {
 	*x = RevokeEndpointRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[2]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -154,7 +42,7 @@ func (x *RevokeEndpointRequest) String() string {
 func (*RevokeEndpointRequest) ProtoMessage() {}
 
 func (x *RevokeEndpointRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[2]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -167,7 +55,7 @@ func (x *RevokeEndpointRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeEndpointRequest.ProtoReflect.Descriptor instead.
 func (*RevokeEndpointRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{2}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *RevokeEndpointRequest) GetEndpointId() string {
@@ -185,7 +73,7 @@ type RevokeEndpointResponse struct {
 
 func (x *RevokeEndpointResponse) Reset() {
 	*x = RevokeEndpointResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[3]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -197,7 +85,7 @@ func (x *RevokeEndpointResponse) String() string {
 func (*RevokeEndpointResponse) ProtoMessage() {}
 
 func (x *RevokeEndpointResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[3]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -210,7 +98,7 @@ func (x *RevokeEndpointResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RevokeEndpointResponse.ProtoReflect.Descriptor instead.
 func (*RevokeEndpointResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{3}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{1}
 }
 
 type CreateUserRequest struct {
@@ -223,7 +111,7 @@ type CreateUserRequest struct {
 
 func (x *CreateUserRequest) Reset() {
 	*x = CreateUserRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[4]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -235,7 +123,7 @@ func (x *CreateUserRequest) String() string {
 func (*CreateUserRequest) ProtoMessage() {}
 
 func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[4]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -248,7 +136,7 @@ func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
 func (*CreateUserRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{4}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateUserRequest) GetUsername() string {
@@ -274,7 +162,7 @@ type CreateUserResponse struct {
 
 func (x *CreateUserResponse) Reset() {
 	*x = CreateUserResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[5]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -286,7 +174,7 @@ func (x *CreateUserResponse) String() string {
 func (*CreateUserResponse) ProtoMessage() {}
 
 func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[5]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -299,7 +187,7 @@ func (x *CreateUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserResponse.ProtoReflect.Descriptor instead.
 func (*CreateUserResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{5}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateUserResponse) GetUserId() string {
@@ -319,7 +207,7 @@ type StoreOAuthTokenRequest struct {
 
 func (x *StoreOAuthTokenRequest) Reset() {
 	*x = StoreOAuthTokenRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[6]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -331,7 +219,7 @@ func (x *StoreOAuthTokenRequest) String() string {
 func (*StoreOAuthTokenRequest) ProtoMessage() {}
 
 func (x *StoreOAuthTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[6]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -344,7 +232,7 @@ func (x *StoreOAuthTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoreOAuthTokenRequest.ProtoReflect.Descriptor instead.
 func (*StoreOAuthTokenRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{6}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StoreOAuthTokenRequest) GetProvider() string {
@@ -369,7 +257,7 @@ type StoreOAuthTokenResponse struct {
 
 func (x *StoreOAuthTokenResponse) Reset() {
 	*x = StoreOAuthTokenResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[7]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -381,7 +269,7 @@ func (x *StoreOAuthTokenResponse) String() string {
 func (*StoreOAuthTokenResponse) ProtoMessage() {}
 
 func (x *StoreOAuthTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[7]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -394,7 +282,7 @@ func (x *StoreOAuthTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoreOAuthTokenResponse.ProtoReflect.Descriptor instead.
 func (*StoreOAuthTokenResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{7}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{5}
 }
 
 type DeleteOAuthTokenRequest struct {
@@ -406,7 +294,7 @@ type DeleteOAuthTokenRequest struct {
 
 func (x *DeleteOAuthTokenRequest) Reset() {
 	*x = DeleteOAuthTokenRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[8]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -418,7 +306,7 @@ func (x *DeleteOAuthTokenRequest) String() string {
 func (*DeleteOAuthTokenRequest) ProtoMessage() {}
 
 func (x *DeleteOAuthTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[8]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -431,7 +319,7 @@ func (x *DeleteOAuthTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteOAuthTokenRequest.ProtoReflect.Descriptor instead.
 func (*DeleteOAuthTokenRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{8}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeleteOAuthTokenRequest) GetProvider() string {
@@ -449,7 +337,7 @@ type DeleteOAuthTokenResponse struct {
 
 func (x *DeleteOAuthTokenResponse) Reset() {
 	*x = DeleteOAuthTokenResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[9]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -461,7 +349,7 @@ func (x *DeleteOAuthTokenResponse) String() string {
 func (*DeleteOAuthTokenResponse) ProtoMessage() {}
 
 func (x *DeleteOAuthTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[9]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -474,7 +362,7 @@ func (x *DeleteOAuthTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteOAuthTokenResponse.ProtoReflect.Descriptor instead.
 func (*DeleteOAuthTokenResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{9}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{7}
 }
 
 type GetAuthStatusRequest struct {
@@ -485,7 +373,7 @@ type GetAuthStatusRequest struct {
 
 func (x *GetAuthStatusRequest) Reset() {
 	*x = GetAuthStatusRequest{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[10]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -497,7 +385,7 @@ func (x *GetAuthStatusRequest) String() string {
 func (*GetAuthStatusRequest) ProtoMessage() {}
 
 func (x *GetAuthStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[10]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -510,7 +398,7 @@ func (x *GetAuthStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAuthStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetAuthStatusRequest) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{10}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{8}
 }
 
 type GetAuthStatusResponse struct {
@@ -526,7 +414,7 @@ type GetAuthStatusResponse struct {
 
 func (x *GetAuthStatusResponse) Reset() {
 	*x = GetAuthStatusResponse{}
-	mi := &file_gridelta_v1_admin_proto_msgTypes[11]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -538,7 +426,7 @@ func (x *GetAuthStatusResponse) String() string {
 func (*GetAuthStatusResponse) ProtoMessage() {}
 
 func (x *GetAuthStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_gridelta_v1_admin_proto_msgTypes[11]
+	mi := &file_gridelta_v1_admin_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -551,7 +439,7 @@ func (x *GetAuthStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAuthStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetAuthStatusResponse) Descriptor() ([]byte, []int) {
-	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{11}
+	return file_gridelta_v1_admin_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetAuthStatusResponse) GetLoggedIn() bool {
@@ -593,16 +481,7 @@ var File_gridelta_v1_admin_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x17gridelta/v1/admin.proto\x12\vgridelta.v1\x1a\x19gridelta/v1/console.proto\";\n" +
-	"\x18CreateEnrollTokenRequest\x12\x1f\n" +
-	"\vttl_seconds\x18\x01 \x01(\rR\n" +
-	"ttlSeconds\"\x9b\x01\n" +
-	"\x19CreateEnrollTokenResponse\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\x12\"\n" +
-	"\rexpires_at_ms\x18\x02 \x01(\x03R\vexpiresAtMs\x12\x1d\n" +
-	"\n" +
-	"server_url\x18\x03 \x01(\tR\tserverUrl\x12%\n" +
-	"\x0eca_fingerprint\x18\x04 \x01(\tR\rcaFingerprint\"8\n" +
+	"\x17gridelta/v1/admin.proto\x12\vgridelta.v1\x1a\x19gridelta/v1/console.proto\"8\n" +
 	"\x15RevokeEndpointRequest\x12\x1f\n" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\"\x18\n" +
@@ -625,13 +504,16 @@ const file_gridelta_v1_admin_proto_rawDesc = "" +
 	"\bprovider\x18\x02 \x01(\tR\bprovider\x12\x18\n" +
 	"\aaccount\x18\x03 \x01(\tR\aaccount\x12\"\n" +
 	"\rexpires_at_ms\x18\x04 \x01(\x03R\vexpiresAtMs\x12\x14\n" +
-	"\x05model\x18\x05 \x01(\tR\x05model2\x8b\x05\n" +
+	"\x05model\x18\x05 \x01(\tR\x05model2\x9e\x06\n" +
 	"\fAdminService\x12b\n" +
 	"\x11CreateEnrollToken\x12%.gridelta.v1.CreateEnrollTokenRequest\x1a&.gridelta.v1.CreateEnrollTokenResponse\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12Y\n" +
 	"\x0eRevokeEndpoint\x12\".gridelta.v1.RevokeEndpointRequest\x1a#.gridelta.v1.RevokeEndpointResponse\x12M\n" +
 	"\n" +
-	"CreateUser\x12\x1e.gridelta.v1.CreateUserRequest\x1a\x1f.gridelta.v1.CreateUserResponse\x12\\\n" +
+	"CreateUser\x12\x1e.gridelta.v1.CreateUserRequest\x1a\x1f.gridelta.v1.CreateUserResponse\x12M\n" +
+	"\n" +
+	"ListGroups\x12\x1e.gridelta.v1.ListGroupsRequest\x1a\x1f.gridelta.v1.ListGroupsResponse\x12B\n" +
+	"\vCreateGroup\x12\x1f.gridelta.v1.CreateGroupRequest\x1a\x12.gridelta.v1.Group\x12\\\n" +
 	"\x0fStoreOAuthToken\x12#.gridelta.v1.StoreOAuthTokenRequest\x1a$.gridelta.v1.StoreOAuthTokenResponse\x12_\n" +
 	"\x10DeleteOAuthToken\x12$.gridelta.v1.DeleteOAuthTokenRequest\x1a%.gridelta.v1.DeleteOAuthTokenResponse\x12V\n" +
 	"\rGetAuthStatus\x12!.gridelta.v1.GetAuthStatusRequest\x1a\".gridelta.v1.GetAuthStatusResponseBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
@@ -648,40 +530,48 @@ func file_gridelta_v1_admin_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_admin_proto_rawDescData
 }
 
-var file_gridelta_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_gridelta_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_gridelta_v1_admin_proto_goTypes = []any{
-	(*CreateEnrollTokenRequest)(nil),  // 0: gridelta.v1.CreateEnrollTokenRequest
-	(*CreateEnrollTokenResponse)(nil), // 1: gridelta.v1.CreateEnrollTokenResponse
-	(*RevokeEndpointRequest)(nil),     // 2: gridelta.v1.RevokeEndpointRequest
-	(*RevokeEndpointResponse)(nil),    // 3: gridelta.v1.RevokeEndpointResponse
-	(*CreateUserRequest)(nil),         // 4: gridelta.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),        // 5: gridelta.v1.CreateUserResponse
-	(*StoreOAuthTokenRequest)(nil),    // 6: gridelta.v1.StoreOAuthTokenRequest
-	(*StoreOAuthTokenResponse)(nil),   // 7: gridelta.v1.StoreOAuthTokenResponse
-	(*DeleteOAuthTokenRequest)(nil),   // 8: gridelta.v1.DeleteOAuthTokenRequest
-	(*DeleteOAuthTokenResponse)(nil),  // 9: gridelta.v1.DeleteOAuthTokenResponse
-	(*GetAuthStatusRequest)(nil),      // 10: gridelta.v1.GetAuthStatusRequest
-	(*GetAuthStatusResponse)(nil),     // 11: gridelta.v1.GetAuthStatusResponse
-	(*ListEndpointsRequest)(nil),      // 12: gridelta.v1.ListEndpointsRequest
-	(*ListEndpointsResponse)(nil),     // 13: gridelta.v1.ListEndpointsResponse
+	(*RevokeEndpointRequest)(nil),     // 0: gridelta.v1.RevokeEndpointRequest
+	(*RevokeEndpointResponse)(nil),    // 1: gridelta.v1.RevokeEndpointResponse
+	(*CreateUserRequest)(nil),         // 2: gridelta.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),        // 3: gridelta.v1.CreateUserResponse
+	(*StoreOAuthTokenRequest)(nil),    // 4: gridelta.v1.StoreOAuthTokenRequest
+	(*StoreOAuthTokenResponse)(nil),   // 5: gridelta.v1.StoreOAuthTokenResponse
+	(*DeleteOAuthTokenRequest)(nil),   // 6: gridelta.v1.DeleteOAuthTokenRequest
+	(*DeleteOAuthTokenResponse)(nil),  // 7: gridelta.v1.DeleteOAuthTokenResponse
+	(*GetAuthStatusRequest)(nil),      // 8: gridelta.v1.GetAuthStatusRequest
+	(*GetAuthStatusResponse)(nil),     // 9: gridelta.v1.GetAuthStatusResponse
+	(*CreateEnrollTokenRequest)(nil),  // 10: gridelta.v1.CreateEnrollTokenRequest
+	(*ListEndpointsRequest)(nil),      // 11: gridelta.v1.ListEndpointsRequest
+	(*ListGroupsRequest)(nil),         // 12: gridelta.v1.ListGroupsRequest
+	(*CreateGroupRequest)(nil),        // 13: gridelta.v1.CreateGroupRequest
+	(*CreateEnrollTokenResponse)(nil), // 14: gridelta.v1.CreateEnrollTokenResponse
+	(*ListEndpointsResponse)(nil),     // 15: gridelta.v1.ListEndpointsResponse
+	(*ListGroupsResponse)(nil),        // 16: gridelta.v1.ListGroupsResponse
+	(*Group)(nil),                     // 17: gridelta.v1.Group
 }
 var file_gridelta_v1_admin_proto_depIdxs = []int32{
-	0,  // 0: gridelta.v1.AdminService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
-	12, // 1: gridelta.v1.AdminService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	2,  // 2: gridelta.v1.AdminService.RevokeEndpoint:input_type -> gridelta.v1.RevokeEndpointRequest
-	4,  // 3: gridelta.v1.AdminService.CreateUser:input_type -> gridelta.v1.CreateUserRequest
-	6,  // 4: gridelta.v1.AdminService.StoreOAuthToken:input_type -> gridelta.v1.StoreOAuthTokenRequest
-	8,  // 5: gridelta.v1.AdminService.DeleteOAuthToken:input_type -> gridelta.v1.DeleteOAuthTokenRequest
-	10, // 6: gridelta.v1.AdminService.GetAuthStatus:input_type -> gridelta.v1.GetAuthStatusRequest
-	1,  // 7: gridelta.v1.AdminService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
-	13, // 8: gridelta.v1.AdminService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	3,  // 9: gridelta.v1.AdminService.RevokeEndpoint:output_type -> gridelta.v1.RevokeEndpointResponse
-	5,  // 10: gridelta.v1.AdminService.CreateUser:output_type -> gridelta.v1.CreateUserResponse
-	7,  // 11: gridelta.v1.AdminService.StoreOAuthToken:output_type -> gridelta.v1.StoreOAuthTokenResponse
-	9,  // 12: gridelta.v1.AdminService.DeleteOAuthToken:output_type -> gridelta.v1.DeleteOAuthTokenResponse
-	11, // 13: gridelta.v1.AdminService.GetAuthStatus:output_type -> gridelta.v1.GetAuthStatusResponse
-	7,  // [7:14] is the sub-list for method output_type
-	0,  // [0:7] is the sub-list for method input_type
+	10, // 0: gridelta.v1.AdminService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
+	11, // 1: gridelta.v1.AdminService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	0,  // 2: gridelta.v1.AdminService.RevokeEndpoint:input_type -> gridelta.v1.RevokeEndpointRequest
+	2,  // 3: gridelta.v1.AdminService.CreateUser:input_type -> gridelta.v1.CreateUserRequest
+	12, // 4: gridelta.v1.AdminService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
+	13, // 5: gridelta.v1.AdminService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
+	4,  // 6: gridelta.v1.AdminService.StoreOAuthToken:input_type -> gridelta.v1.StoreOAuthTokenRequest
+	6,  // 7: gridelta.v1.AdminService.DeleteOAuthToken:input_type -> gridelta.v1.DeleteOAuthTokenRequest
+	8,  // 8: gridelta.v1.AdminService.GetAuthStatus:input_type -> gridelta.v1.GetAuthStatusRequest
+	14, // 9: gridelta.v1.AdminService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
+	15, // 10: gridelta.v1.AdminService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	1,  // 11: gridelta.v1.AdminService.RevokeEndpoint:output_type -> gridelta.v1.RevokeEndpointResponse
+	3,  // 12: gridelta.v1.AdminService.CreateUser:output_type -> gridelta.v1.CreateUserResponse
+	16, // 13: gridelta.v1.AdminService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
+	17, // 14: gridelta.v1.AdminService.CreateGroup:output_type -> gridelta.v1.Group
+	5,  // 15: gridelta.v1.AdminService.StoreOAuthToken:output_type -> gridelta.v1.StoreOAuthTokenResponse
+	7,  // 16: gridelta.v1.AdminService.DeleteOAuthToken:output_type -> gridelta.v1.DeleteOAuthTokenResponse
+	9,  // 17: gridelta.v1.AdminService.GetAuthStatus:output_type -> gridelta.v1.GetAuthStatusResponse
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -699,7 +589,7 @@ func file_gridelta_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_admin_proto_rawDesc), len(file_gridelta_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
