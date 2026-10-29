@@ -30,6 +30,26 @@ const (
 	// ConsoleServiceWatchEndpointsProcedure is the procedure name of the ConsoleService's
 	// WatchEndpoints RPC.
 	ConsoleServiceWatchEndpointsProcedure = "/gridelta.v1.ConsoleService/WatchEndpoints"
+	// ConsoleServiceListGroupsProcedure is the procedure name of the ConsoleService's ListGroups RPC.
+	ConsoleServiceListGroupsProcedure = "/gridelta.v1.ConsoleService/ListGroups"
+	// ConsoleServiceCreateGroupProcedure is the procedure name of the ConsoleService's CreateGroup RPC.
+	ConsoleServiceCreateGroupProcedure = "/gridelta.v1.ConsoleService/CreateGroup"
+	// ConsoleServiceRenameGroupProcedure is the procedure name of the ConsoleService's RenameGroup RPC.
+	ConsoleServiceRenameGroupProcedure = "/gridelta.v1.ConsoleService/RenameGroup"
+	// ConsoleServiceDeleteGroupProcedure is the procedure name of the ConsoleService's DeleteGroup RPC.
+	ConsoleServiceDeleteGroupProcedure = "/gridelta.v1.ConsoleService/DeleteGroup"
+	// ConsoleServiceMoveEndpointProcedure is the procedure name of the ConsoleService's MoveEndpoint
+	// RPC.
+	ConsoleServiceMoveEndpointProcedure = "/gridelta.v1.ConsoleService/MoveEndpoint"
+	// ConsoleServiceCreateEnrollTokenProcedure is the procedure name of the ConsoleService's
+	// CreateEnrollToken RPC.
+	ConsoleServiceCreateEnrollTokenProcedure = "/gridelta.v1.ConsoleService/CreateEnrollToken"
+	// ConsoleServiceListEnrollTokensProcedure is the procedure name of the ConsoleService's
+	// ListEnrollTokens RPC.
+	ConsoleServiceListEnrollTokensProcedure = "/gridelta.v1.ConsoleService/ListEnrollTokens"
+	// ConsoleServiceRevokeEnrollTokenProcedure is the procedure name of the ConsoleService's
+	// RevokeEnrollToken RPC.
+	ConsoleServiceRevokeEnrollTokenProcedure = "/gridelta.v1.ConsoleService/RevokeEnrollToken"
 	// ConsoleServiceOpenTerminalProcedure is the procedure name of the ConsoleService's OpenTerminal
 	// RPC.
 	ConsoleServiceOpenTerminalProcedure = "/gridelta.v1.ConsoleService/OpenTerminal"
@@ -95,6 +115,62 @@ var (
 			StreamType: connect.StreamTypeServer,
 			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("WatchEndpoints"),
 			Procedure:  ConsoleServiceWatchEndpointsProcedure,
+		}
+	})
+	consoleServiceListGroupsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListGroups"),
+			Procedure:  ConsoleServiceListGroupsProcedure,
+		}
+	})
+	consoleServiceCreateGroupSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("CreateGroup"),
+			Procedure:  ConsoleServiceCreateGroupProcedure,
+		}
+	})
+	consoleServiceRenameGroupSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RenameGroup"),
+			Procedure:  ConsoleServiceRenameGroupProcedure,
+		}
+	})
+	consoleServiceDeleteGroupSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("DeleteGroup"),
+			Procedure:  ConsoleServiceDeleteGroupProcedure,
+		}
+	})
+	consoleServiceMoveEndpointSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("MoveEndpoint"),
+			Procedure:  ConsoleServiceMoveEndpointProcedure,
+		}
+	})
+	consoleServiceCreateEnrollTokenSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("CreateEnrollToken"),
+			Procedure:  ConsoleServiceCreateEnrollTokenProcedure,
+		}
+	})
+	consoleServiceListEnrollTokensSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListEnrollTokens"),
+			Procedure:  ConsoleServiceListEnrollTokensProcedure,
+		}
+	})
+	consoleServiceRevokeEnrollTokenSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RevokeEnrollToken"),
+			Procedure:  ConsoleServiceRevokeEnrollTokenProcedure,
 		}
 	})
 	consoleServiceOpenTerminalSpec = sync.OnceValue(func() connect.Spec {
@@ -222,6 +298,15 @@ var (
 type ConsoleServiceClient interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	WatchEndpoints(context.Context, *v1.WatchEndpointsRequest) (ConsoleServiceWatchEndpointsClientStream, error)
+	// 그룹과 그룹에 PC 를 등록하는 토큰
+	ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error)
+	CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error)
+	RenameGroup(context.Context, *v1.RenameGroupRequest) (*v1.RenameGroupResponse, error)
+	DeleteGroup(context.Context, *v1.DeleteGroupRequest) (*v1.DeleteGroupResponse, error)
+	MoveEndpoint(context.Context, *v1.MoveEndpointRequest) (*v1.MoveEndpointResponse, error)
+	CreateEnrollToken(context.Context, *v1.CreateEnrollTokenRequest) (*v1.CreateEnrollTokenResponse, error)
+	ListEnrollTokens(context.Context, *v1.ListEnrollTokensRequest) (*v1.ListEnrollTokensResponse, error)
+	RevokeEnrollToken(context.Context, *v1.RevokeEnrollTokenRequest) (*v1.RevokeEnrollTokenResponse, error)
 	// 웹 터미널
 	OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error)
 	ListTerminals(context.Context, *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error)
@@ -318,6 +403,15 @@ func (s ConsoleServiceWatchApprovalsClientStream) Close() error {
 type ConsoleServiceHandler interface {
 	ListEndpoints(context.Context, *v1.ListEndpointsRequest) (*v1.ListEndpointsResponse, error)
 	WatchEndpoints(context.Context, *v1.WatchEndpointsRequest, ConsoleServiceWatchEndpointsServerStream) error
+	// 그룹과 그룹에 PC 를 등록하는 토큰
+	ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error)
+	CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error)
+	RenameGroup(context.Context, *v1.RenameGroupRequest) (*v1.RenameGroupResponse, error)
+	DeleteGroup(context.Context, *v1.DeleteGroupRequest) (*v1.DeleteGroupResponse, error)
+	MoveEndpoint(context.Context, *v1.MoveEndpointRequest) (*v1.MoveEndpointResponse, error)
+	CreateEnrollToken(context.Context, *v1.CreateEnrollTokenRequest) (*v1.CreateEnrollTokenResponse, error)
+	ListEnrollTokens(context.Context, *v1.ListEnrollTokensRequest) (*v1.ListEnrollTokensResponse, error)
+	RevokeEnrollToken(context.Context, *v1.RevokeEnrollTokenRequest) (*v1.RevokeEnrollTokenResponse, error)
 	// 웹 터미널
 	OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error)
 	ListTerminals(context.Context, *v1.ListTerminalsRequest) (*v1.ListTerminalsResponse, error)
@@ -348,6 +442,14 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 	server.Register(
 		connect.Method{Spec: consoleServiceListEndpointsSpec(), Handler: adapter.listEndpoints},
 		connect.Method{Spec: consoleServiceWatchEndpointsSpec(), Handler: adapter.watchEndpoints},
+		connect.Method{Spec: consoleServiceListGroupsSpec(), Handler: adapter.listGroups},
+		connect.Method{Spec: consoleServiceCreateGroupSpec(), Handler: adapter.createGroup},
+		connect.Method{Spec: consoleServiceRenameGroupSpec(), Handler: adapter.renameGroup},
+		connect.Method{Spec: consoleServiceDeleteGroupSpec(), Handler: adapter.deleteGroup},
+		connect.Method{Spec: consoleServiceMoveEndpointSpec(), Handler: adapter.moveEndpoint},
+		connect.Method{Spec: consoleServiceCreateEnrollTokenSpec(), Handler: adapter.createEnrollToken},
+		connect.Method{Spec: consoleServiceListEnrollTokensSpec(), Handler: adapter.listEnrollTokens},
+		connect.Method{Spec: consoleServiceRevokeEnrollTokenSpec(), Handler: adapter.revokeEnrollToken},
 		connect.Method{Spec: consoleServiceOpenTerminalSpec(), Handler: adapter.openTerminal},
 		connect.Method{Spec: consoleServiceListTerminalsSpec(), Handler: adapter.listTerminals},
 		connect.Method{Spec: consoleServiceAttachTerminalSpec(), Handler: adapter.attachTerminal},
@@ -425,6 +527,38 @@ func (UnimplementedConsoleServiceHandler) ListEndpoints(context.Context, *v1.Lis
 
 func (UnimplementedConsoleServiceHandler) WatchEndpoints(context.Context, *v1.WatchEndpointsRequest, ConsoleServiceWatchEndpointsServerStream) error {
 	return connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.WatchEndpoints is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListGroups(context.Context, *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListGroups is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) CreateGroup(context.Context, *v1.CreateGroupRequest) (*v1.Group, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CreateGroup is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) RenameGroup(context.Context, *v1.RenameGroupRequest) (*v1.RenameGroupResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RenameGroup is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) DeleteGroup(context.Context, *v1.DeleteGroupRequest) (*v1.DeleteGroupResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.DeleteGroup is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) MoveEndpoint(context.Context, *v1.MoveEndpointRequest) (*v1.MoveEndpointResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.MoveEndpoint is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) CreateEnrollToken(context.Context, *v1.CreateEnrollTokenRequest) (*v1.CreateEnrollTokenResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CreateEnrollToken is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListEnrollTokens(context.Context, *v1.ListEnrollTokensRequest) (*v1.ListEnrollTokensResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListEnrollTokens is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) RevokeEnrollToken(context.Context, *v1.RevokeEnrollTokenRequest) (*v1.RevokeEnrollTokenResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RevokeEnrollToken is not implemented")
 }
 
 func (UnimplementedConsoleServiceHandler) OpenTerminal(context.Context, *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error) {
@@ -513,6 +647,70 @@ func (c *consoleServiceClient) WatchEndpoints(ctx context.Context, req *v1.Watch
 		return ConsoleServiceWatchEndpointsClientStream{}, err
 	}
 	return ConsoleServiceWatchEndpointsClientStream{stream: stream}, nil
+}
+
+func (c *consoleServiceClient) ListGroups(ctx context.Context, req *v1.ListGroupsRequest) (*v1.ListGroupsResponse, error) {
+	var res v1.ListGroupsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListGroupsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) CreateGroup(ctx context.Context, req *v1.CreateGroupRequest) (*v1.Group, error) {
+	var res v1.Group
+	if err := c.client.CallUnary(ctx, consoleServiceCreateGroupSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RenameGroup(ctx context.Context, req *v1.RenameGroupRequest) (*v1.RenameGroupResponse, error) {
+	var res v1.RenameGroupResponse
+	if err := c.client.CallUnary(ctx, consoleServiceRenameGroupSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) DeleteGroup(ctx context.Context, req *v1.DeleteGroupRequest) (*v1.DeleteGroupResponse, error) {
+	var res v1.DeleteGroupResponse
+	if err := c.client.CallUnary(ctx, consoleServiceDeleteGroupSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) MoveEndpoint(ctx context.Context, req *v1.MoveEndpointRequest) (*v1.MoveEndpointResponse, error) {
+	var res v1.MoveEndpointResponse
+	if err := c.client.CallUnary(ctx, consoleServiceMoveEndpointSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) CreateEnrollToken(ctx context.Context, req *v1.CreateEnrollTokenRequest) (*v1.CreateEnrollTokenResponse, error) {
+	var res v1.CreateEnrollTokenResponse
+	if err := c.client.CallUnary(ctx, consoleServiceCreateEnrollTokenSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListEnrollTokens(ctx context.Context, req *v1.ListEnrollTokensRequest) (*v1.ListEnrollTokensResponse, error) {
+	var res v1.ListEnrollTokensResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListEnrollTokensSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RevokeEnrollToken(ctx context.Context, req *v1.RevokeEnrollTokenRequest) (*v1.RevokeEnrollTokenResponse, error) {
+	var res v1.RevokeEnrollTokenResponse
+	if err := c.client.CallUnary(ctx, consoleServiceRevokeEnrollTokenSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (c *consoleServiceClient) OpenTerminal(ctx context.Context, req *v1.OpenTerminalRequest) (*v1.OpenTerminalResponse, error) {
@@ -671,6 +869,102 @@ func (h consoleServiceHandler) watchEndpoints(ctx context.Context, _ connect.Spe
 		return err
 	}
 	return h.svc.WatchEndpoints(ctx, &req, ConsoleServiceWatchEndpointsServerStream{stream: stream})
+}
+
+func (h consoleServiceHandler) listGroups(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListGroupsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListGroups(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) createGroup(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CreateGroupRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CreateGroup(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) renameGroup(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RenameGroupRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RenameGroup(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) deleteGroup(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.DeleteGroupRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.DeleteGroup(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) moveEndpoint(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.MoveEndpointRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.MoveEndpoint(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) createEnrollToken(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CreateEnrollTokenRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CreateEnrollToken(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listEnrollTokens(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListEnrollTokensRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListEnrollTokens(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) revokeEnrollToken(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RevokeEnrollTokenRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RevokeEnrollToken(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
 }
 
 func (h consoleServiceHandler) openTerminal(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {

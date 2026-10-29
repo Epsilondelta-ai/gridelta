@@ -12,6 +12,7 @@ const utf8 = new TextDecoder();
 interface PcInfo {
   id: string;
   name: string;
+  group: string;
   hostname: string;
   os: string;
   arch: string;
@@ -21,11 +22,13 @@ interface PcInfo {
 }
 
 async function listPcs(): Promise<PcInfo[]> {
+  const groupNames = new Map((await store.listGroups()).map((g) => [g.id, g.name]));
   return (await store.listEndpoints())
     .filter((e) => !e.revokedAt)
     .map((e) => ({
       id: e.id,
       name: e.displayName || e.hostname,
+      group: groupNames.get(e.groupId) ?? e.groupId,
       hostname: e.hostname,
       os: e.os,
       arch: e.arch,
@@ -57,7 +60,7 @@ export function Assistant({ id }: AgentProps) {
   useTool(
     defineTool({
       name: 'list_pcs',
-      description: '관리 중인 PC 목록(id, 이름, OS, 온라인 여부, 셸, 홈 디렉터리)을 돌려준다.',
+      description: '관리 중인 PC 목록(id, 이름, 그룹, OS, 온라인 여부, 셸, 홈 디렉터리)을 돌려준다. "개발 그룹의 PC" 처럼 그룹으로 말하면 group 으로 고른다.',
       run: async () => JSON.stringify(await listPcs(), null, 2),
     }),
   );

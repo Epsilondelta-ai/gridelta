@@ -21,11 +21,17 @@ import { store } from './store/index.ts';
 // AgentGateway(HTTP/2)와 AdminService(유닉스 소켓)는 Flue 서버와 별도로 띄운다(설계 6.1).
 // Vite 개발 모드에서 app.ts 가 다시 로드돼도 한 번만 실행하도록 globalThis 로 막는다.
 const g = globalThis as { __grideltaServers?: unknown };
+
+// 등록 명령에 넣는 게이트웨이 주소와 (자체 서명이면) 인증서 지문. CLI(AdminService)와 웹(ConsoleService)이 함께 쓴다
+const enrollInfo = {
+  gatewayUrl: config.gatewayUrl,
+  caFingerprint: config.tlsSelfSigned && config.tlsCert ? certFingerprint(config.tlsCert) : undefined,
+};
+
 g.__grideltaServers ??= (() => {
   if (!config.webAuth) {
     console.warn('[auth] GRIDELTA_WEB_AUTH=off: 웹 로그인 없이 모든 기능이 열려 있습니다. 외부에 노출하지 마세요.');
   }
-  const caFingerprint = config.tlsSelfSigned && config.tlsCert ? certFingerprint(config.tlsCert) : undefined;
 
   hub.events.on('pty-exit', (pty) => {
     void store.audit({
@@ -48,8 +54,7 @@ g.__grideltaServers ??= (() => {
   return {
     gateway: startGateway(hub, store, { port: config.gatewayPort, tlsCert: config.tlsCert, tlsKey: config.tlsKey }),
     admin: startAdmin(hub, store, config.adminSocket, {
-      gatewayUrl: config.gatewayUrl,
-      caFingerprint,
+      ...enrollInfo,
       vault,
       aiModel: () => aiModels.current(),
     }),
@@ -60,7 +65,7 @@ const app = new Hono();
 
 app.get('/healthz', (c) => c.text('ok'));
 mountAuth(app, store);
-mountConsole(app, hub, store, approvals, aiModels);
+mountConsole(app, hub, store, approvals, aiModels, enrollInfo);
 
 // AI 대화: Flue 라우트. 통합 대화는 /agents/assistant/<세션>, PC 대화는 /agents/operator/<PC>:<세션>.
 // "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 두고,

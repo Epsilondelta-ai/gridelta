@@ -7,27 +7,19 @@ import "gridelta/v1/console.proto";
 option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
 
 // CLI 전용. 서버 호스트의 유닉스 소켓에서만 수신하며, 소켓 파일 권한(0600)이 곧 인증이다.
+// 등록 토큰·그룹 메시지는 console.proto 와 같은 것을 쓴다.
 service AdminService {
   rpc CreateEnrollToken(CreateEnrollTokenRequest) returns (CreateEnrollTokenResponse);
   rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
   rpc RevokeEndpoint(RevokeEndpointRequest) returns (RevokeEndpointResponse);
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse);
+  rpc CreateGroup(CreateGroupRequest) returns (Group);
 
   // OpenAI 로그인: CLI 가 받은 OAuth 자격 증명을 서버 DB 에 암호화해 저장한다
   rpc StoreOAuthToken(StoreOAuthTokenRequest) returns (StoreOAuthTokenResponse);
   rpc DeleteOAuthToken(DeleteOAuthTokenRequest) returns (DeleteOAuthTokenResponse);
   rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse);
-}
-
-message CreateEnrollTokenRequest {
-  uint32 ttl_seconds = 1; // 0 이면 3600
-}
-
-message CreateEnrollTokenResponse {
-  string token = 1;
-  int64 expires_at_ms = 2;
-  string server_url = 3; // 에이전트가 접속할 게이트웨이 주소
-  string ca_fingerprint = 4; // 자체 서명 인증서일 때만. SHA-256 hex
 }
 
 message RevokeEndpointRequest {

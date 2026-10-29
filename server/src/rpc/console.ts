@@ -44,10 +44,13 @@ import {
   APPROVAL_POLICIES,
   type ApprovalPolicy,
   type ApprovalRow,
+  DEFAULT_GROUP,
+  NameTakenError,
   type SessionUser,
   type Store,
 } from '../store/index.ts';
 import { endpointsView } from './endpoints-view.ts';
+import { createEnrollToken, type EnrollInfo } from './enroll.ts';
 
 export const RPC_PREFIX = '/rpc';
 const MAX_NAME_LENGTH = 64;
@@ -101,7 +104,7 @@ function toTerminal(pty: PtySession): Terminal {
   });
 }
 
-export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels) {
+export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels, enroll: EnrollInfo) {
   const view = endpointsView(hub, store);
   const names = new Map<string, string>(); // 승인 카드에 보여 줄 PC 이름 (WatchApprovals 시작 때 채움)
   const toApproval = (row: ApprovalRow): Approval =>
@@ -139,6 +142,72 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
           hub.events.off('offline', onChange);
           hub.events.off('changed', onChange);
         }
+      },
+
+      async listGroups() {
+        return { groups: (await store.listGroups()).map((g) => ({ id: g.id, name: g.name, endpointCount: g.endpointCount })) };
+      },
+
+      async createGroup(req) {
+        const name = cleanName(req.name);
+        if (!name) throw new ConnectError('name is required', Code.InvalidArgument);
+        try {
+          const g = await store.createGroup(name);
+          return { id: g.id, name: g.name, endpointCount: 0 };
+        } catch (err) {
+          if (err instanceof NameTakenError) throw new ConnectError(err.message, Code.AlreadyExists);
+          throw err;
+        }
+      },
+
+      async renameGroup(req) {
+        const name = cleanName(req.name);
+        if (!name) throw new ConnectError('name is required', Code.InvalidArgument);
+        try {
+          if (!(await store.renameGroup(req.id, name))) throw new ConnectError(`group ${req.id} not found`, Code.NotFound);
+        } catch (err) {
+          if (err instanceof NameTakenError) throw new ConnectError(err.message, Code.AlreadyExists);
+          throw err;
+        }
+        return {};
+      },
+
+      async deleteGroup(req) {
+        if (req.id === DEFAULT_GROUP) throw new ConnectError('the default group cannot be deleted', Code.FailedPrecondition);
+        const moved = (await view.list()).filter((e) => e.groupId === req.id).map((e) => e.id);
+        if (!(await store.deleteGroup(req.id))) throw new ConnectError(`group ${req.id} not found`, Code.NotFound);
+        for (const id of moved) hub.events.emit('changed', { id });
+        return {};
+      },
+
+      async moveEndpoint(req) {
+        if (!(await store.findGroup(req.groupId))) throw new ConnectError(`group ${req.groupId} not found`, Code.NotFound);
+        if (!(await store.moveEndpoint(req.endpointId, req.groupId))) {
+          throw new ConnectError(`endpoint ${req.endpointId} not found`, Code.NotFound);
+        }
+        hub.events.emit('changed', { id: req.endpointId });
+        return {};
+      },
+
+      createEnrollToken: (req) => createEnrollToken(store, enroll, req),
+
+      async listEnrollTokens(req) {
+        const rows = await store.listEnrollTokens(req.groupId || undefined);
+        return {
+          tokens: rows.map((t) => ({
+            id: t.tokenHash,
+            groupId: t.groupId,
+            createdAtMs: BigInt(t.createdAt.getTime()),
+            expiresAtMs: BigInt(t.expiresAt.getTime()),
+            maxUses: t.maxUses,
+            uses: t.uses,
+          })),
+        };
+      },
+
+      async revokeEnrollToken(req) {
+        if (!(await store.revokeEnrollToken(req.id))) throw new ConnectError('token not found or already revoked', Code.NotFound);
+        return {};
       },
 
       async openTerminal(req, ctx) {
@@ -287,9 +356,16 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
  * ConsoleService 를 Flue 의 Hono 앱에 마운트한다. 로그인한 사용자만 호출할 수 있다.
  * Flue 빌드 서버는 교체할 수 없으므로 Connect 를 fetch 핸들러로 바꿔 Hono 라우트로 붙인다.
  */
-export function mountConsole(app: Hono, hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels): void {
+export function mountConsole(
+  app: Hono,
+  hub: AgentHub,
+  store: Store,
+  approvals: ApprovalCenter,
+  aiModels: AiModels,
+  enroll: EnrollInfo,
+): void {
   const router = createConnectRouter();
-  consoleRoutes(hub, store, approvals, aiModels)(router);
+  consoleRoutes(hub, store, approvals, aiModels, enroll)(router);
   for (const handler of router.handlers) {
     app.post(RPC_PREFIX + handler.requestPath, requireAuth(store), async (c) => {
       // 로그인 사용자를 Connect 핸들러의 context 로 넘긴다 (감사 로그용)

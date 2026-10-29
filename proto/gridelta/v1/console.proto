@@ -10,6 +10,16 @@ service ConsoleService {
   rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
   rpc WatchEndpoints(WatchEndpointsRequest) returns (stream EndpointEvent); // 온라인/오프라인 변화
 
+  // 그룹과 그룹에 PC 를 등록하는 토큰
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse);
+  rpc CreateGroup(CreateGroupRequest) returns (Group);
+  rpc RenameGroup(RenameGroupRequest) returns (RenameGroupResponse);
+  rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse); // PC 는 기본 그룹으로, 토큰은 폐기
+  rpc MoveEndpoint(MoveEndpointRequest) returns (MoveEndpointResponse);
+  rpc CreateEnrollToken(CreateEnrollTokenRequest) returns (CreateEnrollTokenResponse);
+  rpc ListEnrollTokens(ListEnrollTokensRequest) returns (ListEnrollTokensResponse);
+  rpc RevokeEnrollToken(RevokeEnrollTokenRequest) returns (RevokeEnrollTokenResponse);
+
   // 웹 터미널
   rpc OpenTerminal(OpenTerminalRequest) returns (OpenTerminalResponse); // session_id 발급
   rpc ListTerminals(ListTerminalsRequest) returns (ListTerminalsResponse); // 새로고침 후 탭 복원용
@@ -48,6 +58,7 @@ message Endpoint {
   int64 last_seen_ms = 9;
   string approval_policy = 10; // always | dangerous | auto
   string display_name = 11; // 사용자가 붙인 이름. 비어 있으면 hostname 을 쓴다
+  string group_id = 12;
 }
 
 message ListEndpointsRequest {}
@@ -219,3 +230,77 @@ message DeleteAiSessionRequest {
 }
 
 message DeleteAiSessionResponse {}
+
+message Group {
+  string id = 1; // "default" 는 지울 수 없는 기본 그룹
+  string name = 2;
+  uint32 endpoint_count = 3;
+}
+
+message ListGroupsRequest {}
+
+message ListGroupsResponse {
+  repeated Group groups = 1;
+}
+
+message CreateGroupRequest {
+  string name = 1;
+}
+
+message RenameGroupRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message RenameGroupResponse {}
+
+message DeleteGroupRequest {
+  string id = 1;
+}
+
+message DeleteGroupResponse {}
+
+message MoveEndpointRequest {
+  string endpoint_id = 1;
+  string group_id = 2;
+}
+
+message MoveEndpointResponse {}
+
+message CreateEnrollTokenRequest {
+  string group_id = 1; // 비우면 기본 그룹
+  uint32 ttl_seconds = 2; // 0 이면 3600
+  uint32 max_uses = 3; // 0 이면 만료 전까지 무제한
+}
+
+message CreateEnrollTokenResponse {
+  string token = 1; // 원문은 이때만 볼 수 있다
+  int64 expires_at_ms = 2;
+  string server_url = 3;
+  string ca_fingerprint = 4; // 자체 서명 인증서일 때만
+  string unix_command = 5; // macOS·Linux 에서 root 로 실행할 등록·설치 명령
+  string windows_command = 6; // 관리자 PowerShell 에서 실행할 명령
+}
+
+message EnrollToken {
+  string id = 1; // 토큰의 해시 (원문은 저장하지 않는다)
+  string group_id = 2;
+  int64 created_at_ms = 3;
+  int64 expires_at_ms = 4;
+  uint32 max_uses = 5;
+  uint32 uses = 6;
+}
+
+message ListEnrollTokensRequest {
+  string group_id = 1; // 비우면 전체
+}
+
+message ListEnrollTokensResponse {
+  repeated EnrollToken tokens = 1; // 아직 쓸 수 있는 것만
+}
+
+message RevokeEnrollTokenRequest {
+  string id = 1;
+}
+
+message RevokeEnrollTokenResponse {}

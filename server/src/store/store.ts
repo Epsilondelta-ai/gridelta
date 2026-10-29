@@ -1,8 +1,19 @@
 import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
-import { and, desc, eq, gt, inArray, isNull, lt } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { aiSessions, approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, settings, users } from './schema.ts';
+import {
+  aiSessions,
+  approvals,
+  auditLog,
+  endpoints,
+  enrollTokens,
+  groups,
+  oauthTokens,
+  sessions,
+  settings,
+  users,
+} from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -16,6 +27,12 @@ export interface HelloInfo {
 }
 
 export class UsernameTakenError extends Error {}
+export class NameTakenError extends Error {}
+
+/** 처음부터 있는 "기본" 그룹 (마이그레이션이 만든다) */
+export const DEFAULT_GROUP = 'default';
+export type GroupRow = typeof groups.$inferSelect;
+export type EnrollTokenRow = typeof enrollTokens.$inferSelect;
 
 export interface SessionUser {
   id: string;
@@ -43,32 +60,138 @@ export class Store {
 
   // --- 등록 토큰 ---
 
-  async createEnrollToken(ttlMs: number, now = Date.now()): Promise<{ token: string; expiresAt: Date }> {
+  /** 그룹에 PC 를 등록하는 토큰을 만든다. maxUses 0 이면 만료 전까지 여러 PC 가 쓸 수 있다 */
+  async createEnrollToken(
+    ttlMs: number,
+    opts: { groupId?: string; maxUses?: number } = {},
+    now = Date.now(),
+  ): Promise<{ token: string; tokenHash: string; expiresAt: Date }> {
     const token = randomToken();
+    const tokenHash = hashToken(token);
     const expiresAt = new Date(now + ttlMs);
-    await this.db.insert(enrollTokens).values({ tokenHash: hashToken(token), createdAt: new Date(now), expiresAt });
-    return { token, expiresAt };
+    await this.db.insert(enrollTokens).values({
+      tokenHash,
+      groupId: opts.groupId ?? DEFAULT_GROUP,
+      createdAt: new Date(now),
+      expiresAt,
+      maxUses: opts.maxUses ?? 1,
+    });
+    return { token, tokenHash, expiresAt };
   }
 
-  /** 아직 쓰이지 않았고 만료되지 않은 토큰이면 사용 처리하고 true. 동시에 두 번 쓰여도 한 번만 성공한다. */
-  async consumeEnrollToken(token: string, now = Date.now()): Promise<boolean> {
-    const result = await this.db
+  /**
+   * 쓸 수 있는 토큰이면(폐기·만료되지 않았고 사용 횟수가 남음) 한 번 사용 처리하고 등록할 그룹 id 를 돌려준다.
+   * 하나의 UPDATE 로 확인과 사용을 함께 하므로 동시에 쓰여도 횟수를 넘지 않는다.
+   */
+  async consumeEnrollToken(token: string, now = Date.now()): Promise<string | undefined> {
+    const rows = await this.db
       .update(enrollTokens)
-      .set({ usedAt: new Date(now) })
+      .set({ usedAt: new Date(now), uses: sql`${enrollTokens.uses} + 1` })
       .where(
         and(
           eq(enrollTokens.tokenHash, hashToken(token)),
-          isNull(enrollTokens.usedAt),
+          isNull(enrollTokens.revokedAt),
           gt(enrollTokens.expiresAt, new Date(now)),
+          or(eq(enrollTokens.maxUses, 0), lt(enrollTokens.uses, enrollTokens.maxUses)),
         ),
-      );
+      )
+      .returning({ groupId: enrollTokens.groupId });
+    return rows[0]?.groupId;
+  }
+
+  /** 아직 쓸 수 있는 토큰 목록 (폐기·만료·소진된 것 제외) */
+  async listEnrollTokens(groupId?: string, now = Date.now()): Promise<EnrollTokenRow[]> {
+    const rows = await this.db
+      .select()
+      .from(enrollTokens)
+      .where(
+        and(
+          isNull(enrollTokens.revokedAt),
+          gt(enrollTokens.expiresAt, new Date(now)),
+          or(eq(enrollTokens.maxUses, 0), lt(enrollTokens.uses, enrollTokens.maxUses)),
+          groupId ? eq(enrollTokens.groupId, groupId) : undefined,
+        ),
+      )
+      .orderBy(desc(enrollTokens.createdAt));
+    return rows;
+  }
+
+  async revokeEnrollToken(tokenHash: string): Promise<boolean> {
+    const result = await this.db
+      .update(enrollTokens)
+      .set({ revokedAt: new Date() })
+      .where(and(eq(enrollTokens.tokenHash, tokenHash), isNull(enrollTokens.revokedAt)));
+    return Number(result.changes) === 1;
+  }
+
+  // --- 그룹 ---
+
+  async listGroups(): Promise<(GroupRow & { endpointCount: number })[]> {
+    const rows = await this.db
+      .select({
+        id: groups.id,
+        name: groups.name,
+        createdAt: groups.createdAt,
+        endpointCount: sql<number>`(select count(*) from ${endpoints} where ${endpoints.groupId} = ${groups.id} and ${endpoints.revokedAt} is null)`,
+      })
+      .from(groups)
+      .orderBy(groups.createdAt);
+    return rows.map((r) => ({ ...r, endpointCount: Number(r.endpointCount) }));
+  }
+
+  /** id 또는 이름으로 찾는다 (CLI 에서 이름으로 부를 수 있게) */
+  async findGroup(ref: string): Promise<GroupRow | undefined> {
+    const [row] = await this.db
+      .select()
+      .from(groups)
+      .where(or(eq(groups.id, ref), eq(groups.name, ref)))
+      .limit(1);
+    return row;
+  }
+
+  async createGroup(name: string): Promise<GroupRow> {
+    if (await this.findGroup(name)) throw new NameTakenError(`group ${name} already exists`);
+    const row: GroupRow = { id: uuidv7(), name, createdAt: new Date() };
+    await this.db.insert(groups).values(row);
+    return row;
+  }
+
+  async renameGroup(id: string, name: string): Promise<boolean> {
+    const other = await this.findGroup(name);
+    if (other && other.id !== id) throw new NameTakenError(`group ${name} already exists`);
+    const result = await this.db.update(groups).set({ name }).where(eq(groups.id, id));
+    return Number(result.changes) === 1;
+  }
+
+  /** 그룹을 지운다. 그 안의 PC 는 기본 그룹으로 옮기고, 그룹의 등록 토큰은 폐기한다 */
+  async deleteGroup(id: string): Promise<boolean> {
+    if (id === DEFAULT_GROUP) throw new Error('the default group cannot be deleted');
+    // node:sqlite 는 동기 드라이버라 트랜잭션 콜백도 동기여야 한다
+    return this.db.transaction((tx) => {
+      tx.update(endpoints).set({ groupId: DEFAULT_GROUP }).where(eq(endpoints.groupId, id)).run();
+      tx.update(enrollTokens)
+        .set({ revokedAt: new Date() })
+        .where(and(eq(enrollTokens.groupId, id), isNull(enrollTokens.revokedAt)))
+        .run();
+      return Number(tx.delete(groups).where(eq(groups.id, id)).run().changes) === 1;
+    });
+  }
+
+  async moveEndpoint(endpointId: string, groupId: string): Promise<boolean> {
+    const result = await this.db
+      .update(endpoints)
+      .set({ groupId })
+      .where(and(eq(endpoints.id, endpointId), isNull(endpoints.revokedAt)));
     return Number(result.changes) === 1;
   }
 
   // --- 엔드포인트 ---
 
   /** 새 에이전트를 등록하고 자격 증명을 발급한다. 자격 증명 원문은 이때만 돌려준다. */
-  async enrollEndpoint(info: Pick<HelloInfo, 'hostname' | 'os' | 'arch'>): Promise<{ id: string; credential: string }> {
+  async enrollEndpoint(
+    info: Pick<HelloInfo, 'hostname' | 'os' | 'arch'>,
+    groupId = DEFAULT_GROUP,
+  ): Promise<{ id: string; credential: string }> {
     const id = uuidv7();
     const credential = randomToken();
     await this.db.insert(endpoints).values({
@@ -76,6 +199,7 @@ export class Store {
       hostname: info.hostname,
       os: info.os,
       arch: info.arch,
+      groupId,
       credentialHash: hashToken(credential),
       enrolledAt: new Date(),
     });

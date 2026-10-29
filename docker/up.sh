@@ -27,7 +27,7 @@ echo
 
 enroll() { # enroll <service>  컨테이너가 새로 만들어졌으면 다시 등록하고, 같은 이름의 예전 등록은 폐기한다
   if ! dc exec -T "$1" test -f /etc/gridelta/agent.yaml; then
-    cmd=$(dc exec -T server gridelta enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*')
+    cmd=$(dc exec -T server gridelta enroll-token create --ttl 10m | grep -o 'gridelta-agent enroll .*' | head -1)
     dc exec -T "$1" sh -c "$cmd" >/dev/null
     local host=$1 mine
     mine=$(dc exec -T "$1" sed -n 's/^agent_id: //p' /etc/gridelta/agent.yaml)

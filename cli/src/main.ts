@@ -37,18 +37,53 @@ function shellQuote(s: string): string {
   return /^[\w@%+=:,./-]+$/.test(s) ? s : `'${s.replaceAll("'", `'\\''`)}'`;
 }
 
+/** 그룹 이름 또는 id → id */
+async function groupId(ref: string): Promise<string> {
+  const { groups } = await admin().listGroups({});
+  const g = groups.find((x) => x.id === ref || x.name === ref);
+  if (!g) throw new InvalidArgumentError(`그룹을 찾지 못했습니다: ${ref} (있는 그룹: ${groups.map((x) => x.name).join(', ')})`);
+  return g.id;
+}
+
+function parseUses(value: string): number {
+  if (value === 'unlimited') return 0;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1) throw new InvalidArgumentError('1 이상의 정수 또는 unlimited');
+  return n;
+}
+
 const enrollToken = program.command('enroll-token').description('에이전트 등록 토큰');
 enrollToken
   .command('create')
-  .description('1회용 등록 토큰을 발급하고 에이전트에서 실행할 명령줄을 출력한다')
+  .description('그룹에 PC 를 등록하는 토큰을 발급하고 에이전트에서 실행할 명령을 출력한다')
   .option('--ttl <duration>', '유효 시간', parseDuration, 3600)
-  .action(async (opts: { ttl: number }) => {
-    const res = await admin().createEnrollToken({ ttlSeconds: opts.ttl });
+  .option('--group <name>', '등록할 그룹 (이름 또는 id)', '기본')
+  .option('--uses <n>', '사용 가능 횟수 (unlimited 면 만료 전까지 무제한)', parseUses, 1)
+  .action(async (opts: { ttl: number; group: string; uses: number }) => {
+    const res = await admin().createEnrollToken({ groupId: await groupId(opts.group), ttlSeconds: opts.ttl, maxUses: opts.uses });
     const args = ['gridelta-agent', 'enroll', '--server', res.serverUrl, '--token', res.token];
     if (res.caFingerprint) args.push('--ca-fingerprint', res.caFingerprint);
-    console.log(`만료: ${new Date(Number(res.expiresAtMs)).toISOString()}`);
+    console.log(`그룹: ${opts.group} · 만료: ${new Date(Number(res.expiresAtMs)).toISOString()} · 사용 횟수: ${opts.uses || '무제한'}`);
     console.log('원격 PC에서 관리자 권한으로 실행하세요:\n');
     console.log(`  ${args.map(shellQuote).join(' ')}`);
+    console.log('\n등록·서비스 설치·시작을 한 번에:');
+    console.log(`  macOS/Linux: ${res.unixCommand}`);
+    console.log(`  Windows (관리자 PowerShell): ${res.windowsCommand}`);
+  });
+
+const groupsCmd = program.command('groups').description('PC 그룹');
+groupsCmd
+  .command('list')
+  .description('그룹 목록')
+  .action(async () => {
+    for (const g of (await admin().listGroups({})).groups) console.log(`${g.id}  ${g.name}  (PC ${g.endpointCount}대)`);
+  });
+groupsCmd
+  .command('create <name>')
+  .description('그룹을 만든다')
+  .action(async (name: string) => {
+    const g = await admin().createGroup({ name });
+    console.log(`그룹을 만들었습니다: ${g.name} (${g.id})`);
   });
 
 const endpoints = program.command('endpoints').description('등록된 PC');

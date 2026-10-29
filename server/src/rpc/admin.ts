@@ -5,33 +5,36 @@ import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { AdminService } from '@gridelta/proto/admin';
 import { CODEX_PROVIDER, type OAuthVault } from '../auth/openai.ts';
 import type { AgentHub } from '../hub/index.ts';
-import { type Store, UsernameTakenError } from '../store/index.ts';
+import { NameTakenError, type Store, UsernameTakenError } from '../store/index.ts';
+import { createEnrollToken, type EnrollInfo } from './enroll.ts';
 import { endpointsView } from './endpoints-view.ts';
 
-export interface AdminOptions {
-  gatewayUrl: string;
+export interface AdminOptions extends EnrollInfo {
   vault: OAuthVault;
   /** 현재 AI 모델 (웹 UI 에서 바꿀 수 있다) */
   aiModel: () => string;
-  /** 자체 서명 인증서일 때만 등록 명령줄에 넣을 지문 */
-  caFingerprint?: string;
 }
 
-const DEFAULT_ENROLL_TTL_S = 3600;
 const MIN_PASSWORD_LENGTH = 8;
 
 export function adminRoutes(hub: AgentHub, store: Store, opts: AdminOptions) {
   return (router: ConnectRouter) => {
     router.service(AdminService, {
-      async createEnrollToken(req) {
-        const ttlS = req.ttlSeconds || DEFAULT_ENROLL_TTL_S;
-        const { token, expiresAt } = await store.createEnrollToken(ttlS * 1000);
-        return {
-          token,
-          expiresAtMs: BigInt(expiresAt.getTime()),
-          serverUrl: opts.gatewayUrl,
-          caFingerprint: opts.caFingerprint ?? '',
-        };
+      createEnrollToken: (req) => createEnrollToken(store, opts, req),
+
+      async listGroups() {
+        return { groups: (await store.listGroups()).map((g) => ({ id: g.id, name: g.name, endpointCount: g.endpointCount })) };
+      },
+
+      async createGroup(req) {
+        if (!req.name.trim()) throw new ConnectError('name is required', Code.InvalidArgument);
+        try {
+          const g = await store.createGroup(req.name.trim());
+          return { id: g.id, name: g.name, endpointCount: 0 };
+        } catch (err) {
+          if (err instanceof NameTakenError) throw new ConnectError(err.message, Code.AlreadyExists);
+          throw err;
+        }
       },
 
       async listEndpoints() {
