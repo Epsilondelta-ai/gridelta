@@ -49,6 +49,8 @@ export function AiPanel({ endpoint, endpointName }: Props) {
   const [currentId, setCurrentId] = useState('');
   const [renaming, setRenaming] = useState(false);
   const [pending, setPending] = useState(''); // 세션을 만든 직후 보낼 메시지
+  /** "+ 이 PC" / "+ 통합" 으로 고른 새 대화의 대상. 세션은 첫 메시지를 보낼 때 만든다 (빈 세션이 쌓이지 않게) */
+  const [draftScope, setDraftScope] = useState<string>();
   const [draft, setDraft] = useState('');
   const [ai, setAi] = useState<AiSettings>();
   const [policy, setPolicy] = useState(endpoint?.approvalPolicy || 'dangerous');
@@ -69,6 +71,7 @@ export function AiPanel({ endpoint, endpointName }: Props) {
       (list) => {
         const last = loadLastSession(endpointId);
         setCurrentId(list.some((s) => s.id === last) ? last : (list[0]?.id ?? ''));
+        setDraftScope(undefined);
       },
       () => {},
     );
@@ -88,10 +91,16 @@ export function AiPanel({ endpoint, endpointName }: Props) {
 
   function select(id: string) {
     setCurrentId(id);
+    setDraftScope(undefined);
     saveLastSession(endpointId, id);
   }
 
-  async function newSession(scope: string): Promise<AiSession> {
+  function startNew(scope: string) {
+    setCurrentId('');
+    setDraftScope(scope);
+  }
+
+  async function createSession(scope: string): Promise<AiSession> {
     const s = await consoleClient.createAiSession({ scope });
     setSessions((prev) => [s, ...prev]);
     select(s.id);
@@ -113,9 +122,9 @@ export function AiPanel({ endpoint, endpointName }: Props) {
     setDraft('');
     let session = current;
     if (!session) {
-      // 세션 없이 보내면 PC 를 골랐으면 그 PC 대화, 아니면 통합 대화를 새로 만든다
-      session = await newSession(endpointId ?? ALL_PCS);
+      // 새 대화: 고른 대상, 없으면 PC 를 골랐으면 그 PC, 아니면 통합 대화로 세션을 만든다
       setPending(text);
+      session = await createSession(draftScope ?? endpointId ?? ALL_PCS);
     } else {
       void sendMessage(text).catch(() => {});
     }
@@ -166,7 +175,8 @@ export function AiPanel({ endpoint, endpointName }: Props) {
   }
 
   const busy = agent.status === 'submitted' || agent.status === 'streaming' || !!pending;
-  const scopeLabel = current ? (current.scope === ALL_PCS ? '모든 PC' : endpointName(current.scope)) : '';
+  const scope = current?.scope ?? draftScope;
+  const scopeLabel = scope ? (scope === ALL_PCS ? '모든 PC' : endpointName(scope)) : '';
 
   return (
     <section aria-label="AI" className="flex min-h-0 flex-col border-line bg-panel md:w-[26rem] md:border-l max-md:h-[50dvh] max-md:border-t">
@@ -181,7 +191,7 @@ export function AiPanel({ endpoint, endpointName }: Props) {
               onChange={(e) => select(e.target.value)}
               className="min-w-0 flex-1 rounded-md border border-line bg-bg px-2 py-1 text-xs"
             >
-              {!current && <option value="">새 대화</option>}
+              {!current && <option value="">{scopeLabel ? `새 대화 (${scopeLabel})` : '새 대화'}</option>}
               {sessions.map((s) => (
                 <option key={s.id} value={s.id}>
                   {sessionLabel(s, endpointName)}
@@ -210,11 +220,11 @@ export function AiPanel({ endpoint, endpointName }: Props) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {endpoint && (
-            <button type="button" onClick={() => void newSession(endpoint.id)} className="text-xs text-accent">
+            <button type="button" onClick={() => startNew(endpoint.id)} className="text-xs text-accent">
               + 이 PC
             </button>
           )}
-          <button type="button" onClick={() => void newSession(ALL_PCS)} className="text-xs text-accent">
+          <button type="button" onClick={() => startNew(ALL_PCS)} className="text-xs text-accent">
             + 통합
           </button>
           {ai && (
@@ -251,7 +261,7 @@ export function AiPanel({ endpoint, endpointName }: Props) {
       </header>
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 text-sm" data-testid="ai-messages">
-        {current && (
+        {scopeLabel && (
           <p className="text-xs text-muted" data-testid="ai-scope">
             대상: {scopeLabel}
           </p>

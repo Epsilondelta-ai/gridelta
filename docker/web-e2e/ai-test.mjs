@@ -75,8 +75,11 @@ try {
 
   // 6. 통합 대화: 여러 PC 를 함께 다룬다
   const sessionSelect = ai.getByLabel('AI 대화');
+  // "+" 는 새 대화 준비만 하고, 세션은 첫 메시지를 보낼 때 만든다 (빈 세션이 쌓이지 않음)
+  await ai.getByRole('button', { name: '+ 이 PC' }).click();
   await ai.getByRole('button', { name: '+ 통합' }).click();
   await ai.getByTestId('ai-scope').filter({ hasText: '모든 PC' }).waitFor();
+  if ((await sessionSelect.locator('option').count()) !== 2) throw new Error('"+" created a session before sending');
   await ask('모든 PC에서 hostname 알려줘');
   await ai.getByText('도구 결과입니다').first().waitFor({ timeout: 60_000 });
   const tools = await toolCards.evaluateAll((els) => els.map((e) => `${e.dataset.tool}:${e.dataset.state}`));
