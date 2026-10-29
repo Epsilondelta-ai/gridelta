@@ -1,0 +1,1 @@
+ALTER TABLE `endpoints` ADD `display_name` text DEFAULT '' NOT NULL;

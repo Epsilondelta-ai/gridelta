@@ -6,7 +6,8 @@ const INPUT_BATCH_MS = 16;
 const RESIZE_DEBOUNCE_MS = 100;
 
 export interface TerminalSink {
-  write(data: Uint8Array): void;
+  /** replay 면 버퍼에서 다시 보내는 지난 출력 */
+  write(data: Uint8Array, replay: boolean): void;
   reset(): void;
   exited(code: number): void;
   status(s: 'connecting' | 'live' | 'reconnecting' | 'gone'): void;
@@ -78,7 +79,7 @@ export class TerminalSession {
               this.latencies.length = Math.min(this.latencies.length, 50);
               this.#lastInputAt = 0;
             }
-            this.sink.write(out.data);
+            this.sink.write(out.data, out.replay);
           }
           this.#nextSeq = out.seq + 1n;
         }

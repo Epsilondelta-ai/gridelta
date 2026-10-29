@@ -17,6 +17,8 @@ service ConsoleService {
   rpc SendInput(SendInputRequest) returns (SendInputResponse);
   rpc ResizeTerminal(ResizeTerminalRequest) returns (ResizeTerminalResponse);
   rpc CloseTerminal(CloseTerminalRequest) returns (CloseTerminalResponse);
+  rpc RenameTerminal(RenameTerminalRequest) returns (RenameTerminalResponse);
+  rpc RenameEndpoint(RenameEndpointRequest) returns (RenameEndpointResponse);
 
   // AI 명령 승인
   rpc WatchApprovals(WatchApprovalsRequest) returns (stream ApprovalEvent); // 구독 직후 대기 중인 요청을 보낸다
@@ -39,6 +41,7 @@ message Endpoint {
   bool online = 8;
   int64 last_seen_ms = 9;
   string approval_policy = 10; // always | dangerous | auto
+  string display_name = 11; // 사용자가 붙인 이름. 비어 있으면 hostname 을 쓴다
 }
 
 message ListEndpointsRequest {}
@@ -68,6 +71,7 @@ message Terminal {
   string endpoint_id = 2;
   int64 created_at_ms = 3;
   bool exited = 4;
+  string title = 5; // 사용자가 붙인 탭 이름. 비어 있으면 클라이언트가 "터미널 N" 으로 보여 준다
 }
 
 message ListTerminalsRequest {
@@ -88,6 +92,9 @@ message TerminalOutput {
   uint64 seq = 2;
   bool reset = 3; // true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
   optional int32 exit_code = 4; // 셸 종료 시 마지막 메시지에 담고 스트림 종료
+  // true 면 버퍼에서 다시 보내는 지난 출력. 그 안의 터미널 질의(색상·장치 정보 등)에 xterm 이 답하면
+  // 그 답이 셸 입력으로 들어가므로, 클라이언트는 재생 출력을 그리는 동안 생긴 응답을 버린다
+  bool replay = 5;
 }
 
 message SendInputRequest {
@@ -158,3 +165,17 @@ message GetAiSettingsRequest {}
 message UpdateAiSettingsRequest {
   string model = 1;
 }
+
+message RenameTerminalRequest {
+  string session_id = 1;
+  string title = 2; // 비우면 기본 이름으로 돌아간다
+}
+
+message RenameTerminalResponse {}
+
+message RenameEndpointRequest {
+  string endpoint_id = 1;
+  string display_name = 2; // 비우면 hostname 으로 돌아간다
+}
+
+message RenameEndpointResponse {}

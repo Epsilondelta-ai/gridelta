@@ -12,7 +12,7 @@ try {
   if (await page.getByRole('button', { name: '로그아웃' }).count()) throw new Error('logout button shown');
   console.log('PASS: 로그인 화면 없이 바로 PC 목록 (로그아웃 버튼 숨김)');
 
-  await page.getByRole('navigation', { name: 'PC 목록' }).getByRole('button', { name: new RegExp(PC) }).click();
+  await page.getByRole('navigation', { name: 'PC 목록' }).locator('button[data-endpoint-id]', { hasText: PC }).click();
   await page.getByRole('button', { name: '+ 새 터미널' }).click();
   await page.locator('[data-session-id]:not(.hidden) .xterm').click();
   await page.waitForTimeout(500);

@@ -27,7 +27,7 @@ describe('PtySession', () => {
     const { events, needsRedraw } = s.subscribe(1n);
     s.pushOutput(bytes('c'));
     const got = await drain(events, 2);
-    expect(got.map((e) => e.kind === 'output' && `${e.seq}:${text(e.data)}`)).toEqual(['1:b', '2:c']);
+    expect(got.map((e) => e.kind === 'output' && `${e.seq}:${text(e.data)}:${e.replay}`)).toEqual(['1:b:true', '2:c:false']);
     expect(needsRedraw).toBe(false);
     s.dispose();
   });

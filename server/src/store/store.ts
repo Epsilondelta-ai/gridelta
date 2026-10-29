@@ -106,6 +106,14 @@ export class Store {
     await this.db.update(endpoints).set({ lastSeen: at }).where(eq(endpoints.id, id));
   }
 
+  async renameEndpoint(id: string, displayName: string): Promise<boolean> {
+    const result = await this.db
+      .update(endpoints)
+      .set({ displayName })
+      .where(and(eq(endpoints.id, id), isNull(endpoints.revokedAt)));
+    return Number(result.changes) === 1;
+  }
+
   async revokeEndpoint(id: string): Promise<boolean> {
     const result = await this.db
       .update(endpoints)

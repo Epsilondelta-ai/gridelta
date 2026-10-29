@@ -1,6 +1,7 @@
 import type { Endpoint } from '@gridelta/proto/console';
 import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { AiPanel } from './AiPanel.tsx';
+import { NameInput } from './NameInput.tsx';
 import { consoleClient, fetchMe, isUnauthenticated, login, logout, sleep, type User } from './api.ts';
 import { Approvals } from './Approvals.tsx';
 import type { TerminalSession } from './terminal-session.ts';
@@ -59,7 +60,10 @@ function Login({ onLogin }: { onLogin: (u: User) => void }) {
 interface Tab {
   sessionId: string;
   endpointId: string;
+  /** 기본 이름 (터미널 N) */
   title: string;
+  /** 사용자가 붙인 이름. 서버에 저장되어 새로고침 후에도 남는다 */
+  customTitle: string;
   status: TerminalStatus;
   exitCode?: number;
 }
@@ -77,6 +81,8 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   const sessions = useRef(new Map<string, TerminalSession>());
   const [latency, setLatency] = useState<number>();
   const [showAi, setShowAi] = useState(true);
+  /** 이름을 바꾸는 중인 PC id 또는 터미널 세션 id */
+  const [renaming, setRenaming] = useState('');
 
   const handleError = useCallback(
     (err: unknown) => {
@@ -114,7 +120,13 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
       .then((res) => {
         const restored = res.terminals
           .filter((t) => !t.exited)
-          .map((t, i) => ({ sessionId: t.sessionId, endpointId: t.endpointId, title: `터미널 ${i + 1}`, status: 'connecting' as const }));
+          .map((t, i) => ({
+            sessionId: t.sessionId,
+            endpointId: t.endpointId,
+            title: `터미널 ${i + 1}`,
+            customTitle: t.title,
+            status: 'connecting' as const,
+          }));
         setTabs(restored);
         const pc = selectedFromUrl();
         setActiveTab(restored.find((t) => t.endpointId === pc)?.sessionId ?? '');
@@ -149,7 +161,13 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
       const { sessionId } = await consoleClient.openTerminal({ endpointId: selected, cols: 80, rows: 24 });
       setTabs((prev) => [
         ...prev,
-        { sessionId, endpointId: selected, title: `터미널 ${prev.filter((t) => t.endpointId === selected).length + 1}`, status: 'connecting' },
+        {
+          sessionId,
+          endpointId: selected,
+          title: `터미널 ${prev.filter((t) => t.endpointId === selected).length + 1}`,
+          customTitle: '',
+          status: 'connecting',
+        },
       ]);
       setActiveTab(sessionId);
     } catch (err) {
@@ -165,6 +183,27 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
     if (activeTab === tab.sessionId) setActiveTab(pcTabs.find((t) => t.sessionId !== tab.sessionId)?.sessionId ?? '');
   }
 
+  async function renameTab(tab: Tab, name: string) {
+    setRenaming('');
+    try {
+      await consoleClient.renameTerminal({ sessionId: tab.sessionId, title: name });
+      setTabs((prev) => prev.map((t) => (t.sessionId === tab.sessionId ? { ...t, customTitle: name } : t)));
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
+  async function renamePc(e: Endpoint, name: string) {
+    setRenaming('');
+    try {
+      await consoleClient.renameEndpoint({ endpointId: e.id, displayName: name });
+      // WatchEndpoints 가 바뀐 이름을 다시 보내지만, 바로 보이도록 먼저 반영한다
+      setEndpoints((prev) => new Map(prev).set(e.id, { ...e, displayName: name }));
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
   function selectPc(id: string) {
     setSelected(id);
     setActiveTab(tabs.find((t) => t.endpointId === id)?.sessionId ?? '');
@@ -174,7 +213,8 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
     setTabs((prev) => prev.map((t) => (t.sessionId === sessionId ? { ...t, status, exitCode } : t)));
   }, []);
 
-  const sortedEndpoints = [...endpoints.values()].sort((a, b) => a.hostname.localeCompare(b.hostname));
+  const pcName = (e: Endpoint) => e.displayName || e.hostname;
+  const sortedEndpoints = [...endpoints.values()].sort((a, b) => pcName(a).localeCompare(pcName(b)));
 
   return (
     <div className="flex h-dvh flex-col bg-bg text-fg md:flex-row">
@@ -194,30 +234,55 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
         </div>
         <nav aria-label="PC 목록" className="flex-1 overflow-y-auto px-2 pb-2 max-md:max-h-40">
           {sortedEndpoints.length === 0 && <p className="px-2 py-4 text-sm text-muted">등록된 PC가 없습니다.</p>}
-          {sortedEndpoints.map((e) => (
-            <button
-              key={e.id}
-              type="button"
-              onClick={() => selectPc(e.id)}
-              data-endpoint-id={e.id}
-              aria-current={e.id === selected}
-              className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm ${
-                e.id === selected ? 'bg-accent-soft' : 'hover:bg-hover'
-              }`}
-            >
-              <span
-                className={`size-2 shrink-0 rounded-full ${e.online ? 'bg-ok' : 'bg-line'}`}
-                aria-label={e.online ? '온라인' : '오프라인'}
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">{e.hostname}</span>
-                <span className="block truncate text-xs text-muted">
-                  {e.os}/{e.arch}
-                  {!e.online && e.lastSeenMs > 0n && ` · ${new Date(Number(e.lastSeenMs)).toLocaleString()}`}
-                </span>
-              </span>
-            </button>
-          ))}
+          {sortedEndpoints.map((e) =>
+            renaming === e.id ? (
+              <div key={e.id} className="px-2 py-2">
+                <NameInput
+                  value={e.displayName}
+                  placeholder={e.hostname}
+                  label="PC 이름"
+                  onSave={(name) => void renamePc(e, name)}
+                  onCancel={() => setRenaming('')}
+                />
+              </div>
+            ) : (
+              <div key={e.id} className="group relative">
+                <button
+                  type="button"
+                  onClick={() => selectPc(e.id)}
+                  onDoubleClick={() => setRenaming(e.id)}
+                  onKeyDown={(ev) => ev.key === 'F2' && setRenaming(e.id)}
+                  title="더블클릭하거나 F2 로 이름 바꾸기"
+                  data-endpoint-id={e.id}
+                  aria-current={e.id === selected}
+                  className={`flex w-full items-center gap-2 rounded-md px-2 py-2 pr-8 text-left text-sm ${
+                    e.id === selected ? 'bg-accent-soft' : 'hover:bg-hover'
+                  }`}
+                >
+                  <span
+                    className={`size-2 shrink-0 rounded-full ${e.online ? 'bg-ok' : 'bg-line'}`}
+                    aria-label={e.online ? '온라인' : '오프라인'}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium">{pcName(e)}</span>
+                    <span className="block truncate text-xs text-muted">
+                      {e.displayName && `${e.hostname} · `}
+                      {e.os}/{e.arch}
+                      {!e.online && e.lastSeenMs > 0n && ` · ${new Date(Number(e.lastSeenMs)).toLocaleString()}`}
+                    </span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  aria-label={`${pcName(e)} 이름 바꾸기`}
+                  onClick={() => setRenaming(e.id)}
+                  className="absolute top-1/2 right-1 -translate-y-1/2 rounded px-1.5 text-muted opacity-0 hover:text-fg focus:opacity-100 group-hover:opacity-100"
+                >
+                  ✎
+                </button>
+              </div>
+            ),
+          )}
         </nav>
       </aside>
 
@@ -237,12 +302,35 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
                     t.sessionId === activeTab ? 'border-accent' : 'border-transparent text-muted'
                   }`}
                 >
-                  <button type="button" role="tab" aria-selected={t.sessionId === activeTab} onClick={() => setActiveTab(t.sessionId)}>
-                    {t.title}
-                    {t.status === 'exited' && ` (종료 ${t.exitCode})`}
-                    {t.status === 'reconnecting' && ' (재연결 중)'}
-                  </button>
-                  <button type="button" aria-label={`${t.title} 닫기`} className="ml-1 text-muted hover:text-fg" onClick={() => void closeTab(t)}>
+                  {renaming === t.sessionId ? (
+                    <NameInput
+                      value={t.customTitle}
+                      placeholder={t.title}
+                      label="터미널 이름"
+                      onSave={(name) => void renameTab(t, name)}
+                      onCancel={() => setRenaming('')}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={t.sessionId === activeTab}
+                      onClick={() => setActiveTab(t.sessionId)}
+                      onDoubleClick={() => setRenaming(t.sessionId)}
+                      onKeyDown={(ev) => ev.key === 'F2' && setRenaming(t.sessionId)}
+                      title="더블클릭하거나 F2 로 이름 바꾸기"
+                    >
+                      {t.customTitle || t.title}
+                      {t.status === 'exited' && ` (종료 ${t.exitCode})`}
+                      {t.status === 'reconnecting' && ' (재연결 중)'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    aria-label={`${t.customTitle || t.title} 닫기`}
+                    className="ml-1 text-muted hover:text-fg"
+                    onClick={() => void closeTab(t)}
+                  >
                     ×
                   </button>
                 </div>
@@ -286,7 +374,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
         {endpoint && showAi && <AiPanel endpoint={endpoint} />}
         </div>
         <footer className="flex items-center gap-4 border-t border-line bg-panel px-4 py-1 text-xs text-muted">
-          <span>{endpoint ? `${endpoint.hostname} · ${endpoint.defaultShell}` : ''}</span>
+          <span>{endpoint ? `${pcName(endpoint)} · ${endpoint.defaultShell}` : ''}</span>
           {latency !== undefined && <span data-testid="latency">입력 지연 {Math.round(latency)} ms</span>}
           {error && (
             <span className="text-danger" role="alert">
