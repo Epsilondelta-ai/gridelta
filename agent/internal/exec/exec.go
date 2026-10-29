@@ -5,12 +5,14 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	osexec "os/exec"
 	"sync"
 	"time"
 
 	grideltav1 "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1"
+	"github.com/Epsilondelta-ai/gridelta/agent/internal/paths"
 )
 
 // TimeoutExitCode 는 timeout_ms 를 넘겨 강제 종료된 명령의 종료 코드다.
@@ -18,6 +20,14 @@ const TimeoutExitCode = 124
 
 // ErrCanceled 는 CancelRequest 로 취소된 경우 돌려준다.
 var ErrCanceled = errors.New("canceled")
+
+// processTree 는 OS 별로 명령과 그 자식 프로세스를 함께 정리하는 방법이다.
+type processTree interface {
+	// started 는 프로세스가 시작된 직후 호출한다 (Windows: Job 에 넣고 재개).
+	started() error
+	// release 는 Wait 가 끝난 뒤 호출한다.
+	release()
+}
 
 // Run 은 명령을 실행하고 결과를 돌려준다. 명령의 non-zero exit 는 에러가 아니다.
 // ctx 가 취소되면 프로세스 트리를 정리하고 ErrCanceled 를 돌려준다.
@@ -35,15 +45,30 @@ func Run(ctx context.Context, req *grideltav1.ExecRequest, defaultShell string, 
 	}
 
 	cmd := osexec.CommandContext(runCtx, shell, shellArgs(shell, req.GetCommand())...)
-	cmd.Dir = req.GetCwd()
+	if cwd := req.GetCwd(); cwd != "" {
+		dir, err := paths.Native(cwd)
+		if err != nil {
+			return nil, fmt.Errorf("cwd %q: %w", cwd, err)
+		}
+		cmd.Dir = dir
+	}
 	cmd.Env = BuildEnv(req.GetEnv())
-	configureProcessTree(cmd)
+	tree := configureProcessTree(cmd)
+	defer tree.release()
 
 	out := &limitedOutput{limit: outputLimit}
 	cmd.Stdout = out.writer(&out.stdout)
 	cmd.Stderr = out.writer(&out.stderr)
 
-	err := cmd.Run()
+	if err := cmd.Start(); err != nil {
+		// 셸 실행 자체가 실패한 경우 (셸 없음, cwd 없음 등)
+		return nil, err
+	}
+	if err := tree.started(); err != nil {
+		_ = cmd.Wait()
+		return nil, err
+	}
+	err := cmd.Wait()
 	res := &grideltav1.ExecResult{Stdout: out.stdout.Bytes(), Stderr: out.stderr.Bytes(), Truncated: out.truncated}
 
 	switch {

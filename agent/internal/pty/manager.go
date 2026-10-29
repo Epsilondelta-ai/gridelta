@@ -15,6 +15,7 @@ import (
 
 	grideltav1 "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/exec"
+	"github.com/Epsilondelta-ai/gridelta/agent/internal/paths"
 )
 
 // chunkSize 만큼 모아 PtyOutput 하나로 보낸다.
@@ -39,8 +40,16 @@ type Manager struct {
 }
 
 type session struct {
-	pty gopty.Pty
-	cmd *gopty.Cmd
+	pty  gopty.Pty
+	cmd  *gopty.Cmd
+	tree procTree
+}
+
+// procTree 는 OS 별로 셸과 그 자식 프로세스를 함께 정리하는 방법이다.
+type procTree interface {
+	started() error
+	kill() error
+	release()
 }
 
 func NewManager(sink Sink, defaultShell string) *Manager {
@@ -76,16 +85,26 @@ func (m *Manager) Open(req *grideltav1.PtyOpenRequest) (int, error) {
 	}
 	cmd := p.Command(shell, args...)
 	cmd.Env = exec.BuildEnv(map[string]string{"TERM": "xterm-256color", "COLORTERM": "truecolor"})
-	cmd.Dir = req.GetCwd()
-	if cmd.Dir == "" {
+	if cwd := req.GetCwd(); cwd != "" {
+		if cmd.Dir, err = paths.Native(cwd); err != nil {
+			p.Close()
+			return 0, fmt.Errorf("cwd %q: %w", cwd, err)
+		}
+	} else {
 		cmd.Dir, _ = os.UserHomeDir()
 	}
+	tree := newProcTree(cmd)
 	if err := cmd.Start(); err != nil {
 		p.Close()
 		return 0, err
 	}
+	if err := tree.started(); err != nil {
+		_ = cmd.Wait()
+		p.Close()
+		return 0, err
+	}
 
-	s := &session{pty: p, cmd: cmd}
+	s := &session{pty: p, cmd: cmd, tree: tree}
 	m.mu.Lock()
 	m.sessions[id] = s
 	m.mu.Unlock()
@@ -125,6 +144,7 @@ func (m *Manager) pump(id string, s *session) {
 	}
 	s.pty.Close()
 	<-readDone
+	s.tree.release()
 
 	m.mu.Lock()
 	delete(m.sessions, id)
@@ -183,7 +203,7 @@ func kill(s *session) error {
 	if s.cmd.Process == nil {
 		return nil
 	}
-	err := s.cmd.Process.Kill()
+	err := s.tree.kill()
 	_ = s.pty.Close()
 	if errors.Is(err, os.ErrProcessDone) || errors.Is(err, io.EOF) {
 		return nil

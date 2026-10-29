@@ -18,6 +18,7 @@ import (
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/config"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/conn"
 	"github.com/Epsilondelta-ai/gridelta/agent/internal/exec"
+	"github.com/Epsilondelta-ai/gridelta/agent/internal/paths"
 )
 
 // Version 은 빌드 시 -ldflags "-X main.Version=..." 로 덮어쓴다.
@@ -216,7 +217,11 @@ func control(action string, args []string) error {
 func newClient(cfg *config.Config) *conn.Client {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 	hostname, _ := os.Hostname()
+	// 프로토콜은 POSIX 경로만 쓴다 (Windows: C:\Users\me → /c/Users/me)
 	home, _ := os.UserHomeDir()
+	if p, err := paths.Protocol(home); err == nil {
+		home = p
+	}
 	osUser := ""
 	if u, err := user.Current(); err == nil {
 		osUser = u.Username
