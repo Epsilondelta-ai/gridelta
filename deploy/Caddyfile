@@ -1,0 +1,34 @@
+# gridelta 리버스 프록시 예시 (Caddy 2)
+#
+# Flue 서버(메인 포트)는 HTTP/1.1·평문으로만 뜨므로, 브라우저에는 Caddy 가 TLS 와 HTTP/2 를 제공한다.
+# 브라우저 구간이 HTTP/1.1 이면 도메인당 연결 수 제한(약 6개)에 서버 스트림이 걸려 터미널 입력이 막힌다.
+#
+# 에이전트 게이트웨이(8443)는 두 방식 중 하나를 고른다.
+#   A. 서버가 직접 TLS 로 띄운다: GRIDELTA_TLS_CERT / GRIDELTA_TLS_KEY 지정, 이 파일의 두 번째 블록은 지운다.
+#      자체 서명 인증서면 GRIDELTA_TLS_SELF_SIGNED=1 로 등록 명령줄에 지문을 넣는다.
+#   B. Caddy 가 TLS 를 맡고 서버에는 h2c 로 넘긴다: 인증서 변수를 비우고 아래 두 번째 블록을 쓴다.
+#      이때 GRIDELTA_GATEWAY_URL=https://grid.example.com:8443
+
+grid.example.com {
+	encode zstd gzip
+
+	reverse_proxy 127.0.0.1:3000 {
+		# 서버 스트림(WatchEndpoints, 터미널 출력)을 버퍼링하지 않고 바로 흘려보낸다
+		flush_interval -1
+		transport http {
+			read_timeout 0
+			write_timeout 0
+		}
+	}
+}
+
+grid.example.com:8443 {
+	reverse_proxy h2c://127.0.0.1:8443 {
+		flush_interval -1
+		transport http {
+			versions h2c
+			read_timeout 0
+			write_timeout 0
+		}
+	}
+}

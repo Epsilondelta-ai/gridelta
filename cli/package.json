@@ -1,0 +1,23 @@
+{
+  "name": "@gridelta/cli",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "gridelta": "./bin/gridelta.js"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@clack/prompts": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-node": "catalog:",
+    "@gridelta/proto": "workspace:*",
+    "commander": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

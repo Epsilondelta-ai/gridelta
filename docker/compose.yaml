@@ -1,4 +1,5 @@
-# 로컬 동작 확인용 구성: 서버 1대 + 리눅스 에이전트 2대
+# 로컬 동작 확인용 구성: 서버 1대 + 리눅스 에이전트 2대 (systemd debian, alpine)
+# 인증서는 e2e.sh 가 .e2e/certs 에 만든다.
 name: gridelta-e2e
 
 services:
@@ -8,6 +9,12 @@ services:
       dockerfile: docker/server.Dockerfile
     environment:
       GRIDELTA_DEBUG: "1"
+      GRIDELTA_GATEWAY_URL: https://server:8443
+      GRIDELTA_TLS_CERT: /certs/server.crt
+      GRIDELTA_TLS_KEY: /certs/server.key
+      GRIDELTA_TLS_SELF_SIGNED: "1"
+    volumes:
+      - ./.e2e/certs:/certs:ro
     ports:
       - "127.0.0.1:${GRIDELTA_E2E_PORT:-3900}:3000"
 
@@ -15,20 +22,20 @@ services:
     build:
       context: ..
       dockerfile: docker/agent.Dockerfile
+      target: systemd
     hostname: agent-debian
-    environment:
-      GRIDELTA_SERVER: http://server:8443
-      GRIDELTA_AGENT_ID: e2e-debian
+    # systemd 를 PID 1 로 돌리기 위한 설정
+    privileged: true
+    cgroup: host
+    tmpfs: [/run, /run/lock]
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     depends_on: [server]
 
   agent-alpine:
     build:
       context: ..
       dockerfile: docker/agent.Dockerfile
-      args:
-        BASE: alpine:3.22
+      target: plain
     hostname: agent-alpine
-    environment:
-      GRIDELTA_SERVER: http://server:8443
-      GRIDELTA_AGENT_ID: e2e-alpine
     depends_on: [server]

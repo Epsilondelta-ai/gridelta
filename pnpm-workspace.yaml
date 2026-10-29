@@ -1,6 +1,7 @@
 packages:
   - packages/*
   - server
+  - cli
 
 catalogMode: strict
 
@@ -12,7 +13,12 @@ catalog:
   "@flue/cli": 2.3.0
   "@flue/runtime": 2.3.0
   "@flue/vite": 2.3.0
+  "@clack/prompts": 1.8.1
+  "@node-rs/argon2": 2.2.2
   "@types/node": ^26.0.0
+  commander: 15.0.0
+  drizzle-kit: 1.0.0-rc.5
+  drizzle-orm: 1.0.0-rc.5
   hono: 4.13.14
   typescript: 7.0.2
   vite: 8.3.5

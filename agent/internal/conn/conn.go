@@ -3,19 +3,15 @@ package conn
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
 	"log/slog"
-	"net/http"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"connectrpc.com/connect/v2"
-	"connectrpc.com/connect/v2/connecthttp"
 
 	grideltav1 "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1"
 	"github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1/grideltav1connect"
@@ -23,21 +19,21 @@ import (
 )
 
 const (
-	maxMessageBytes = 4 << 20
 	// 이 시간 동안 서버에게서 아무것도 받지 못하면 스스로 끊고 재연결한다
 	idleTimeout = 45 * time.Second
 	// 이만큼 연결이 유지되었으면 다음 재연결은 백오프를 처음부터 시작한다
 	stableAfter = 30 * time.Second
-	// 버전 비호환으로 거부되면 이 간격으로만 재시도한다
-	incompatibleRetry = time.Hour
+	// 버전 비호환이거나 자격 증명이 폐기되면 이 간격으로만 재시도한다
+	rejectedRetry = time.Hour
 )
 
 // Config 는 에이전트 연결 설정이다.
 type Config struct {
-	ServerURL   string
-	Credential  string
-	Hello       *grideltav1.Hello
-	OutputLimit int
+	ServerURL     string
+	CAFingerprint string
+	Credential    string
+	Hello         *grideltav1.Hello
+	OutputLimit   int
 }
 
 // Client 는 서버와의 연결 하나를 유지한다.
@@ -48,41 +44,7 @@ type Client struct {
 }
 
 func New(cfg Config, logger *slog.Logger) *Client {
-	transport := connecthttp.NewTransport(newHTTPClient(cfg.ServerURL), cfg.ServerURL,
-		connecthttp.WithReadMaxBytes(maxMessageBytes),
-		connecthttp.WithSendMaxBytes(maxMessageBytes),
-	)
-	return &Client{
-		cfg:    cfg,
-		gw:     grideltav1connect.NewAgentGatewayClient(connect.NewClient(transport)),
-		logger: logger,
-	}
-}
-
-// newHTTPClient 는 긴 bidi 스트림에 맞춘 HTTP/2 클라이언트를 만든다.
-// http:// 이면 h2c(평문 HTTP/2), https:// 이면 TLS 위 HTTP/2 만 쓴다.
-func newHTTPClient(serverURL string) *http.Client {
-	protocols := new(http.Protocols)
-	if strings.HasPrefix(serverURL, "http://") {
-		protocols.SetUnencryptedHTTP2(true)
-	} else {
-		protocols.SetHTTP2(true)
-	}
-	return &http.Client{
-		// 스트림 전체에 걸리므로 0 으로 두고 context 로 취소한다
-		Timeout: 0,
-		Transport: &http.Transport{
-			ForceAttemptHTTP2: true,
-			Protocols:         protocols,
-			TLSClientConfig:   &tls.Config{MinVersion: tls.VersionTLS12},
-			HTTP2: &http.HTTP2Config{
-				SendPingTimeout:  20 * time.Second,
-				PingTimeout:      10 * time.Second,
-				WriteByteTimeout: 15 * time.Second,
-			},
-		},
-		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
-	}
+	return &Client{cfg: cfg, gw: NewGatewayClient(cfg.ServerURL, cfg.CAFingerprint), logger: logger}
 }
 
 // Run 은 ctx 가 끝날 때까지 연결을 유지하고, 끊기면 백오프 후 재연결한다.
@@ -98,8 +60,9 @@ func (c *Client) Run(ctx context.Context) {
 			bo.reset()
 		}
 		wait := bo.next()
-		if connect.CodeOf(err) == connect.CodeFailedPrecondition {
-			wait = incompatibleRetry
+		switch connect.CodeOf(err) {
+		case connect.CodeFailedPrecondition, connect.CodeUnauthenticated:
+			wait = rejectedRetry
 		}
 		c.logger.Warn("disconnected", "err", err, "retry_in", wait.Round(time.Millisecond))
 		select {

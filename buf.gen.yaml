@@ -10,5 +10,7 @@ plugins:
     opt: paths=source_relative
   - local: protoc-gen-es
     out: packages/proto/src/gen
-    opt: target=ts
+    opt:
+      - target=ts
+      - import_extension=ts
     include_imports: true

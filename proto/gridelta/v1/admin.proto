@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package gridelta.v1;
+
+import "gridelta/v1/console.proto";
+
+option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
+
+// CLI 전용. 서버 호스트의 유닉스 소켓에서만 수신하며, 소켓 파일 권한(0600)이 곧 인증이다.
+// OAuth 관련 RPC 는 M6 에서 추가한다.
+service AdminService {
+  rpc CreateEnrollToken(CreateEnrollTokenRequest) returns (CreateEnrollTokenResponse);
+  rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
+  rpc RevokeEndpoint(RevokeEndpointRequest) returns (RevokeEndpointResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}
+
+message CreateEnrollTokenRequest {
+  uint32 ttl_seconds = 1; // 0 이면 3600
+}
+
+message CreateEnrollTokenResponse {
+  string token = 1;
+  int64 expires_at_ms = 2;
+  string server_url = 3; // 에이전트가 접속할 게이트웨이 주소
+  string ca_fingerprint = 4; // 자체 서명 인증서일 때만. SHA-256 hex
+}
+
+message RevokeEndpointRequest {
+  string endpoint_id = 1;
+}
+
+message RevokeEndpointResponse {}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message CreateUserResponse {
+  string user_id = 1;
+}

@@ -1,14 +1,21 @@
+import { X509Certificate } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import http2 from 'node:http2';
 import { create } from '@bufbuild/protobuf';
 import { Code, ConnectError, type ConnectRouter } from '@connectrpc/connect';
 import { connectNodeAdapter } from '@connectrpc/connect-node';
 import { type AgentMessage, AgentGateway, type ServerMessage, ServerMessageSchema } from '@gridelta/proto/gateway';
 import { type AgentHub, IDLE_TIMEOUT_MS, PING_INTERVAL_MS } from '../hub/index.ts';
+import type { Store } from '../store/index.ts';
 
 export const SERVER_VERSION = '0.1.0-dev';
 const MAX_MESSAGE_BYTES = 4 * 1024 * 1024;
 
-export function gatewayRoutes(hub: AgentHub) {
+function bearer(header: string | null): string {
+  return header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : '';
+}
+
+export function gatewayRoutes(hub: AgentHub, store: Store) {
   return (router: ConnectRouter) => {
     router.service(AgentGateway, {
       async *connect(requests: AsyncIterable<AgentMessage>, ctx): AsyncIterable<ServerMessage> {
@@ -18,8 +25,10 @@ export function gatewayRoutes(hub: AgentHub) {
           throw new ConnectError('first message must be Hello', Code.InvalidArgument);
         }
         const hello = first.value.msg.value;
-        if (!hello.agentId) throw new ConnectError('agent_id is required', Code.InvalidArgument);
+        const row = await store.authenticateEndpoint(hello.agentId, bearer(ctx.requestHeader.get('authorization')));
+        if (!row) throw new ConnectError('invalid or revoked agent credential', Code.Unauthenticated);
 
+        await store.updateFromHello(hello.agentId, hello);
         const conn = hub.attach(hello);
         console.info(`[gateway] online ${hello.agentId} (${hello.os}/${hello.arch}, ${hello.hostname})`);
 
@@ -62,27 +71,49 @@ export function gatewayRoutes(hub: AgentHub) {
           clearInterval(timer);
           ctx.signal.removeEventListener('abort', onAbort);
           hub.detach(conn);
+          await store.touchEndpoint(hello.agentId, new Date(conn.lastRecv)).catch(() => {});
           console.info(`[gateway] offline ${hello.agentId}`);
         }
       },
 
-      enroll() {
-        throw new ConnectError('enroll is implemented in M2', Code.Unimplemented);
+      async enroll(req) {
+        if (!(await store.consumeEnrollToken(req.enrollToken))) {
+          throw new ConnectError('invalid, used or expired enroll token', Code.PermissionDenied);
+        }
+        const { id, credential } = await store.enrollEndpoint(req);
+        console.info(`[gateway] enrolled ${id} (${req.os}/${req.arch}, ${req.hostname})`);
+        return { agentId: id, credential };
       },
     });
   };
 }
 
+export interface GatewayOptions {
+  port: number;
+  tlsCert?: string;
+  tlsKey?: string;
+}
+
 /**
  * 에이전트용 HTTP/2 서버를 띄운다. bidi 스트림에는 HTTP/2 가 필수다.
- * M1 은 평문 HTTP/2(h2c)이며, TLS 는 M2 에서 붙인다.
+ * 인증서가 주어지면 TLS, 아니면 h2c (앞단 프록시가 TLS 를 맡는 경우).
  */
-export function startGateway(hub: AgentHub, port: number): http2.Http2Server {
-  const handler = connectNodeAdapter({
-    routes: gatewayRoutes(hub),
-    readMaxBytes: MAX_MESSAGE_BYTES,
-  });
-  const server = http2.createServer(handler);
-  server.listen(port, () => console.info(`[gateway] listening on :${port} (h2c)`));
+export function startGateway(hub: AgentHub, store: Store, opts: GatewayOptions): http2.Http2Server {
+  const handler = connectNodeAdapter({ routes: gatewayRoutes(hub, store), readMaxBytes: MAX_MESSAGE_BYTES });
+  const tls = opts.tlsCert && opts.tlsKey;
+  const server = tls
+    ? http2.createSecureServer({ cert: readFileSync(opts.tlsCert!), key: readFileSync(opts.tlsKey!) }, handler)
+    : http2.createServer(handler);
+  server.listen(opts.port, () => console.info(`[gateway] listening on :${opts.port} (${tls ? 'TLS' : 'h2c'})`));
   return server;
+}
+
+/**
+ * 인증서 파일에서 고정용 지문(SHA-256, 소문자 hex)을 구한다.
+ * 체인 파일이면 마지막 인증서(가장 상위 CA)를 쓴다. 자체 서명이면 그 인증서 자신이다.
+ */
+export function certFingerprint(certPath: string): string {
+  const pems = readFileSync(certPath, 'utf8').match(/-----BEGIN CERTIFICATE-----[\s\S]+?-----END CERTIFICATE-----/g);
+  if (!pems?.length) throw new Error(`no certificate found in ${certPath}`);
+  return new X509Certificate(pems.at(-1)!).fingerprint256.replaceAll(':', '').toLowerCase();
 }
