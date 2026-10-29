@@ -152,18 +152,18 @@ dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=a
 pass "PTY 세션 시작·종료가 감사 로그에 기록"
 
 echo "== M5: AI 컨트롤 (정해진 응답 모델 + 브라우저)"
-exec_on "$DEBIAN" "mkdir -p /tmp/gridelta-ai-test && touch /tmp/gridelta-ai-test/keep" >/dev/null
+exec_on "$DEBIAN" "mkdir -p /tmp/gridelta-ai-test /tmp/gridelta-ai-test2 && touch /tmp/gridelta-ai-test/keep" >/dev/null
 dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
   sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node ai-test.mjs' || fail "AI e2e"
-out=$(exec_on "$DEBIAN" "test -e /tmp/gridelta-ai-test && echo exists || echo gone; cat /tmp/gridelta-ai.txt")
-[[ "$(jget 'd.stdout' <<<"$out")" == $'gone\nwritten by ai' ]] || fail "AI side effects on the PC: $out"
+out=$(exec_on "$DEBIAN" "test -e /tmp/gridelta-ai-test && echo exists || echo gone; test -e /tmp/gridelta-ai-test2 && echo exists || echo gone; cat /tmp/gridelta-ai.txt")
+[[ "$(jget 'd.stdout' <<<"$out")" == $'gone\ngone\nwritten by ai' ]] || fail "AI side effects on the PC: $out"
 pass "원격 PC 상태 확인: 승인 후 폴더 삭제됨, AI 가 쓴 파일 존재"
 [[ "$(dc exec -T server node -e "
   const { DatabaseSync } = require('node:sqlite');
   const db = new DatabaseSync('/var/lib/gridelta/gridelta.db');
   const statuses = db.prepare('select status from approvals order by created_at').all().map(r => r.status).join(',');
   const ai = db.prepare(\"select count(*) n from audit_log where actor = 'ai' and kind = 'exec' and approval_id is not null\").get().n;
-  console.log(statuses === 'denied,approved' && ai === 2);
+  console.log(statuses === 'denied,approved,approved' && ai === 3);
 ")" == true ]] || fail "approvals/audit_log rows for AI commands"
 pass "승인 기록(거부·승인)과 AI 명령 감사 로그(approval_id 포함)"
 code=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/UpdateAiSettings" \

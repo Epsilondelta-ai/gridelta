@@ -214,6 +214,10 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   }, []);
 
   const pcName = (e: Endpoint) => e.displayName || e.hostname;
+  const endpointName = (id: string) => {
+    const e = endpoints.get(id);
+    return e ? pcName(e) : id.slice(0, 8);
+  };
   const sortedEndpoints = [...endpoints.values()].sort((a, b) => pcName(a).localeCompare(pcName(b)));
 
   return (
@@ -371,7 +375,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
           </>
         )}
         </div>
-        {endpoint && showAi && <AiPanel endpoint={endpoint} />}
+        {showAi && <AiPanel endpoint={endpoint} endpointName={endpointName} />}
         </div>
         <footer className="flex items-center gap-4 border-t border-line bg-panel px-4 py-1 text-xs text-muted">
           <span>{endpoint ? `${pcName(endpoint)} · ${endpoint.defaultShell}` : ''}</span>

@@ -260,6 +260,9 @@ catalogs:
     typescript:
       specifier: 7.0.2
       version: 7.0.2
+    valibot:
+      specifier: 1.5.0
+      version: 1.5.0
     vite:
       specifier: 8.3.5
       version: 8.3.5
@@ -354,6 +357,9 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.13.14
+      valibot:
+        specifier: 'catalog:'
+        version: 1.5.0(typescript@7.0.2)
     devDependencies:
       '@flue/cli':
         specifier: 'catalog:'

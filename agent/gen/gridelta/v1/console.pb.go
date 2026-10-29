@@ -1691,6 +1691,390 @@ func (*RenameEndpointResponse) Descriptor() ([]byte, []int) {
 	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{32}
 }
 
+type AiSession struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Scope         string                 `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"` // "all" 이면 여러 PC 를 다루는 통합 대화, 아니면 그 PC 의 endpoint id
+	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	CreatedAtMs   int64                  `protobuf:"varint,4,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
+	UpdatedAtMs   int64                  `protobuf:"varint,5,opt,name=updated_at_ms,json=updatedAtMs,proto3" json:"updated_at_ms,omitempty"`
+	AgentUrl      string                 `protobuf:"bytes,6,opt,name=agent_url,json=agentUrl,proto3" json:"agent_url,omitempty"` // 이 세션의 Flue 대화 URL (/agents/assistant/<id> 또는 /agents/operator/<endpoint>:<id>)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AiSession) Reset() {
+	*x = AiSession{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AiSession) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AiSession) ProtoMessage() {}
+
+func (x *AiSession) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AiSession.ProtoReflect.Descriptor instead.
+func (*AiSession) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *AiSession) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AiSession) GetScope() string {
+	if x != nil {
+		return x.Scope
+	}
+	return ""
+}
+
+func (x *AiSession) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *AiSession) GetCreatedAtMs() int64 {
+	if x != nil {
+		return x.CreatedAtMs
+	}
+	return 0
+}
+
+func (x *AiSession) GetUpdatedAtMs() int64 {
+	if x != nil {
+		return x.UpdatedAtMs
+	}
+	return 0
+}
+
+func (x *AiSession) GetAgentUrl() string {
+	if x != nil {
+		return x.AgentUrl
+	}
+	return ""
+}
+
+type ListAiSessionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"` // 주면 통합 대화 + 그 PC 의 대화, 비우면 전체
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAiSessionsRequest) Reset() {
+	*x = ListAiSessionsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAiSessionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAiSessionsRequest) ProtoMessage() {}
+
+func (x *ListAiSessionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAiSessionsRequest.ProtoReflect.Descriptor instead.
+func (*ListAiSessionsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ListAiSessionsRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+type ListAiSessionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Sessions      []*AiSession           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions,omitempty"` // 최근에 쓴 것부터
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAiSessionsResponse) Reset() {
+	*x = ListAiSessionsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAiSessionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAiSessionsResponse) ProtoMessage() {}
+
+func (x *ListAiSessionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAiSessionsResponse.ProtoReflect.Descriptor instead.
+func (*ListAiSessionsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *ListAiSessionsResponse) GetSessions() []*AiSession {
+	if x != nil {
+		return x.Sessions
+	}
+	return nil
+}
+
+type CreateAiSessionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Scope         string                 `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"` // "all" 또는 endpoint id
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAiSessionRequest) Reset() {
+	*x = CreateAiSessionRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAiSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAiSessionRequest) ProtoMessage() {}
+
+func (x *CreateAiSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAiSessionRequest.ProtoReflect.Descriptor instead.
+func (*CreateAiSessionRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *CreateAiSessionRequest) GetScope() string {
+	if x != nil {
+		return x.Scope
+	}
+	return ""
+}
+
+type RenameAiSessionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameAiSessionRequest) Reset() {
+	*x = RenameAiSessionRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameAiSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameAiSessionRequest) ProtoMessage() {}
+
+func (x *RenameAiSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameAiSessionRequest.ProtoReflect.Descriptor instead.
+func (*RenameAiSessionRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *RenameAiSessionRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *RenameAiSessionRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+type RenameAiSessionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenameAiSessionResponse) Reset() {
+	*x = RenameAiSessionResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenameAiSessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenameAiSessionResponse) ProtoMessage() {}
+
+func (x *RenameAiSessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenameAiSessionResponse.ProtoReflect.Descriptor instead.
+func (*RenameAiSessionResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{38}
+}
+
+type DeleteAiSessionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAiSessionRequest) Reset() {
+	*x = DeleteAiSessionRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAiSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAiSessionRequest) ProtoMessage() {}
+
+func (x *DeleteAiSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAiSessionRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAiSessionRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *DeleteAiSessionRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteAiSessionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAiSessionResponse) Reset() {
+	*x = DeleteAiSessionResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAiSessionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAiSessionResponse) ProtoMessage() {}
+
+func (x *DeleteAiSessionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAiSessionResponse.ProtoReflect.Descriptor instead.
+func (*DeleteAiSessionResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{40}
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
@@ -1806,8 +2190,28 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\x18\n" +
-	"\x16RenameEndpointResponse2\xa6\n" +
-	"\n" +
+	"\x16RenameEndpointResponse\"\xac\x01\n" +
+	"\tAiSession\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05scope\x18\x02 \x01(\tR\x05scope\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\"\n" +
+	"\rcreated_at_ms\x18\x04 \x01(\x03R\vcreatedAtMs\x12\"\n" +
+	"\rupdated_at_ms\x18\x05 \x01(\x03R\vupdatedAtMs\x12\x1b\n" +
+	"\tagent_url\x18\x06 \x01(\tR\bagentUrl\"8\n" +
+	"\x15ListAiSessionsRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\"L\n" +
+	"\x16ListAiSessionsResponse\x122\n" +
+	"\bsessions\x18\x01 \x03(\v2\x16.gridelta.v1.AiSessionR\bsessions\".\n" +
+	"\x16CreateAiSessionRequest\x12\x14\n" +
+	"\x05scope\x18\x01 \x01(\tR\x05scope\">\n" +
+	"\x16RenameAiSessionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\"\x19\n" +
+	"\x17RenameAiSessionResponse\"(\n" +
+	"\x16DeleteAiSessionRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x19\n" +
+	"\x17DeleteAiSessionResponse2\x8d\r\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
 	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12S\n" +
@@ -1821,7 +2225,11 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x0eRenameEndpoint\x12\".gridelta.v1.RenameEndpointRequest\x1a#.gridelta.v1.RenameEndpointResponse\x12R\n" +
 	"\x0eWatchApprovals\x12\".gridelta.v1.WatchApprovalsRequest\x1a\x1a.gridelta.v1.ApprovalEvent0\x01\x12Y\n" +
 	"\x0eDecideApproval\x12\".gridelta.v1.DecideApprovalRequest\x1a#.gridelta.v1.DecideApprovalResponse\x12b\n" +
-	"\x11SetApprovalPolicy\x12%.gridelta.v1.SetApprovalPolicyRequest\x1a&.gridelta.v1.SetApprovalPolicyResponse\x12K\n" +
+	"\x11SetApprovalPolicy\x12%.gridelta.v1.SetApprovalPolicyRequest\x1a&.gridelta.v1.SetApprovalPolicyResponse\x12Y\n" +
+	"\x0eListAiSessions\x12\".gridelta.v1.ListAiSessionsRequest\x1a#.gridelta.v1.ListAiSessionsResponse\x12N\n" +
+	"\x0fCreateAiSession\x12#.gridelta.v1.CreateAiSessionRequest\x1a\x16.gridelta.v1.AiSession\x12\\\n" +
+	"\x0fRenameAiSession\x12#.gridelta.v1.RenameAiSessionRequest\x1a$.gridelta.v1.RenameAiSessionResponse\x12\\\n" +
+	"\x0fDeleteAiSession\x12#.gridelta.v1.DeleteAiSessionRequest\x1a$.gridelta.v1.DeleteAiSessionResponse\x12K\n" +
 	"\rGetAiSettings\x12!.gridelta.v1.GetAiSettingsRequest\x1a\x17.gridelta.v1.AiSettings\x12Q\n" +
 	"\x10UpdateAiSettings\x12$.gridelta.v1.UpdateAiSettingsRequest\x1a\x17.gridelta.v1.AiSettingsBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
 
@@ -1837,7 +2245,7 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_gridelta_v1_console_proto_goTypes = []any{
 	(*Endpoint)(nil),                  // 0: gridelta.v1.Endpoint
 	(*ListEndpointsRequest)(nil),      // 1: gridelta.v1.ListEndpointsRequest
@@ -1872,6 +2280,14 @@ var file_gridelta_v1_console_proto_goTypes = []any{
 	(*RenameTerminalResponse)(nil),    // 30: gridelta.v1.RenameTerminalResponse
 	(*RenameEndpointRequest)(nil),     // 31: gridelta.v1.RenameEndpointRequest
 	(*RenameEndpointResponse)(nil),    // 32: gridelta.v1.RenameEndpointResponse
+	(*AiSession)(nil),                 // 33: gridelta.v1.AiSession
+	(*ListAiSessionsRequest)(nil),     // 34: gridelta.v1.ListAiSessionsRequest
+	(*ListAiSessionsResponse)(nil),    // 35: gridelta.v1.ListAiSessionsResponse
+	(*CreateAiSessionRequest)(nil),    // 36: gridelta.v1.CreateAiSessionRequest
+	(*RenameAiSessionRequest)(nil),    // 37: gridelta.v1.RenameAiSessionRequest
+	(*RenameAiSessionResponse)(nil),   // 38: gridelta.v1.RenameAiSessionResponse
+	(*DeleteAiSessionRequest)(nil),    // 39: gridelta.v1.DeleteAiSessionRequest
+	(*DeleteAiSessionResponse)(nil),   // 40: gridelta.v1.DeleteAiSessionResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
@@ -1879,41 +2295,50 @@ var file_gridelta_v1_console_proto_depIdxs = []int32{
 	7,  // 2: gridelta.v1.ListTerminalsResponse.terminals:type_name -> gridelta.v1.Terminal
 	18, // 3: gridelta.v1.ApprovalEvent.approval:type_name -> gridelta.v1.Approval
 	25, // 4: gridelta.v1.AiSettings.models:type_name -> gridelta.v1.AiModel
-	1,  // 5: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3,  // 6: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	5,  // 7: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
-	8,  // 8: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
-	10, // 9: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
-	12, // 10: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
-	14, // 11: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
-	16, // 12: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	29, // 13: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
-	31, // 14: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
-	19, // 15: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
-	21, // 16: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
-	23, // 17: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
-	27, // 18: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
-	28, // 19: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
-	2,  // 20: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 21: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	6,  // 22: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 23: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 24: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 25: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 26: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 27: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	30, // 28: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
-	32, // 29: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
-	20, // 30: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
-	22, // 31: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
-	24, // 32: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
-	26, // 33: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
-	26, // 34: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
-	20, // [20:35] is the sub-list for method output_type
-	5,  // [5:20] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	33, // 5: gridelta.v1.ListAiSessionsResponse.sessions:type_name -> gridelta.v1.AiSession
+	1,  // 6: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 7: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	5,  // 8: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 9: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 10: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 11: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 12: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 13: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	29, // 14: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
+	31, // 15: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
+	19, // 16: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 17: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 18: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	34, // 19: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
+	36, // 20: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
+	37, // 21: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
+	39, // 22: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
+	27, // 23: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
+	28, // 24: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
+	2,  // 25: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 26: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	6,  // 27: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 28: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 29: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 30: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 31: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 32: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	30, // 33: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
+	32, // 34: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
+	20, // 35: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 36: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 37: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	35, // 38: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
+	33, // 39: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
+	38, // 40: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
+	40, // 41: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
+	26, // 42: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
+	26, // 43: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
+	25, // [25:44] is the sub-list for method output_type
+	6,  // [6:25] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }
@@ -1928,7 +2353,7 @@ func file_gridelta_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   33,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

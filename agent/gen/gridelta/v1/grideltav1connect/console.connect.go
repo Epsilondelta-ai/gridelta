@@ -62,6 +62,18 @@ const (
 	// ConsoleServiceSetApprovalPolicyProcedure is the procedure name of the ConsoleService's
 	// SetApprovalPolicy RPC.
 	ConsoleServiceSetApprovalPolicyProcedure = "/gridelta.v1.ConsoleService/SetApprovalPolicy"
+	// ConsoleServiceListAiSessionsProcedure is the procedure name of the ConsoleService's
+	// ListAiSessions RPC.
+	ConsoleServiceListAiSessionsProcedure = "/gridelta.v1.ConsoleService/ListAiSessions"
+	// ConsoleServiceCreateAiSessionProcedure is the procedure name of the ConsoleService's
+	// CreateAiSession RPC.
+	ConsoleServiceCreateAiSessionProcedure = "/gridelta.v1.ConsoleService/CreateAiSession"
+	// ConsoleServiceRenameAiSessionProcedure is the procedure name of the ConsoleService's
+	// RenameAiSession RPC.
+	ConsoleServiceRenameAiSessionProcedure = "/gridelta.v1.ConsoleService/RenameAiSession"
+	// ConsoleServiceDeleteAiSessionProcedure is the procedure name of the ConsoleService's
+	// DeleteAiSession RPC.
+	ConsoleServiceDeleteAiSessionProcedure = "/gridelta.v1.ConsoleService/DeleteAiSession"
 	// ConsoleServiceGetAiSettingsProcedure is the procedure name of the ConsoleService's GetAiSettings
 	// RPC.
 	ConsoleServiceGetAiSettingsProcedure = "/gridelta.v1.ConsoleService/GetAiSettings"
@@ -162,6 +174,34 @@ var (
 			Procedure:  ConsoleServiceSetApprovalPolicyProcedure,
 		}
 	})
+	consoleServiceListAiSessionsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListAiSessions"),
+			Procedure:  ConsoleServiceListAiSessionsProcedure,
+		}
+	})
+	consoleServiceCreateAiSessionSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("CreateAiSession"),
+			Procedure:  ConsoleServiceCreateAiSessionProcedure,
+		}
+	})
+	consoleServiceRenameAiSessionSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RenameAiSession"),
+			Procedure:  ConsoleServiceRenameAiSessionProcedure,
+		}
+	})
+	consoleServiceDeleteAiSessionSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("DeleteAiSession"),
+			Procedure:  ConsoleServiceDeleteAiSessionProcedure,
+		}
+	})
 	consoleServiceGetAiSettingsSpec = sync.OnceValue(func() connect.Spec {
 		return connect.Spec{
 			StreamType: connect.StreamTypeUnary,
@@ -195,6 +235,11 @@ type ConsoleServiceClient interface {
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest) (ConsoleServiceWatchApprovalsClientStream, error)
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
 	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
+	// AI 대화 세션. 대화 내용은 Flue 라우트가 저장하고, 여기서는 목록·이름을 관리한다
+	ListAiSessions(context.Context, *v1.ListAiSessionsRequest) (*v1.ListAiSessionsResponse, error)
+	CreateAiSession(context.Context, *v1.CreateAiSessionRequest) (*v1.AiSession, error)
+	RenameAiSession(context.Context, *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error)
+	DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error)
 	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
 	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
 	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
@@ -286,6 +331,11 @@ type ConsoleServiceHandler interface {
 	WatchApprovals(context.Context, *v1.WatchApprovalsRequest, ConsoleServiceWatchApprovalsServerStream) error
 	DecideApproval(context.Context, *v1.DecideApprovalRequest) (*v1.DecideApprovalResponse, error)
 	SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error)
+	// AI 대화 세션. 대화 내용은 Flue 라우트가 저장하고, 여기서는 목록·이름을 관리한다
+	ListAiSessions(context.Context, *v1.ListAiSessionsRequest) (*v1.ListAiSessionsResponse, error)
+	CreateAiSession(context.Context, *v1.CreateAiSessionRequest) (*v1.AiSession, error)
+	RenameAiSession(context.Context, *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error)
+	DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error)
 	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
 	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
 	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
@@ -309,6 +359,10 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 		connect.Method{Spec: consoleServiceWatchApprovalsSpec(), Handler: adapter.watchApprovals},
 		connect.Method{Spec: consoleServiceDecideApprovalSpec(), Handler: adapter.decideApproval},
 		connect.Method{Spec: consoleServiceSetApprovalPolicySpec(), Handler: adapter.setApprovalPolicy},
+		connect.Method{Spec: consoleServiceListAiSessionsSpec(), Handler: adapter.listAiSessions},
+		connect.Method{Spec: consoleServiceCreateAiSessionSpec(), Handler: adapter.createAiSession},
+		connect.Method{Spec: consoleServiceRenameAiSessionSpec(), Handler: adapter.renameAiSession},
+		connect.Method{Spec: consoleServiceDeleteAiSessionSpec(), Handler: adapter.deleteAiSession},
 		connect.Method{Spec: consoleServiceGetAiSettingsSpec(), Handler: adapter.getAiSettings},
 		connect.Method{Spec: consoleServiceUpdateAiSettingsSpec(), Handler: adapter.updateAiSettings},
 	)
@@ -415,6 +469,22 @@ func (UnimplementedConsoleServiceHandler) DecideApproval(context.Context, *v1.De
 
 func (UnimplementedConsoleServiceHandler) SetApprovalPolicy(context.Context, *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.SetApprovalPolicy is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListAiSessions(context.Context, *v1.ListAiSessionsRequest) (*v1.ListAiSessionsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListAiSessions is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) CreateAiSession(context.Context, *v1.CreateAiSessionRequest) (*v1.AiSession, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CreateAiSession is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) RenameAiSession(context.Context, *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RenameAiSession is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.DeleteAiSession is not implemented")
 }
 
 func (UnimplementedConsoleServiceHandler) GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error) {
@@ -528,6 +598,38 @@ func (c *consoleServiceClient) DecideApproval(ctx context.Context, req *v1.Decid
 func (c *consoleServiceClient) SetApprovalPolicy(ctx context.Context, req *v1.SetApprovalPolicyRequest) (*v1.SetApprovalPolicyResponse, error) {
 	var res v1.SetApprovalPolicyResponse
 	if err := c.client.CallUnary(ctx, consoleServiceSetApprovalPolicySpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListAiSessions(ctx context.Context, req *v1.ListAiSessionsRequest) (*v1.ListAiSessionsResponse, error) {
+	var res v1.ListAiSessionsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListAiSessionsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) CreateAiSession(ctx context.Context, req *v1.CreateAiSessionRequest) (*v1.AiSession, error) {
+	var res v1.AiSession
+	if err := c.client.CallUnary(ctx, consoleServiceCreateAiSessionSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RenameAiSession(ctx context.Context, req *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error) {
+	var res v1.RenameAiSessionResponse
+	if err := c.client.CallUnary(ctx, consoleServiceRenameAiSessionSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) DeleteAiSession(ctx context.Context, req *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error) {
+	var res v1.DeleteAiSessionResponse
+	if err := c.client.CallUnary(ctx, consoleServiceDeleteAiSessionSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -689,6 +791,54 @@ func (h consoleServiceHandler) setApprovalPolicy(ctx context.Context, _ connect.
 		return err
 	}
 	res, err := h.svc.SetApprovalPolicy(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listAiSessions(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListAiSessionsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListAiSessions(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) createAiSession(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CreateAiSessionRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CreateAiSession(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) renameAiSession(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RenameAiSessionRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RenameAiSession(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) deleteAiSession(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.DeleteAiSessionRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.DeleteAiSession(ctx, &req)
 	if err != nil {
 		return err
 	}

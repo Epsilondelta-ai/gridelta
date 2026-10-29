@@ -218,13 +218,17 @@ func newClient(cfg *config.Config) *conn.Client {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 	hostname, _ := os.Hostname()
 	// 프로토콜은 POSIX 경로만 쓴다 (Windows: C:\Users\me → /c/Users/me)
+	// systemd 서비스에는 HOME 이 없을 수 있으므로 OS 사용자 정보로 보완한다
 	home, _ := os.UserHomeDir()
-	if p, err := paths.Protocol(home); err == nil {
-		home = p
-	}
 	osUser := ""
 	if u, err := user.Current(); err == nil {
 		osUser = u.Username
+		if home == "" {
+			home = u.HomeDir
+		}
+	}
+	if p, err := paths.Protocol(home); err == nil {
+		home = p
 	}
 	shell := cfg.Shell
 	if shell == "" {

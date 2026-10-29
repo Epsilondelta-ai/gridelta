@@ -160,7 +160,8 @@ try {
   await page.getByLabel('터미널 이름').fill('취소될 이름');
   await page.getByLabel('터미널 이름').press('Escape');
   await page.getByRole('tab', { name: '터미널 2' }).waitFor();
-  await nav.getByRole('button', { name: `${PC} 이름 바꾸기` }).click({ force: true });
+  await nav.locator('button[data-endpoint-id]', { hasText: PC }).hover();
+  await nav.getByRole('button', { name: `${PC} 이름 바꾸기` }).click();
   await page.getByLabel('PC 이름').fill('개발 서버');
   await page.getByLabel('PC 이름').press('Enter');
   await nav.getByText('개발 서버').waitFor();
@@ -174,7 +175,8 @@ try {
   await page.getByLabel('터미널 이름').fill('');
   await page.getByLabel('터미널 이름').press('Enter');
   await page.getByRole('tab', { name: '터미널 1', exact: true }).waitFor();
-  await nav.getByRole('button', { name: '개발 서버 이름 바꾸기' }).click({ force: true });
+  await nav.locator('button[data-endpoint-id]', { hasText: '개발 서버' }).hover();
+  await nav.getByRole('button', { name: '개발 서버 이름 바꾸기' }).click();
   await page.getByLabel('PC 이름').fill('');
   await page.getByLabel('PC 이름').press('Enter');
   await nav.getByRole('button', { name: `${PC} 이름 바꾸기` }).waitFor({ state: 'attached' });

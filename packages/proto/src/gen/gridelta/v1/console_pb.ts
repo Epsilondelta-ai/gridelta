@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file gridelta/v1/console.proto.
  */
 export const file_gridelta_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLXAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkSFAoMZGlzcGxheV9uYW1lGAsgASgJIhYKFExpc3RFbmRwb2ludHNSZXF1ZXN0IkEKFUxpc3RFbmRwb2ludHNSZXNwb25zZRIoCgllbmRwb2ludHMYASADKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludCIXChVXYXRjaEVuZHBvaW50c1JlcXVlc3QiOAoNRW5kcG9pbnRFdmVudBInCghlbmRwb2ludBgBIAEoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IkYKE09wZW5UZXJtaW5hbFJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIioKFE9wZW5UZXJtaW5hbFJlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkiaQoIVGVybWluYWwSEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtlbmRwb2ludF9pZBgCIAEoCRIVCg1jcmVhdGVkX2F0X21zGAMgASgDEg4KBmV4aXRlZBgEIAEoCBINCgV0aXRsZRgFIAEoCSIrChRMaXN0VGVybWluYWxzUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSJBChVMaXN0VGVybWluYWxzUmVzcG9uc2USKAoJdGVybWluYWxzGAEgAygLMhUuZ3JpZGVsdGEudjEuVGVybWluYWwiPQoVQXR0YWNoVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSEAoIZnJvbV9zZXEYAiABKAQicAoOVGVybWluYWxPdXRwdXQSDAoEZGF0YRgBIAEoDBILCgNzZXEYAiABKAQSDQoFcmVzZXQYAyABKAgSFgoJZXhpdF9jb2RlGAQgASgFSACIAQESDgoGcmVwbGF5GAUgASgIQgwKCl9leGl0X2NvZGUiWgoQU2VuZElucHV0UmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlucHV0X3NlcRgCIAEoBBIMCgRkYXRhGAMgASgMEhEKCWNsaWVudF9pZBgEIAEoCSITChFTZW5kSW5wdXRSZXNwb25zZSJHChVSZXNpemVUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iGAoWUmVzaXplVGVybWluYWxSZXNwb25zZSIqChRDbG9zZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJIhcKFUNsb3NlVGVybWluYWxSZXNwb25zZSKOAQoIQXBwcm92YWwSCgoCaWQYASABKAkSEwoLZW5kcG9pbnRfaWQYAiABKAkSEAoIaG9zdG5hbWUYAyABKAkSDwoHY29tbWFuZBgEIAEoCRIOCgZzdGF0dXMYBSABKAkSFQoNY3JlYXRlZF9hdF9tcxgGIAEoAxIXCg9jb252ZXJzYXRpb25faWQYByABKAkiFwoVV2F0Y2hBcHByb3ZhbHNSZXF1ZXN0IjgKDUFwcHJvdmFsRXZlbnQSJwoIYXBwcm92YWwYASABKAsyFS5ncmlkZWx0YS52MS5BcHByb3ZhbCI0ChVEZWNpZGVBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkSDwoHYXBwcm92ZRgCIAEoCCIYChZEZWNpZGVBcHByb3ZhbFJlc3BvbnNlIj8KGFNldEFwcHJvdmFsUG9saWN5UmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIOCgZwb2xpY3kYAiABKAkiGwoZU2V0QXBwcm92YWxQb2xpY3lSZXNwb25zZSIjCgdBaU1vZGVsEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiQQoKQWlTZXR0aW5ncxINCgVtb2RlbBgBIAEoCRIkCgZtb2RlbHMYAiADKAsyFC5ncmlkZWx0YS52MS5BaU1vZGVsIhYKFEdldEFpU2V0dGluZ3NSZXF1ZXN0IigKF1VwZGF0ZUFpU2V0dGluZ3NSZXF1ZXN0Eg0KBW1vZGVsGAEgASgJIjoKFVJlbmFtZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEg0KBXRpdGxlGAIgASgJIhgKFlJlbmFtZVRlcm1pbmFsUmVzcG9uc2UiQgoVUmVuYW1lRW5kcG9pbnRSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJEhQKDGRpc3BsYXlfbmFtZRgCIAEoCSIYChZSZW5hbWVFbmRwb2ludFJlc3BvbnNlMqYKCg5Db25zb2xlU2VydmljZRJWCg1MaXN0RW5kcG9pbnRzEiEuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVzcG9uc2USUgoOV2F0Y2hFbmRwb2ludHMSIi5ncmlkZWx0YS52MS5XYXRjaEVuZHBvaW50c1JlcXVlc3QaGi5ncmlkZWx0YS52MS5FbmRwb2ludEV2ZW50MAESUwoMT3BlblRlcm1pbmFsEiAuZ3JpZGVsdGEudjEuT3BlblRlcm1pbmFsUmVxdWVzdBohLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlc3BvbnNlElYKDUxpc3RUZXJtaW5hbHMSIS5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RUZXJtaW5hbHNSZXNwb25zZRJTCg5BdHRhY2hUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLkF0dGFjaFRlcm1pbmFsUmVxdWVzdBobLmdyaWRlbHRhLnYxLlRlcm1pbmFsT3V0cHV0MAESSgoJU2VuZElucHV0Eh0uZ3JpZGVsdGEudjEuU2VuZElucHV0UmVxdWVzdBoeLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlc3BvbnNlElkKDlJlc2l6ZVRlcm1pbmFsEiIuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXNwb25zZRJWCg1DbG9zZVRlcm1pbmFsEiEuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlcXVlc3QaIi5ncmlkZWx0YS52MS5DbG9zZVRlcm1pbmFsUmVzcG9uc2USWQoOUmVuYW1lVGVybWluYWwSIi5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlc3BvbnNlElkKDlJlbmFtZUVuZHBvaW50EiIuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXNwb25zZRJSCg5XYXRjaEFwcHJvdmFscxIiLmdyaWRlbHRhLnYxLldhdGNoQXBwcm92YWxzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkFwcHJvdmFsRXZlbnQwARJZCg5EZWNpZGVBcHByb3ZhbBIiLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVzcG9uc2USYgoRU2V0QXBwcm92YWxQb2xpY3kSJS5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QaJi5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlc3BvbnNlEksKDUdldEFpU2V0dGluZ3MSIS5ncmlkZWx0YS52MS5HZXRBaVNldHRpbmdzUmVxdWVzdBoXLmdyaWRlbHRhLnYxLkFpU2V0dGluZ3MSUQoQVXBkYXRlQWlTZXR0aW5ncxIkLmdyaWRlbHRhLnYxLlVwZGF0ZUFpU2V0dGluZ3NSZXF1ZXN0GhcuZ3JpZGVsdGEudjEuQWlTZXR0aW5nc0JGWkRnaXRodWIuY29tL0Vwc2lsb25kZWx0YS1haS9ncmlkZWx0YS9hZ2VudC9nZW4vZ3JpZGVsdGEvdjE7Z3JpZGVsdGF2MWIGcHJvdG8z");
+  fileDesc("ChlncmlkZWx0YS92MS9jb25zb2xlLnByb3RvEgtncmlkZWx0YS52MSLXAQoIRW5kcG9pbnQSCgoCaWQYASABKAkSEAoIaG9zdG5hbWUYAiABKAkSCgoCb3MYAyABKAkSDAoEYXJjaBgEIAEoCRIQCghob21lX2RpchgFIAEoCRIVCg1kZWZhdWx0X3NoZWxsGAYgASgJEhUKDWFnZW50X3ZlcnNpb24YByABKAkSDgoGb25saW5lGAggASgIEhQKDGxhc3Rfc2Vlbl9tcxgJIAEoAxIXCg9hcHByb3ZhbF9wb2xpY3kYCiABKAkSFAoMZGlzcGxheV9uYW1lGAsgASgJIhYKFExpc3RFbmRwb2ludHNSZXF1ZXN0IkEKFUxpc3RFbmRwb2ludHNSZXNwb25zZRIoCgllbmRwb2ludHMYASADKAsyFS5ncmlkZWx0YS52MS5FbmRwb2ludCIXChVXYXRjaEVuZHBvaW50c1JlcXVlc3QiOAoNRW5kcG9pbnRFdmVudBInCghlbmRwb2ludBgBIAEoCzIVLmdyaWRlbHRhLnYxLkVuZHBvaW50IkYKE09wZW5UZXJtaW5hbFJlcXVlc3QSEwoLZW5kcG9pbnRfaWQYASABKAkSDAoEY29scxgCIAEoDRIMCgRyb3dzGAMgASgNIioKFE9wZW5UZXJtaW5hbFJlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkiaQoIVGVybWluYWwSEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtlbmRwb2ludF9pZBgCIAEoCRIVCg1jcmVhdGVkX2F0X21zGAMgASgDEg4KBmV4aXRlZBgEIAEoCBINCgV0aXRsZRgFIAEoCSIrChRMaXN0VGVybWluYWxzUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSJBChVMaXN0VGVybWluYWxzUmVzcG9uc2USKAoJdGVybWluYWxzGAEgAygLMhUuZ3JpZGVsdGEudjEuVGVybWluYWwiPQoVQXR0YWNoVGVybWluYWxSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSEAoIZnJvbV9zZXEYAiABKAQicAoOVGVybWluYWxPdXRwdXQSDAoEZGF0YRgBIAEoDBILCgNzZXEYAiABKAQSDQoFcmVzZXQYAyABKAgSFgoJZXhpdF9jb2RlGAQgASgFSACIAQESDgoGcmVwbGF5GAUgASgIQgwKCl9leGl0X2NvZGUiWgoQU2VuZElucHV0UmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlucHV0X3NlcRgCIAEoBBIMCgRkYXRhGAMgASgMEhEKCWNsaWVudF9pZBgEIAEoCSITChFTZW5kSW5wdXRSZXNwb25zZSJHChVSZXNpemVUZXJtaW5hbFJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRIMCgRjb2xzGAIgASgNEgwKBHJvd3MYAyABKA0iGAoWUmVzaXplVGVybWluYWxSZXNwb25zZSIqChRDbG9zZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJIhcKFUNsb3NlVGVybWluYWxSZXNwb25zZSKOAQoIQXBwcm92YWwSCgoCaWQYASABKAkSEwoLZW5kcG9pbnRfaWQYAiABKAkSEAoIaG9zdG5hbWUYAyABKAkSDwoHY29tbWFuZBgEIAEoCRIOCgZzdGF0dXMYBSABKAkSFQoNY3JlYXRlZF9hdF9tcxgGIAEoAxIXCg9jb252ZXJzYXRpb25faWQYByABKAkiFwoVV2F0Y2hBcHByb3ZhbHNSZXF1ZXN0IjgKDUFwcHJvdmFsRXZlbnQSJwoIYXBwcm92YWwYASABKAsyFS5ncmlkZWx0YS52MS5BcHByb3ZhbCI0ChVEZWNpZGVBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkSDwoHYXBwcm92ZRgCIAEoCCIYChZEZWNpZGVBcHByb3ZhbFJlc3BvbnNlIj8KGFNldEFwcHJvdmFsUG9saWN5UmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCRIOCgZwb2xpY3kYAiABKAkiGwoZU2V0QXBwcm92YWxQb2xpY3lSZXNwb25zZSIjCgdBaU1vZGVsEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiQQoKQWlTZXR0aW5ncxINCgVtb2RlbBgBIAEoCRIkCgZtb2RlbHMYAiADKAsyFC5ncmlkZWx0YS52MS5BaU1vZGVsIhYKFEdldEFpU2V0dGluZ3NSZXF1ZXN0IigKF1VwZGF0ZUFpU2V0dGluZ3NSZXF1ZXN0Eg0KBW1vZGVsGAEgASgJIjoKFVJlbmFtZVRlcm1pbmFsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEg0KBXRpdGxlGAIgASgJIhgKFlJlbmFtZVRlcm1pbmFsUmVzcG9uc2UiQgoVUmVuYW1lRW5kcG9pbnRSZXF1ZXN0EhMKC2VuZHBvaW50X2lkGAEgASgJEhQKDGRpc3BsYXlfbmFtZRgCIAEoCSIYChZSZW5hbWVFbmRwb2ludFJlc3BvbnNlInYKCUFpU2Vzc2lvbhIKCgJpZBgBIAEoCRINCgVzY29wZRgCIAEoCRINCgV0aXRsZRgDIAEoCRIVCg1jcmVhdGVkX2F0X21zGAQgASgDEhUKDXVwZGF0ZWRfYXRfbXMYBSABKAMSEQoJYWdlbnRfdXJsGAYgASgJIiwKFUxpc3RBaVNlc3Npb25zUmVxdWVzdBITCgtlbmRwb2ludF9pZBgBIAEoCSJCChZMaXN0QWlTZXNzaW9uc1Jlc3BvbnNlEigKCHNlc3Npb25zGAEgAygLMhYuZ3JpZGVsdGEudjEuQWlTZXNzaW9uIicKFkNyZWF0ZUFpU2Vzc2lvblJlcXVlc3QSDQoFc2NvcGUYASABKAkiMwoWUmVuYW1lQWlTZXNzaW9uUmVxdWVzdBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCSIZChdSZW5hbWVBaVNlc3Npb25SZXNwb25zZSIkChZEZWxldGVBaVNlc3Npb25SZXF1ZXN0EgoKAmlkGAEgASgJIhkKF0RlbGV0ZUFpU2Vzc2lvblJlc3BvbnNlMo0NCg5Db25zb2xlU2VydmljZRJWCg1MaXN0RW5kcG9pbnRzEiEuZ3JpZGVsdGEudjEuTGlzdEVuZHBvaW50c1JlcXVlc3QaIi5ncmlkZWx0YS52MS5MaXN0RW5kcG9pbnRzUmVzcG9uc2USUgoOV2F0Y2hFbmRwb2ludHMSIi5ncmlkZWx0YS52MS5XYXRjaEVuZHBvaW50c1JlcXVlc3QaGi5ncmlkZWx0YS52MS5FbmRwb2ludEV2ZW50MAESUwoMT3BlblRlcm1pbmFsEiAuZ3JpZGVsdGEudjEuT3BlblRlcm1pbmFsUmVxdWVzdBohLmdyaWRlbHRhLnYxLk9wZW5UZXJtaW5hbFJlc3BvbnNlElYKDUxpc3RUZXJtaW5hbHMSIS5ncmlkZWx0YS52MS5MaXN0VGVybWluYWxzUmVxdWVzdBoiLmdyaWRlbHRhLnYxLkxpc3RUZXJtaW5hbHNSZXNwb25zZRJTCg5BdHRhY2hUZXJtaW5hbBIiLmdyaWRlbHRhLnYxLkF0dGFjaFRlcm1pbmFsUmVxdWVzdBobLmdyaWRlbHRhLnYxLlRlcm1pbmFsT3V0cHV0MAESSgoJU2VuZElucHV0Eh0uZ3JpZGVsdGEudjEuU2VuZElucHV0UmVxdWVzdBoeLmdyaWRlbHRhLnYxLlNlbmRJbnB1dFJlc3BvbnNlElkKDlJlc2l6ZVRlcm1pbmFsEiIuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVzaXplVGVybWluYWxSZXNwb25zZRJWCg1DbG9zZVRlcm1pbmFsEiEuZ3JpZGVsdGEudjEuQ2xvc2VUZXJtaW5hbFJlcXVlc3QaIi5ncmlkZWx0YS52MS5DbG9zZVRlcm1pbmFsUmVzcG9uc2USWQoOUmVuYW1lVGVybWluYWwSIi5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlcXVlc3QaIy5ncmlkZWx0YS52MS5SZW5hbWVUZXJtaW5hbFJlc3BvbnNlElkKDlJlbmFtZUVuZHBvaW50EiIuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuUmVuYW1lRW5kcG9pbnRSZXNwb25zZRJSCg5XYXRjaEFwcHJvdmFscxIiLmdyaWRlbHRhLnYxLldhdGNoQXBwcm92YWxzUmVxdWVzdBoaLmdyaWRlbHRhLnYxLkFwcHJvdmFsRXZlbnQwARJZCg5EZWNpZGVBcHByb3ZhbBIiLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVxdWVzdBojLmdyaWRlbHRhLnYxLkRlY2lkZUFwcHJvdmFsUmVzcG9uc2USYgoRU2V0QXBwcm92YWxQb2xpY3kSJS5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlcXVlc3QaJi5ncmlkZWx0YS52MS5TZXRBcHByb3ZhbFBvbGljeVJlc3BvbnNlElkKDkxpc3RBaVNlc3Npb25zEiIuZ3JpZGVsdGEudjEuTGlzdEFpU2Vzc2lvbnNSZXF1ZXN0GiMuZ3JpZGVsdGEudjEuTGlzdEFpU2Vzc2lvbnNSZXNwb25zZRJOCg9DcmVhdGVBaVNlc3Npb24SIy5ncmlkZWx0YS52MS5DcmVhdGVBaVNlc3Npb25SZXF1ZXN0GhYuZ3JpZGVsdGEudjEuQWlTZXNzaW9uElwKD1JlbmFtZUFpU2Vzc2lvbhIjLmdyaWRlbHRhLnYxLlJlbmFtZUFpU2Vzc2lvblJlcXVlc3QaJC5ncmlkZWx0YS52MS5SZW5hbWVBaVNlc3Npb25SZXNwb25zZRJcCg9EZWxldGVBaVNlc3Npb24SIy5ncmlkZWx0YS52MS5EZWxldGVBaVNlc3Npb25SZXF1ZXN0GiQuZ3JpZGVsdGEudjEuRGVsZXRlQWlTZXNzaW9uUmVzcG9uc2USSwoNR2V0QWlTZXR0aW5ncxIhLmdyaWRlbHRhLnYxLkdldEFpU2V0dGluZ3NSZXF1ZXN0GhcuZ3JpZGVsdGEudjEuQWlTZXR0aW5ncxJRChBVcGRhdGVBaVNldHRpbmdzEiQuZ3JpZGVsdGEudjEuVXBkYXRlQWlTZXR0aW5nc1JlcXVlc3QaFy5ncmlkZWx0YS52MS5BaVNldHRpbmdzQkZaRGdpdGh1Yi5jb20vRXBzaWxvbmRlbHRhLWFpL2dyaWRlbHRhL2FnZW50L2dlbi9ncmlkZWx0YS92MTtncmlkZWx0YXYxYgZwcm90bzM");
 
 /**
  * @generated from message gridelta.v1.Endpoint
@@ -757,6 +757,174 @@ export const RenameEndpointResponseSchema: GenMessage<RenameEndpointResponse> = 
   messageDesc(file_gridelta_v1_console, 32);
 
 /**
+ * @generated from message gridelta.v1.AiSession
+ */
+export type AiSession = Message<"gridelta.v1.AiSession"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * "all" 이면 여러 PC 를 다루는 통합 대화, 아니면 그 PC 의 endpoint id
+   *
+   * @generated from field: string scope = 2;
+   */
+  scope: string;
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title: string;
+
+  /**
+   * @generated from field: int64 created_at_ms = 4;
+   */
+  createdAtMs: bigint;
+
+  /**
+   * @generated from field: int64 updated_at_ms = 5;
+   */
+  updatedAtMs: bigint;
+
+  /**
+   * 이 세션의 Flue 대화 URL (/agents/assistant/<id> 또는 /agents/operator/<endpoint>:<id>)
+   *
+   * @generated from field: string agent_url = 6;
+   */
+  agentUrl: string;
+};
+
+/**
+ * Describes the message gridelta.v1.AiSession.
+ * Use `create(AiSessionSchema)` to create a new message.
+ */
+export const AiSessionSchema: GenMessage<AiSession> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 33);
+
+/**
+ * @generated from message gridelta.v1.ListAiSessionsRequest
+ */
+export type ListAiSessionsRequest = Message<"gridelta.v1.ListAiSessionsRequest"> & {
+  /**
+   * 주면 통합 대화 + 그 PC 의 대화, 비우면 전체
+   *
+   * @generated from field: string endpoint_id = 1;
+   */
+  endpointId: string;
+};
+
+/**
+ * Describes the message gridelta.v1.ListAiSessionsRequest.
+ * Use `create(ListAiSessionsRequestSchema)` to create a new message.
+ */
+export const ListAiSessionsRequestSchema: GenMessage<ListAiSessionsRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 34);
+
+/**
+ * @generated from message gridelta.v1.ListAiSessionsResponse
+ */
+export type ListAiSessionsResponse = Message<"gridelta.v1.ListAiSessionsResponse"> & {
+  /**
+   * 최근에 쓴 것부터
+   *
+   * @generated from field: repeated gridelta.v1.AiSession sessions = 1;
+   */
+  sessions: AiSession[];
+};
+
+/**
+ * Describes the message gridelta.v1.ListAiSessionsResponse.
+ * Use `create(ListAiSessionsResponseSchema)` to create a new message.
+ */
+export const ListAiSessionsResponseSchema: GenMessage<ListAiSessionsResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 35);
+
+/**
+ * @generated from message gridelta.v1.CreateAiSessionRequest
+ */
+export type CreateAiSessionRequest = Message<"gridelta.v1.CreateAiSessionRequest"> & {
+  /**
+   * "all" 또는 endpoint id
+   *
+   * @generated from field: string scope = 1;
+   */
+  scope: string;
+};
+
+/**
+ * Describes the message gridelta.v1.CreateAiSessionRequest.
+ * Use `create(CreateAiSessionRequestSchema)` to create a new message.
+ */
+export const CreateAiSessionRequestSchema: GenMessage<CreateAiSessionRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 36);
+
+/**
+ * @generated from message gridelta.v1.RenameAiSessionRequest
+ */
+export type RenameAiSessionRequest = Message<"gridelta.v1.RenameAiSessionRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string title = 2;
+   */
+  title: string;
+};
+
+/**
+ * Describes the message gridelta.v1.RenameAiSessionRequest.
+ * Use `create(RenameAiSessionRequestSchema)` to create a new message.
+ */
+export const RenameAiSessionRequestSchema: GenMessage<RenameAiSessionRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 37);
+
+/**
+ * @generated from message gridelta.v1.RenameAiSessionResponse
+ */
+export type RenameAiSessionResponse = Message<"gridelta.v1.RenameAiSessionResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.RenameAiSessionResponse.
+ * Use `create(RenameAiSessionResponseSchema)` to create a new message.
+ */
+export const RenameAiSessionResponseSchema: GenMessage<RenameAiSessionResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 38);
+
+/**
+ * @generated from message gridelta.v1.DeleteAiSessionRequest
+ */
+export type DeleteAiSessionRequest = Message<"gridelta.v1.DeleteAiSessionRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message gridelta.v1.DeleteAiSessionRequest.
+ * Use `create(DeleteAiSessionRequestSchema)` to create a new message.
+ */
+export const DeleteAiSessionRequestSchema: GenMessage<DeleteAiSessionRequest> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 39);
+
+/**
+ * @generated from message gridelta.v1.DeleteAiSessionResponse
+ */
+export type DeleteAiSessionResponse = Message<"gridelta.v1.DeleteAiSessionResponse"> & {
+};
+
+/**
+ * Describes the message gridelta.v1.DeleteAiSessionResponse.
+ * Use `create(DeleteAiSessionResponseSchema)` to create a new message.
+ */
+export const DeleteAiSessionResponseSchema: GenMessage<DeleteAiSessionResponse> = /*@__PURE__*/
+  messageDesc(file_gridelta_v1_console, 40);
+
+/**
  * 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
  * AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
  *
@@ -880,6 +1048,40 @@ export const ConsoleService: GenService<{
     methodKind: "unary";
     input: typeof SetApprovalPolicyRequestSchema;
     output: typeof SetApprovalPolicyResponseSchema;
+  },
+  /**
+   * AI 대화 세션. 대화 내용은 Flue 라우트가 저장하고, 여기서는 목록·이름을 관리한다
+   *
+   * @generated from rpc gridelta.v1.ConsoleService.ListAiSessions
+   */
+  listAiSessions: {
+    methodKind: "unary";
+    input: typeof ListAiSessionsRequestSchema;
+    output: typeof ListAiSessionsResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.CreateAiSession
+   */
+  createAiSession: {
+    methodKind: "unary";
+    input: typeof CreateAiSessionRequestSchema;
+    output: typeof AiSessionSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.RenameAiSession
+   */
+  renameAiSession: {
+    methodKind: "unary";
+    input: typeof RenameAiSessionRequestSchema;
+    output: typeof RenameAiSessionResponseSchema;
+  },
+  /**
+   * @generated from rpc gridelta.v1.ConsoleService.DeleteAiSession
+   */
+  deleteAiSession: {
+    methodKind: "unary";
+    input: typeof DeleteAiSessionRequestSchema;
+    output: typeof DeleteAiSessionResponseSchema;
   },
   /**
    * AI 모델 선택. 바꾸면 새 대화부터 적용된다

@@ -1,8 +1,8 @@
 import { hash as argon2Hash, verify as argon2Verify } from '@node-rs/argon2';
-import { and, eq, gt, isNull, lt } from 'drizzle-orm';
+import { and, desc, eq, gt, inArray, isNull, lt } from 'drizzle-orm';
 import { hashToken, randomToken, tokenMatches, uuidv7 } from '../auth/tokens.ts';
 import type { Db } from './db.ts';
-import { approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, settings, users } from './schema.ts';
+import { aiSessions, approvals, auditLog, endpoints, enrollTokens, oauthTokens, sessions, settings, users } from './schema.ts';
 
 export type EndpointRow = typeof endpoints.$inferSelect;
 
@@ -25,6 +25,10 @@ export interface SessionUser {
 export type ApprovalRow = typeof approvals.$inferSelect;
 export type ApprovalPolicy = 'always' | 'dangerous' | 'auto';
 export const APPROVAL_POLICIES: readonly ApprovalPolicy[] = ['always', 'dangerous', 'auto'];
+
+export type AiSessionRow = typeof aiSessions.$inferSelect;
+/** 통합(여러 PC) 대화의 scope 값 */
+export const ALL_PCS = 'all';
 
 export type OAuthTokenRow = typeof oauthTokens.$inferSelect;
 
@@ -239,5 +243,40 @@ export class Store {
 
   async setSetting(key: string, value: string): Promise<void> {
     await this.db.insert(settings).values({ key, value }).onConflictDoUpdate({ target: settings.key, set: { value } });
+  }
+
+  // --- AI 대화 세션 ---
+
+  async createAiSession(scope: string): Promise<AiSessionRow> {
+    const now = new Date();
+    const row: AiSessionRow = { id: uuidv7(), scope, title: '', createdAt: now, updatedAt: now };
+    await this.db.insert(aiSessions).values(row);
+    return row;
+  }
+
+  async getAiSession(id: string): Promise<AiSessionRow | undefined> {
+    const [row] = await this.db.select().from(aiSessions).where(eq(aiSessions.id, id)).limit(1);
+    return row;
+  }
+
+  /** 최근에 쓴 것부터. scopes 를 주면 그 scope 들만 */
+  async listAiSessions(scopes?: string[]): Promise<AiSessionRow[]> {
+    const q = this.db.select().from(aiSessions);
+    const filtered = scopes ? q.where(inArray(aiSessions.scope, scopes)) : q;
+    return filtered.orderBy(desc(aiSessions.updatedAt));
+  }
+
+  async renameAiSession(id: string, title: string): Promise<boolean> {
+    const result = await this.db.update(aiSessions).set({ title }).where(eq(aiSessions.id, id));
+    return Number(result.changes) === 1;
+  }
+
+  async touchAiSession(id: string): Promise<void> {
+    await this.db.update(aiSessions).set({ updatedAt: new Date() }).where(eq(aiSessions.id, id));
+  }
+
+  async deleteAiSession(id: string): Promise<boolean> {
+    const result = await this.db.delete(aiSessions).where(eq(aiSessions.id, id));
+    return Number(result.changes) === 1;
   }
 }

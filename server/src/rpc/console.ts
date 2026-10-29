@@ -9,6 +9,8 @@ import {
 } from '@connectrpc/connect';
 import { universalServerRequestFromFetch, universalServerResponseToFetch } from '@connectrpc/connect/protocol';
 import {
+  type AiSession,
+  AiSessionSchema,
   type Approval,
   type ApprovalEvent,
   ApprovalEventSchema,
@@ -35,7 +37,16 @@ import {
 import type { PtySession } from '../hub/pty.ts';
 import type { ApprovalCenter } from '../ai/approvals.ts';
 import { type AiModels, UnknownModelError } from '../ai/models.ts';
-import { APPROVAL_POLICIES, type ApprovalPolicy, type ApprovalRow, type SessionUser, type Store } from '../store/index.ts';
+import { agentUrl } from '../ai/sessions.ts';
+import {
+  ALL_PCS,
+  type AiSessionRow,
+  APPROVAL_POLICIES,
+  type ApprovalPolicy,
+  type ApprovalRow,
+  type SessionUser,
+  type Store,
+} from '../store/index.ts';
 import { endpointsView } from './endpoints-view.ts';
 
 export const RPC_PREFIX = '/rpc';
@@ -67,6 +78,17 @@ async function mapErrors<T>(fn: () => T | Promise<T>): Promise<T> {
   } catch (err) {
     throw toConnectError(err);
   }
+}
+
+function toAiSession(row: AiSessionRow): AiSession {
+  return create(AiSessionSchema, {
+    id: row.id,
+    scope: row.scope,
+    title: row.title,
+    createdAtMs: BigInt(row.createdAt.getTime()),
+    updatedAtMs: BigInt(row.updatedAt.getTime()),
+    agentUrl: agentUrl(row),
+  });
 }
 
 function toTerminal(pty: PtySession): Terminal {
@@ -206,6 +228,31 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         if (!(await approvals.decide(req.id, req.approve, ctx.values.get(kUser)?.id || undefined))) {
           throw new ConnectError(`approval ${req.id} is not pending`, Code.FailedPrecondition);
         }
+        return {};
+      },
+
+      async listAiSessions(req) {
+        const rows = await store.listAiSessions(req.endpointId ? [ALL_PCS, req.endpointId] : undefined);
+        return { sessions: rows.map(toAiSession) };
+      },
+
+      async createAiSession(req) {
+        if (req.scope !== ALL_PCS && !(await view.get(req.scope))) {
+          throw new ConnectError(`scope must be "${ALL_PCS}" or a registered endpoint id`, Code.InvalidArgument);
+        }
+        return toAiSession(await store.createAiSession(req.scope));
+      },
+
+      async renameAiSession(req) {
+        if (!(await store.renameAiSession(req.id, cleanName(req.title)))) {
+          throw new ConnectError(`AI session ${req.id} not found`, Code.NotFound);
+        }
+        return {};
+      },
+
+      async deleteAiSession(req) {
+        // 목록에서만 지운다. Flue 의 대화 기록(flue.db)은 남는다
+        if (!(await store.deleteAiSession(req.id))) throw new ConnectError(`AI session ${req.id} not found`, Code.NotFound);
         return {};
       },
 

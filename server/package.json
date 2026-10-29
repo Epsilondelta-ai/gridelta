@@ -20,7 +20,8 @@
     "@hono/node-server": "catalog:",
     "@node-rs/argon2": "catalog:",
     "drizzle-orm": "catalog:",
-    "hono": "catalog:"
+    "hono": "catalog:",
+    "valibot": "catalog:"
   },
   "devDependencies": {
     "@flue/cli": "catalog:",

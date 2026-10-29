@@ -81,3 +81,13 @@ export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
 });
+
+/** AI 대화 세션 목록. 대화 내용은 Flue 가 flue.db 에 저장하고, 여기에는 목록과 이름만 둔다 */
+export const aiSessions = sqliteTable('ai_sessions', {
+  id: text('id').primaryKey(),
+  /** 'all' 이면 여러 PC 를 다루는 통합 대화, 아니면 그 PC(endpoint id)에 묶인 대화 */
+  scope: text('scope').notNull(),
+  title: text('title').notNull().default(''),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+});
