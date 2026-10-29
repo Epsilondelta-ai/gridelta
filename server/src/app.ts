@@ -1,10 +1,12 @@
 import { existsSync } from 'node:fs';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { createAgentRouter } from '@flue/runtime/routing';
-import { Hono } from 'hono';
+import { type Context, Hono, type Next } from 'hono';
+import { Assistant } from './agents/assistant.ts';
 import { Operator } from './agents/operator.ts';
 import { registerFauxProvider } from './ai/faux.ts';
 import { aiModels, approvals } from './ai/index.ts';
+import { sessionForInstance } from './ai/sessions.ts';
 import { OAuthVault, registerCodexProvider } from './auth/openai.ts';
 import { loadMasterKey } from './auth/secrets.ts';
 import { mountAuth, requireAuth } from './auth/web.ts';
@@ -12,7 +14,6 @@ import { config } from './config.ts';
 import { certFingerprint, startGateway } from './gateway/gateway.ts';
 import { hub } from './hub/index.ts';
 import { startAdmin } from './rpc/admin.ts';
-import { endpointIdOf } from './sandboxes/remote-pc.ts';
 import { mountConsole } from './rpc/console.ts';
 import { mountDebug } from './rpc/debug.ts';
 import { store } from './store/index.ts';
@@ -61,19 +62,22 @@ app.get('/healthz', (c) => c.text('ok'));
 mountAuth(app, store);
 mountConsole(app, hub, store, approvals, aiModels);
 
-// AI 대화: Flue 라우트 (/agents/operator/:id). 로그인한 사용자만, 등록된 PC 의 대화만 연다.
-// "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 둔다
+// AI 대화: Flue 라우트. 통합 대화는 /agents/assistant/<세션>, PC 대화는 /agents/operator/<PC>:<세션>.
+// "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 두고,
+// 등록된 세션(ConsoleService.CreateAiSession)의 URL 만 열어 준다
 app.use('/agents/*', requireAuth(store));
-app.use('/agents/operator/:id/*', async (c, next) => {
-  const ep = await store.getEndpoint(endpointIdOf(c.req.param('id')));
-  if (!ep || ep.revokedAt) return c.json({ error: 'unknown endpoint' }, 404);
-  await next();
-});
-app.use('/agents/operator/:id', async (c, next) => {
-  const ep = await store.getEndpoint(endpointIdOf(c.req.param('id')));
-  if (!ep || ep.revokedAt) return c.json({ error: 'unknown endpoint' }, 404);
-  await next();
-});
+for (const agent of ['assistant', 'operator'] as const) {
+  const check = async (c: Context, next: Next) => {
+    const session = await sessionForInstance(store, agent, c.req.param('id') ?? '');
+    if (!session) return c.json({ error: 'unknown AI session' }, 404);
+    // 메시지를 보낼 때 세션 목록의 "마지막 사용" 을 갱신한다
+    if (c.req.method === 'POST' && !c.req.path.endsWith('/abort')) await store.touchAiSession(session.id);
+    await next();
+  };
+  app.use(`/agents/${agent}/:id`, check);
+  app.use(`/agents/${agent}/:id/*`, check);
+}
+app.route('/agents/assistant', createAgentRouter(Assistant));
 app.route('/agents/operator', createAgentRouter(Operator));
 if (config.debug) mountDebug(app, hub);
 

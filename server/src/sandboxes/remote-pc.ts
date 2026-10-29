@@ -12,33 +12,19 @@ import {
   type SandboxFactory,
   SandboxDiedError,
   SandboxOperationUnsupportedError,
-  type ShellResult,
   sandboxFromDriver,
 } from '@flue/runtime';
 import {
-  ExecRequestSchema,
   FsMkdirRequestSchema,
-  FsReadRequestSchema,
   FsReaddirRequestSchema,
   FsRmRequestSchema,
   FsStatRequestSchema,
-  FsWriteRequestSchema,
   type Response,
 } from '@gridelta/proto/gateway';
-import type { ApprovalCenter } from '../ai/approvals.ts';
-import { needsApproval } from '../ai/policy.ts';
+import { execWithApproval, readRemoteFile, type RemoteDeps, writeRemoteFile } from '../ai/remote.ts';
 import { AgentRequestError, type AgentHub, EndpointOfflineError, type RequestOp, type RequestOpts } from '../hub/index.ts';
-import type { ApprovalPolicy, Store } from '../store/index.ts';
 
-/** 거부된 명령의 종료 코드. 모델이 이유를 알고 다른 방법을 찾게 결과로 돌려준다 (설계 8.5) */
-export const DENIED_EXIT_CODE = 126;
-const DEFAULT_EXEC_TIMEOUT_MS = 5 * 60 * 1000;
-
-export interface RemotePcDeps {
-  hub: AgentHub;
-  store: Store;
-  approvals: ApprovalCenter;
-}
+export type RemotePcDeps = RemoteDeps;
 
 /** Flue 인스턴스 id 는 `<endpoint_id>:<대화 id>` 형식이다 (설계 8.1). */
 export function endpointIdOf(instanceId: string): string {
@@ -51,11 +37,10 @@ export function isWindowsCwd(cwd: string): boolean {
 }
 
 const utf8 = new TextDecoder();
-const encoder = new TextEncoder();
 
 /** 원격 PC 를 Flue 샌드박스로 연결한다. Flue 기본 도구(read/write/edit/bash/grep/glob)가 원격 PC 에서 동작한다. */
 export function remotePc(deps: RemotePcDeps): SandboxFactory {
-  const { hub, store, approvals } = deps;
+  const { hub, store } = deps;
   return {
     async createSandbox({ id }) {
       const endpointId = endpointIdOf(id);
@@ -71,55 +56,17 @@ export function remotePc(deps: RemotePcDeps): SandboxFactory {
         });
 
       const driver: SandboxDriver = {
-        async exec(command, o) {
-          const ep = await store.getEndpoint(endpointId);
-          const policy = (ep?.approvalPolicy ?? 'dangerous') as ApprovalPolicy;
-          let approvalId: string | null = null;
-          if (needsApproval(policy, command)) {
-            const approval = await approvals.request({ endpointId, command, requestedBy: id }, o?.signal);
-            approvalId = approval.id;
-            const decision = approval.decision;
-            if (decision !== 'approved') {
-              o?.signal?.throwIfAborted();
-              const result: ShellResult = {
-                stdout: '',
-                stderr: decision === 'expired' ? '승인 대기 시간이 지나 실행하지 않음' : '사용자가 실행을 거부함',
-                exitCode: DENIED_EXIT_CODE,
-              };
-              await store.audit({ actor: 'ai', endpointId, kind: 'exec', command, exitCode: result.exitCode, approvalId });
-              return result;
-            }
-          }
-
-          const timeoutMs = o?.timeoutMs ?? DEFAULT_EXEC_TIMEOUT_MS;
-          const res = await call(
-            'exec',
-            {
-              case: 'exec',
-              value: create(ExecRequestSchema, { command, cwd: o?.cwd ?? '', env: o?.env ?? {}, timeoutMs }),
-            },
-            // 에이전트가 timeout 에서 124 로 끝내므로 응답 대기는 조금 더 길게 둔다
-            { timeoutMs: timeoutMs + 15_000, signal: o?.signal },
-          );
-          if (res.result.case !== 'exec') throw new Error('unexpected exec response');
-          const r = res.result.value;
-          const stdout = utf8.decode(r.stdout) + (r.truncated ? '\n[출력이 너무 길어 잘렸습니다]' : '');
-          await store.audit({ actor: 'ai', endpointId, kind: 'exec', command, exitCode: r.exitCode, approvalId });
-          return { stdout, stderr: utf8.decode(r.stderr), exitCode: r.exitCode };
-        },
+        exec: (command, o) =>
+          execWithApproval(deps, endpointId, command, { ...o, requestedBy: id }, (ep, op, opts) =>
+            call('exec', op, opts),
+          ),
 
         async readFile(path) {
           return utf8.decode(await this.readFileBuffer(path));
         },
-        async readFileBuffer(path) {
-          const res = await call('readFile', { case: 'fsRead', value: create(FsReadRequestSchema, { path }) });
-          return res.result.case === 'fsRead' ? res.result.value.data : new Uint8Array();
-        },
-        async writeFile(path, content) {
-          const data = typeof content === 'string' ? encoder.encode(content) : content;
-          await call('writeFile', { case: 'fsWrite', value: create(FsWriteRequestSchema, { path, data }) });
-          await store.audit({ actor: 'ai', endpointId, kind: 'fs', command: `write ${path} (${data.length} bytes)` });
-        },
+        readFileBuffer: (path) => readRemoteFile(deps, endpointId, path, (ep, op, opts) => call('readFile', op, opts)),
+        writeFile: (path, content) =>
+          writeRemoteFile(deps, endpointId, path, content, (ep, op, opts) => call('writeFile', op, opts)),
         async stat(path): Promise<FileStat> {
           const res = await call('stat', { case: 'fsStat', value: create(FsStatRequestSchema, { path }) });
           if (res.result.case !== 'fsStat') throw new Error('unexpected stat response');

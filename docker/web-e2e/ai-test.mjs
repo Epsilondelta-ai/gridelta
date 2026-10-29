@@ -73,6 +73,57 @@ try {
   await toolCards.nth(3).waitFor({ timeout: 15_000 });
   pass(`새로고침 후 대화 기록 유지 (도구 호출 ${await toolCards.count()}건)`);
 
+  // 6. 통합 대화: 여러 PC 를 함께 다룬다
+  const sessionSelect = ai.getByLabel('AI 대화');
+  await ai.getByRole('button', { name: '+ 통합' }).click();
+  await ai.getByTestId('ai-scope').filter({ hasText: '모든 PC' }).waitFor();
+  await ask('모든 PC에서 hostname 알려줘');
+  await ai.getByText('도구 결과입니다').first().waitFor({ timeout: 60_000 });
+  const tools = await toolCards.evaluateAll((els) => els.map((e) => `${e.dataset.tool}:${e.dataset.state}`));
+  const runs = await ai.locator('[data-tool="run_command"]').allTextContents();
+  if (!tools.includes('list_pcs:output-available') || runs.length !== 2) throw new Error(`unified tools: ${tools}`);
+  if (!runs.some((t) => t.includes('agent-debian')) || !runs.some((t) => t.includes('agent-alpine'))) throw new Error(`hostname outputs: ${runs}`);
+  pass('통합 대화: list_pcs 후 두 PC 에서 각각 명령 실행');
+
+  await ask('통합 삭제');
+  await approval.waitFor({ timeout: 30_000 });
+  const who = await approval.textContent();
+  if (!who.includes('agent-debian') || !who.includes('rm -rf /tmp/gridelta-ai-test2')) throw new Error(`unified approval: ${who}`);
+  await approval.getByRole('button', { name: '승인' }).click();
+  await approval.waitFor({ state: 'detached' });
+  await ai.locator('[data-tool="run_command"][data-state="output-available"]').nth(2).waitFor({ timeout: 30_000 });
+  pass('통합 대화의 위험 명령도 대상 PC 의 승인 정책을 거침');
+
+  // 7. 세션 목록에서 이전 대화를 고른다
+  const labels = await sessionSelect.locator('option').allTextContents();
+  if (labels.length !== 2 || !labels.some((l) => l.startsWith('[통합]')) || !labels.some((l) => l.startsWith(`[${PC}]`))) {
+    throw new Error(`session list: ${labels}`);
+  }
+  await sessionSelect.selectOption({ label: labels.find((l) => l.startsWith(`[${PC}]`)) });
+  await toolCards.nth(3).waitFor({ timeout: 15_000 });
+  if ((await toolCards.count()) !== 4) throw new Error(`PC session tool count: ${await toolCards.count()}`);
+  pass(`세션 목록에서 이전 대화 선택 (${labels.join(' / ')})`);
+
+  await ai.getByRole('button', { name: '대화 이름 바꾸기' }).click();
+  await ai.getByRole('textbox', { name: '대화 이름' }).fill('정리 작업');
+  await ai.getByRole('textbox', { name: '대화 이름' }).press('Enter');
+  await page.reload();
+  await sessionSelect.waitFor();
+  const selected = await sessionSelect.evaluate((el) => el.options[el.selectedIndex]?.text ?? '');
+  if (selected.normalize('NFC').trim() !== `[${PC}] 정리 작업`.normalize('NFC')) {
+    throw new Error(`selected after reload: ${JSON.stringify(selected)}`);
+  }
+  pass('세션 이름 바꾸기, 새로고침 후 마지막 세션 유지');
+
+  // 다른 PC 에서는 통합 대화와 그 PC 의 대화만 보인다
+  await page.getByRole('navigation', { name: 'PC 목록' }).locator('button[data-endpoint-id]', { hasText: 'agent-alpine' }).click();
+  await page.waitForTimeout(500);
+  const alpineLabels = await sessionSelect.locator('option').allTextContents();
+  if (!alpineLabels.some((l) => l.startsWith('[통합]')) || alpineLabels.some((l) => l.startsWith(`[${PC}]`))) {
+    throw new Error(`alpine session list: ${alpineLabels}`);
+  }
+  pass('다른 PC 에서는 통합 대화만 함께 보임');
+
   await page.screenshot({ path: '/e2e/ai.png' });
 } catch (err) {
   console.error(`FAIL: ${err.message}`);
