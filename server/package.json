@@ -1,0 +1,34 @@
+{
+  "name": "@gridelta/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "node dist/server.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-node": "catalog:",
+    "@earendil-works/pi-ai": "catalog:",
+    "@flue/runtime": "catalog:",
+    "@gridelta/proto": "workspace:*",
+    "@hono/node-server": "catalog:",
+    "@node-rs/argon2": "catalog:",
+    "drizzle-orm": "catalog:",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@flue/cli": "catalog:",
+    "@flue/vite": "catalog:",
+    "@types/node": "catalog:",
+    "drizzle-kit": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

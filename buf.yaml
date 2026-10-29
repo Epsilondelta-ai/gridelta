@@ -1,0 +1,16 @@
+version: v2
+modules:
+  - path: proto
+lint:
+  use:
+    - STANDARD
+  except:
+    # 하나의 Connect 스트림에 여러 메시지를 oneof 로 싣는 구조라 요청/응답 이름 규칙을 따르지 않는다
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    # 설계 문서의 서비스 이름(AgentGateway)을 그대로 쓴다
+    - SERVICE_SUFFIX
+breaking:
+  use:
+    - FILE

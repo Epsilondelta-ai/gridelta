@@ -1,0 +1,50 @@
+packages:
+  - packages/*
+  - server
+  - cli
+  - web
+
+catalogMode: strict
+
+catalog:
+  "@bufbuild/protobuf": 2.16.0
+  "@bufbuild/protoc-gen-es": 2.16.0
+  "@connectrpc/connect": 2.3.0
+  "@connectrpc/connect-node": 2.3.0
+  "@connectrpc/connect-web": 2.3.0
+  "@flue/cli": 2.3.0
+  "@flue/runtime": 2.3.0
+  "@flue/vite": 2.3.0
+  "@hono/node-server": 2.1.5
+  "@clack/prompts": 1.8.1
+  "@earendil-works/pi-ai": 1.4.0
+  "@flue/react": 2.3.0
+  "@flue/sdk": 2.3.0
+  "@node-rs/argon2": 2.2.2
+  "@tailwindcss/vite": 4.3.3
+  "@types/node": ^26.0.0
+  "@types/react": 19.3.0
+  "@types/react-dom": 19.3.0
+  "@vitejs/plugin-react": 6.1.2
+  "@xterm/addon-fit": 0.11.0
+  "@xterm/addon-unicode11": 0.9.0
+  "@xterm/addon-web-links": 0.12.0
+  "@xterm/addon-webgl": 0.19.0
+  "@xterm/xterm": 6.0.0
+  commander: 15.0.0
+  drizzle-kit: 1.0.0-rc.5
+  drizzle-orm: 1.0.0-rc.5
+  hono: 4.13.14
+  react: 19.3.1
+  react-dom: 19.3.1
+  tailwindcss: 4.3.3
+  typescript: 7.0.2
+  vite: 8.3.5
+  vitest: 5.0.5
+
+# 설치 스크립트 실행 허용 목록 (pnpm 은 기본적으로 막는다)
+allowBuilds:
+  esbuild: true
+  "@google/genai": false
+  core-js-pure: false
+  protobufjs: false

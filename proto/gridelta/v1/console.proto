@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+package gridelta.v1;
+
+option go_package = "github.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1";
+
+// 웹 ↔ 서버. 브라우저 제약으로 unary 와 서버 스트림만 쓴다.
+// AI 대화 자체는 Flue HTTP 라우트(/agents/operator/:id)를 쓴다.
+service ConsoleService {
+  rpc ListEndpoints(ListEndpointsRequest) returns (ListEndpointsResponse);
+  rpc WatchEndpoints(WatchEndpointsRequest) returns (stream EndpointEvent); // 온라인/오프라인 변화
+
+  // 웹 터미널
+  rpc OpenTerminal(OpenTerminalRequest) returns (OpenTerminalResponse); // session_id 발급
+  rpc ListTerminals(ListTerminalsRequest) returns (ListTerminalsResponse); // 새로고침 후 탭 복원용
+  rpc AttachTerminal(AttachTerminalRequest) returns (stream TerminalOutput); // 출력 스트림, from_seq 로 재접속
+  rpc SendInput(SendInputRequest) returns (SendInputResponse);
+  rpc ResizeTerminal(ResizeTerminalRequest) returns (ResizeTerminalResponse);
+  rpc CloseTerminal(CloseTerminalRequest) returns (CloseTerminalResponse);
+
+  // AI 명령 승인
+  rpc WatchApprovals(WatchApprovalsRequest) returns (stream ApprovalEvent); // 구독 직후 대기 중인 요청을 보낸다
+  rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse);
+  rpc SetApprovalPolicy(SetApprovalPolicyRequest) returns (SetApprovalPolicyResponse);
+
+  // AI 모델 선택. 바꾸면 새 대화부터 적용된다
+  rpc GetAiSettings(GetAiSettingsRequest) returns (AiSettings);
+  rpc UpdateAiSettings(UpdateAiSettingsRequest) returns (AiSettings);
+}
+
+message Endpoint {
+  string id = 1;
+  string hostname = 2;
+  string os = 3;
+  string arch = 4;
+  string home_dir = 5;
+  string default_shell = 6;
+  string agent_version = 7;
+  bool online = 8;
+  int64 last_seen_ms = 9;
+  string approval_policy = 10; // always | dangerous | auto
+}
+
+message ListEndpointsRequest {}
+
+message ListEndpointsResponse {
+  repeated Endpoint endpoints = 1;
+}
+
+message WatchEndpointsRequest {}
+
+message EndpointEvent {
+  Endpoint endpoint = 1; // 상태가 바뀐 PC. 구독 직후에는 현재 목록을 한 건씩 보낸다
+}
+
+message OpenTerminalRequest {
+  string endpoint_id = 1;
+  uint32 cols = 2;
+  uint32 rows = 3;
+}
+
+message OpenTerminalResponse {
+  string session_id = 1;
+}
+
+message Terminal {
+  string session_id = 1;
+  string endpoint_id = 2;
+  int64 created_at_ms = 3;
+  bool exited = 4;
+}
+
+message ListTerminalsRequest {
+  string endpoint_id = 1; // 비우면 전체
+}
+
+message ListTerminalsResponse {
+  repeated Terminal terminals = 1;
+}
+
+message AttachTerminalRequest {
+  string session_id = 1;
+  uint64 from_seq = 2; // 받은 마지막 seq + 1, 처음은 0
+}
+
+message TerminalOutput {
+  bytes data = 1;
+  uint64 seq = 2;
+  bool reset = 3; // true 면 from_seq 이후 일부가 버퍼에서 밀려남 → 클라이언트는 화면을 초기화한 뒤 data 를 씀
+  optional int32 exit_code = 4; // 셸 종료 시 마지막 메시지에 담고 스트림 종료
+}
+
+message SendInputRequest {
+  string session_id = 1;
+  uint64 input_seq = 2; // client_id 별 0부터 1씩 증가. 이미 처리한 값은 무시한다(재시도 안전)
+  bytes data = 3;
+  string client_id = 4; // 입력을 보내는 탭마다 새로 만드는 랜덤 id. 새로고침하면 바뀐다
+}
+
+message SendInputResponse {}
+
+message ResizeTerminalRequest {
+  string session_id = 1;
+  uint32 cols = 2;
+  uint32 rows = 3;
+}
+
+message ResizeTerminalResponse {}
+
+message CloseTerminalRequest {
+  string session_id = 1;
+}
+
+message CloseTerminalResponse {}
+
+message Approval {
+  string id = 1;
+  string endpoint_id = 2;
+  string hostname = 3;
+  string command = 4;
+  string status = 5; // pending | approved | denied | expired
+  int64 created_at_ms = 6;
+  string conversation_id = 7; // 요청한 AI 대화 (Flue 인스턴스 id)
+}
+
+message WatchApprovalsRequest {}
+
+message ApprovalEvent {
+  Approval approval = 1;
+}
+
+message DecideApprovalRequest {
+  string id = 1;
+  bool approve = 2;
+}
+
+message DecideApprovalResponse {}
+
+message SetApprovalPolicyRequest {
+  string endpoint_id = 1;
+  string policy = 2; // always | dangerous | auto
+}
+
+message SetApprovalPolicyResponse {}
+
+message AiModel {
+  string id = 1; // provider/model (예: openai-codex/gpt-5.6-sol)
+  string name = 2;
+}
+
+message AiSettings {
+  string model = 1;
+  repeated AiModel models = 2; // 고를 수 있는 모델
+}
+
+message GetAiSettingsRequest {}
+
+message UpdateAiSettingsRequest {
+  string model = 1;
+}

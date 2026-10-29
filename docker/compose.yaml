@@ -1,0 +1,58 @@
+# 로컬 동작 확인용 구성: 서버 1대 + 리눅스 에이전트 2대 (systemd debian, alpine)
+# 인증서는 e2e.sh 가 .e2e/certs 에 만든다.
+name: gridelta-e2e
+
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: docker/server.Dockerfile
+    environment:
+      GRIDELTA_DEBUG: "1"
+      # 실제 LLM 대신 정해진 응답 모델로 AI 흐름을 확인한다
+      GRIDELTA_AI_FAUX: ${GRIDELTA_AI_FAUX:-1}
+      # gridelta login openai 의 브라우저 콜백(1455)을 호스트에서 받을 수 있게 한다
+      PI_OAUTH_CALLBACK_HOST: 0.0.0.0
+      GRIDELTA_WEB_AUTH: ${GRIDELTA_WEB_AUTH:-on}
+      GRIDELTA_GATEWAY_URL: https://server:8443
+      GRIDELTA_TLS_CERT: /certs/server.crt
+      GRIDELTA_TLS_KEY: /certs/server.key
+      GRIDELTA_TLS_SELF_SIGNED: "1"
+    volumes:
+      - ./.e2e/certs:/certs:ro
+    ports:
+      - "127.0.0.1:${GRIDELTA_E2E_PORT:-3900}:3000"
+      - "127.0.0.1:${GRIDELTA_OAUTH_PORT:-1455}:1455"
+
+  agent-debian:
+    build:
+      context: ..
+      dockerfile: docker/agent.Dockerfile
+      target: systemd
+    hostname: agent-debian
+    # systemd 를 PID 1 로 돌리기 위한 설정
+    privileged: true
+    cgroup: host
+    tmpfs: [/run, /run/lock]
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    depends_on: [server]
+
+  agent-alpine:
+    build:
+      context: ..
+      dockerfile: docker/agent.Dockerfile
+      target: plain
+    hostname: agent-alpine
+    depends_on: [server]
+
+  # 웹 터미널 확인용 브라우저 (e2e.sh 가 docker compose run 으로 실행)
+  browser:
+    image: mcr.microsoft.com/playwright:v1.64.1-noble
+    profiles: [browser]
+    working_dir: /e2e
+    volumes:
+      - ./web-e2e:/e2e
+    environment:
+      BASE_URL: http://server:3000
+    depends_on: [server]
