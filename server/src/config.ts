@@ -28,5 +28,11 @@ export const config = {
   /** e2e 테스트용 정해진 응답 모델을 쓴다 */
   aiFaux: env.GRIDELTA_AI_FAUX === '1',
 
+  /**
+   * off 면 웹 로그인 없이 모든 기능을 쓴다. 서버에 접근할 수 있으면 누구나 모든 PC 의 root 셸을 얻으므로
+   * 외부에 노출되지 않은 환경(로컬, 사내망, 앞단에서 따로 인증하는 프록시 뒤)에서만 쓴다.
+   */
+  webAuth: env.GRIDELTA_WEB_AUTH !== 'off',
+
   debug: env.GRIDELTA_DEBUG === '1',
 };

@@ -112,7 +112,7 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
         const pty = await mapErrors(() => hub.openPty(req.endpointId, req.cols || 80, req.rows || 24));
         await store.audit({
           actor: 'user',
-          userId: ctx.values.get(kUser)?.id,
+          userId: ctx.values.get(kUser)?.id || undefined,
           endpointId: req.endpointId,
           kind: 'pty',
           command: `open ${pty.id}`,
@@ -174,7 +174,7 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
       },
 
       async decideApproval(req, ctx) {
-        if (!(await approvals.decide(req.id, req.approve, ctx.values.get(kUser)?.id))) {
+        if (!(await approvals.decide(req.id, req.approve, ctx.values.get(kUser)?.id || undefined))) {
           throw new ConnectError(`approval ${req.id} is not pending`, Code.FailedPrecondition);
         }
         return {};

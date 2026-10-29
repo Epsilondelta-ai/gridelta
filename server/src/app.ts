@@ -19,6 +19,9 @@ import { store } from './store/index.ts';
 // Vite 개발 모드에서 app.ts 가 다시 로드돼도 한 번만 실행하도록 globalThis 로 막는다.
 const g = globalThis as { __grideltaServers?: unknown };
 g.__grideltaServers ??= (() => {
+  if (!config.webAuth) {
+    console.warn('[auth] GRIDELTA_WEB_AUTH=off: 웹 로그인 없이 모든 기능이 열려 있습니다. 외부에 노출하지 마세요.');
+  }
   const caFingerprint = config.tlsSelfSigned && config.tlsCert ? certFingerprint(config.tlsCert) : undefined;
 
   hub.events.on('pty-exit', (pty) => {

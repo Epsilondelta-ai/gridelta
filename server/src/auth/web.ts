@@ -1,5 +1,6 @@
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
+import { config } from '../config.ts';
 import type { SessionUser, Store } from '../store/index.ts';
 
 export const SESSION_COOKIE = 'gridelta_session';
@@ -12,12 +13,16 @@ const failures = new Map<string, { count: number; lockedUntil: number }>();
 
 export type AuthEnv = { Variables: { user: SessionUser } };
 
+/** 웹 로그인을 끈 경우(GRIDELTA_WEB_AUTH=off)의 사용자. 감사 로그에는 user_id 없이 남는다 */
+export const ANONYMOUS_USER: SessionUser = { id: '', username: 'local' };
+
 /** 프록시 뒤에서는 X-Forwarded-Proto 로 HTTPS 여부를 판단한다. HTTPS 일 때만 Secure 쿠키를 쓴다. */
 function isHttps(c: Context): boolean {
   return c.req.header('x-forwarded-proto') === 'https' || new URL(c.req.url).protocol === 'https:';
 }
 
 export async function verifySession(store: Store, c: Context): Promise<SessionUser | undefined> {
+  if (!config.webAuth) return ANONYMOUS_USER;
   const token = getCookie(c, SESSION_COOKIE);
   return token ? store.getSessionUser(token) : undefined;
 }
@@ -69,6 +74,6 @@ export function mountAuth(app: Hono, store: Store): void {
 
   app.get('/api/me', async (c) => {
     const user = await verifySession(store, c);
-    return user ? c.json({ user }) : c.json({ error: 'login required' }, 401);
+    return user ? c.json({ user, authDisabled: !config.webAuth }) : c.json({ error: 'login required' }, 401);
   });
 }

@@ -140,7 +140,7 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -XPOST "$BASE/_debug/exec" -H 'con
 pass "연결되지 않은 PC → EndpointOfflineError"
 
 echo "== M3: 웹 터미널 (브라우저)"
-dc run --rm -T -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
+dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
   sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node test.mjs' || fail "web terminal e2e"
 [[ "$(dc exec -T server node -e "
   const { DatabaseSync } = require('node:sqlite');
@@ -152,7 +152,7 @@ pass "PTY 세션 시작·종료가 감사 로그에 기록"
 
 echo "== M5: AI 컨트롤 (정해진 응답 모델 + 브라우저)"
 exec_on "$DEBIAN" "mkdir -p /tmp/gridelta-ai-test && touch /tmp/gridelta-ai-test/keep" >/dev/null
-dc run --rm -T -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
+dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" -e PC=agent-debian browser \
   sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node ai-test.mjs' || fail "AI e2e"
 out=$(exec_on "$DEBIAN" "test -e /tmp/gridelta-ai-test && echo exists || echo gone; cat /tmp/gridelta-ai.txt")
 [[ "$(jget 'd.stdout' <<<"$out")" == $'gone\nwritten by ai' ]] || fail "AI side effects on the PC: $out"
@@ -203,5 +203,19 @@ pass "revoke → 즉시 끊기고 재접속 거부"
 [[ "$(cli endpoints list --json | jget "d.length === 1 && d[0].id === '$ALPINE' && d[0].online")" == true ]] ||
   fail "CLI endpoints list: $(cli endpoints list --json)"
 pass "CLI endpoints list"
+
+echo "== 웹 로그인 끄기 (GRIDELTA_WEB_AUTH=off)"
+GRIDELTA_WEB_AUTH=off dc up -d server >/dev/null 2>&1
+wait_for "server healthy with auth off" 60 healthy
+[[ "$(curl -sf "$BASE/api/me" | jget 'd.authDisabled')" == true ]] || fail "/api/me with auth off"
+nocookie=$(curl -sf -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/ListEndpoints" -H 'content-type: application/json' -d '{}') ||
+  fail "ConsoleService without cookie failed with auth off"
+JAR=/dev/null
+wait_for "agent-alpine reconnect" 60 is_online "$ALPINE"
+pass "쿠키 없이 ConsoleService 호출 가능"
+dc logs server | grep -q "GRIDELTA_WEB_AUTH=off" || fail "no startup warning for auth off"
+pass "서버 시작 시 로그인 꺼짐 경고"
+dc run --rm -T --no-deps -e PC=agent-alpine browser \
+  sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node noauth-test.mjs' || fail "browser without login"
 
 echo "== all passed"

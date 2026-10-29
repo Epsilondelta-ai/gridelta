@@ -11,6 +11,7 @@ services:
       GRIDELTA_DEBUG: "1"
       # 실제 LLM 대신 정해진 응답 모델로 AI 흐름을 확인한다
       GRIDELTA_AI_FAUX: "1"
+      GRIDELTA_WEB_AUTH: ${GRIDELTA_WEB_AUTH:-on}
       GRIDELTA_GATEWAY_URL: https://server:8443
       GRIDELTA_TLS_CERT: /certs/server.crt
       GRIDELTA_TLS_KEY: /certs/server.key

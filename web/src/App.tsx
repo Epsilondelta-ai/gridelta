@@ -181,14 +181,16 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
       <aside className="flex shrink-0 flex-col border-line bg-panel md:w-64 md:border-r max-md:border-b">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="font-semibold">gridelta</span>
-          <button
-            type="button"
-            className="text-sm text-muted hover:text-fg"
-            onClick={() => void logout().then(onLoggedOut)}
-            title={`${user.username} 로그아웃`}
-          >
-            로그아웃
-          </button>
+          {!user.authDisabled && (
+            <button
+              type="button"
+              className="text-sm text-muted hover:text-fg"
+              onClick={() => void logout().then(onLoggedOut)}
+              title={`${user.username} 로그아웃`}
+            >
+              로그아웃
+            </button>
+          )}
         </div>
         <nav aria-label="PC 목록" className="flex-1 overflow-y-auto px-2 pb-2 max-md:max-h-40">
           {sortedEndpoints.length === 0 && <p className="px-2 py-4 text-sm text-muted">등록된 PC가 없습니다.</p>}

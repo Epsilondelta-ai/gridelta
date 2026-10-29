@@ -9,12 +9,15 @@ export const consoleClient = createClient(ConsoleService, transport);
 export interface User {
   id: string;
   username: string;
+  /** 서버가 웹 로그인을 끈 경우(GRIDELTA_WEB_AUTH=off) */
+  authDisabled?: boolean;
 }
 
 export async function fetchMe(): Promise<User | undefined> {
   const res = await fetch('/api/me');
   if (!res.ok) return undefined;
-  return ((await res.json()) as { user: User }).user;
+  const body = (await res.json()) as { user: User; authDisabled?: boolean };
+  return { ...body.user, authDisabled: body.authDisabled };
 }
 
 export async function login(username: string, password: string): Promise<User> {
