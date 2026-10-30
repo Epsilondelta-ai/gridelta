@@ -19,6 +19,7 @@
     "@xterm/addon-web-links": "catalog:",
     "@xterm/addon-webgl": "catalog:",
     "@xterm/xterm": "catalog:",
+    "cronstrue": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
   },

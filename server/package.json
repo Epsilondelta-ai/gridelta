@@ -19,6 +19,7 @@
     "@gridelta/proto": "workspace:*",
     "@hono/node-server": "catalog:",
     "@node-rs/argon2": "catalog:",
+    "croner": "catalog:",
     "drizzle-orm": "catalog:",
     "hono": "catalog:",
     "valibot": "catalog:"

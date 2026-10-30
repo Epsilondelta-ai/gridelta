@@ -192,6 +192,10 @@ code=$(curl -s -o /dev/null -w '%{http_code}' -b "$JAR" -XPOST "$BASE/rpc/gridel
 [[ "$code" == 400 ]] || fail "UpdateAiSettings with unknown model returned $code"
 pass "목록에 없는 모델로는 바꿀 수 없음"
 
+echo "== M7: 스케줄 잡과 상태 기록 (브라우저)"
+dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" browser \
+  sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node jobs-test.mjs' || fail "jobs e2e"
+
 echo "== 재연결"
 # WatchEndpoints 서버 스트림을 HTTP/1.1 로 구독해 둔다 (Connect 스트리밍 envelope: flags 1B + length 4B)
 printf '\x00\x00\x00\x00\x02{}' | curl -sN -m 90 -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/WatchEndpoints" \
@@ -222,8 +226,8 @@ cli endpoints revoke "$DEBIAN" >/dev/null
 wait_for "agent-debian offline after revoke" 5 is_offline "$DEBIAN"
 sleep 8
 [[ "$(list | jget "(d.endpoints||[]).some(e => e.id === '$DEBIAN')")" == false ]] || fail "revoked endpoint still listed"
-dc exec -T agent-debian journalctl -u gridelta-agent --no-pager | grep -q "invalid or revoked agent credential" ||
-  fail "agent was not rejected after revoke"
+agent_logs=$(dc exec -T agent-debian journalctl -u gridelta-agent --no-pager)
+grep -q "invalid or revoked agent credential" <<<"$agent_logs" || fail "agent was not rejected after revoke"
 pass "revoke → 즉시 끊기고 재접속 거부"
 
 [[ "$(cli endpoints list --json | jget "d.length === 1 && d[0].id === '$ALPINE' && d[0].online")" == true ]] ||
@@ -239,7 +243,9 @@ nocookie=$(curl -sf -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/ListEndpoints" 
 JAR=/dev/null
 wait_for "agent-alpine reconnect" 60 is_online "$ALPINE"
 pass "쿠키 없이 ConsoleService 호출 가능"
-dc logs server | grep -q "GRIDELTA_WEB_AUTH=off" || fail "no startup warning for auth off"
+# grep -q 가 일찍 끝나면 pipefail 로 logs 쪽이 실패로 잡히므로 먼저 받아 둔다
+server_logs=$(dc logs server 2>&1)
+grep -q "GRIDELTA_WEB_AUTH=off" <<<"$server_logs" || fail "no startup warning for auth off"
 pass "서버 시작 시 로그인 꺼짐 경고"
 dc run --rm -T --no-deps -e PC=agent-alpine browser \
   sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node noauth-test.mjs' || fail "browser without login"

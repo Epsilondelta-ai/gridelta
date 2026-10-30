@@ -2919,6 +2919,1291 @@ func (*RevokeEnrollTokenResponse) Descriptor() ([]byte, []int) {
 	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{57}
 }
 
+// 잡을 만들거나 바꿀 때 받는 내용
+type JobSpec struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Name           string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Kind           string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`                               // command | ai
+	TargetType     string                 `protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3" json:"target_type,omitempty"` // endpoint | group
+	TargetId       string                 `protobuf:"bytes,4,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
+	Cron           string                 `protobuf:"bytes,5,opt,name=cron,proto3" json:"cron,omitempty"` // 5필드 또는 초를 포함한 6필드. 비우면 run_at_ms 에 한 번만
+	RunAtMs        int64                  `protobuf:"varint,6,opt,name=run_at_ms,json=runAtMs,proto3" json:"run_at_ms,omitempty"`
+	Timezone       string                 `protobuf:"bytes,7,opt,name=timezone,proto3" json:"timezone,omitempty"`                                   // IANA (예: Asia/Seoul)
+	CommandUnix    string                 `protobuf:"bytes,8,opt,name=command_unix,json=commandUnix,proto3" json:"command_unix,omitempty"`          // macOS·Linux
+	CommandWindows string                 `protobuf:"bytes,9,opt,name=command_windows,json=commandWindows,proto3" json:"command_windows,omitempty"` // Windows (PowerShell)
+	AiPrompt       string                 `protobuf:"bytes,10,opt,name=ai_prompt,json=aiPrompt,proto3" json:"ai_prompt,omitempty"`
+	RecordName     string                 `protobuf:"bytes,11,opt,name=record_name,json=recordName,proto3" json:"record_name,omitempty"`    // 비우면 출력을 상태로 저장하지 않는다
+	RecordParse    string                 `protobuf:"bytes,12,opt,name=record_parse,json=recordParse,proto3" json:"record_parse,omitempty"` // json | kv | text
+	TimeoutS       uint32                 `protobuf:"varint,13,opt,name=timeout_s,json=timeoutS,proto3" json:"timeout_s,omitempty"`         // 0 이면 600
+	Concurrency    uint32                 `protobuf:"varint,14,opt,name=concurrency,proto3" json:"concurrency,omitempty"`                   // 0 이면 10
+	Enabled        bool                   `protobuf:"varint,15,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *JobSpec) Reset() {
+	*x = JobSpec{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JobSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JobSpec) ProtoMessage() {}
+
+func (x *JobSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JobSpec.ProtoReflect.Descriptor instead.
+func (*JobSpec) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *JobSpec) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *JobSpec) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *JobSpec) GetTargetType() string {
+	if x != nil {
+		return x.TargetType
+	}
+	return ""
+}
+
+func (x *JobSpec) GetTargetId() string {
+	if x != nil {
+		return x.TargetId
+	}
+	return ""
+}
+
+func (x *JobSpec) GetCron() string {
+	if x != nil {
+		return x.Cron
+	}
+	return ""
+}
+
+func (x *JobSpec) GetRunAtMs() int64 {
+	if x != nil {
+		return x.RunAtMs
+	}
+	return 0
+}
+
+func (x *JobSpec) GetTimezone() string {
+	if x != nil {
+		return x.Timezone
+	}
+	return ""
+}
+
+func (x *JobSpec) GetCommandUnix() string {
+	if x != nil {
+		return x.CommandUnix
+	}
+	return ""
+}
+
+func (x *JobSpec) GetCommandWindows() string {
+	if x != nil {
+		return x.CommandWindows
+	}
+	return ""
+}
+
+func (x *JobSpec) GetAiPrompt() string {
+	if x != nil {
+		return x.AiPrompt
+	}
+	return ""
+}
+
+func (x *JobSpec) GetRecordName() string {
+	if x != nil {
+		return x.RecordName
+	}
+	return ""
+}
+
+func (x *JobSpec) GetRecordParse() string {
+	if x != nil {
+		return x.RecordParse
+	}
+	return ""
+}
+
+func (x *JobSpec) GetTimeoutS() uint32 {
+	if x != nil {
+		return x.TimeoutS
+	}
+	return 0
+}
+
+func (x *JobSpec) GetConcurrency() uint32 {
+	if x != nil {
+		return x.Concurrency
+	}
+	return 0
+}
+
+func (x *JobSpec) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+type JobRun struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	JobId         string                 `protobuf:"bytes,2,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	ScheduledAtMs int64                  `protobuf:"varint,3,opt,name=scheduled_at_ms,json=scheduledAtMs,proto3" json:"scheduled_at_ms,omitempty"`
+	StartedAtMs   int64                  `protobuf:"varint,4,opt,name=started_at_ms,json=startedAtMs,proto3" json:"started_at_ms,omitempty"`
+	FinishedAtMs  int64                  `protobuf:"varint,5,opt,name=finished_at_ms,json=finishedAtMs,proto3" json:"finished_at_ms,omitempty"` // 실행 중이면 0
+	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`                                    // running | succeeded | failed | skipped
+	Note          string                 `protobuf:"bytes,7,opt,name=note,proto3" json:"note,omitempty"`
+	Trigger       string                 `protobuf:"bytes,8,opt,name=trigger,proto3" json:"trigger,omitempty"` // schedule | manual | catchup
+	TargetCount   uint32                 `protobuf:"varint,9,opt,name=target_count,json=targetCount,proto3" json:"target_count,omitempty"`
+	RanCount      uint32                 `protobuf:"varint,10,opt,name=ran_count,json=ranCount,proto3" json:"ran_count,omitempty"` // 오프라인 PC 는 세지 않는다
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JobRun) Reset() {
+	*x = JobRun{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JobRun) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JobRun) ProtoMessage() {}
+
+func (x *JobRun) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JobRun.ProtoReflect.Descriptor instead.
+func (*JobRun) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *JobRun) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *JobRun) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
+}
+
+func (x *JobRun) GetScheduledAtMs() int64 {
+	if x != nil {
+		return x.ScheduledAtMs
+	}
+	return 0
+}
+
+func (x *JobRun) GetStartedAtMs() int64 {
+	if x != nil {
+		return x.StartedAtMs
+	}
+	return 0
+}
+
+func (x *JobRun) GetFinishedAtMs() int64 {
+	if x != nil {
+		return x.FinishedAtMs
+	}
+	return 0
+}
+
+func (x *JobRun) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *JobRun) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+func (x *JobRun) GetTrigger() string {
+	if x != nil {
+		return x.Trigger
+	}
+	return ""
+}
+
+func (x *JobRun) GetTargetCount() uint32 {
+	if x != nil {
+		return x.TargetCount
+	}
+	return 0
+}
+
+func (x *JobRun) GetRanCount() uint32 {
+	if x != nil {
+		return x.RanCount
+	}
+	return 0
+}
+
+type Job struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Spec          *JobSpec               `protobuf:"bytes,2,opt,name=spec,proto3" json:"spec,omitempty"`
+	NextRunAtMs   int64                  `protobuf:"varint,3,opt,name=next_run_at_ms,json=nextRunAtMs,proto3" json:"next_run_at_ms,omitempty"` // 0 이면 예정 없음
+	CreatedBy     string                 `protobuf:"bytes,4,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`            // user | ai
+	CreatedAtMs   int64                  `protobuf:"varint,5,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
+	UpdatedAtMs   int64                  `protobuf:"varint,6,opt,name=updated_at_ms,json=updatedAtMs,proto3" json:"updated_at_ms,omitempty"`
+	LastRun       *JobRun                `protobuf:"bytes,7,opt,name=last_run,json=lastRun,proto3" json:"last_run,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Job) Reset() {
+	*x = Job{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Job) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Job) ProtoMessage() {}
+
+func (x *Job) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Job.ProtoReflect.Descriptor instead.
+func (*Job) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *Job) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Job) GetSpec() *JobSpec {
+	if x != nil {
+		return x.Spec
+	}
+	return nil
+}
+
+func (x *Job) GetNextRunAtMs() int64 {
+	if x != nil {
+		return x.NextRunAtMs
+	}
+	return 0
+}
+
+func (x *Job) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *Job) GetCreatedAtMs() int64 {
+	if x != nil {
+		return x.CreatedAtMs
+	}
+	return 0
+}
+
+func (x *Job) GetUpdatedAtMs() int64 {
+	if x != nil {
+		return x.UpdatedAtMs
+	}
+	return 0
+}
+
+func (x *Job) GetLastRun() *JobRun {
+	if x != nil {
+		return x.LastRun
+	}
+	return nil
+}
+
+type JobResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	ExitCode      *int32                 `protobuf:"varint,2,opt,name=exit_code,json=exitCode,proto3,oneof" json:"exit_code,omitempty"` // 명령이 끝나지 못했으면 없음 (error 참고)
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	Output        string                 `protobuf:"bytes,4,opt,name=output,proto3" json:"output,omitempty"` // stdout + stderr, 최대 64 KB
+	Truncated     bool                   `protobuf:"varint,5,opt,name=truncated,proto3" json:"truncated,omitempty"`
+	RecordStatus  string                 `protobuf:"bytes,6,opt,name=record_status,json=recordStatus,proto3" json:"record_status,omitempty"` // none | saved | failed
+	StartedAtMs   int64                  `protobuf:"varint,7,opt,name=started_at_ms,json=startedAtMs,proto3" json:"started_at_ms,omitempty"`
+	FinishedAtMs  int64                  `protobuf:"varint,8,opt,name=finished_at_ms,json=finishedAtMs,proto3" json:"finished_at_ms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JobResult) Reset() {
+	*x = JobResult{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JobResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JobResult) ProtoMessage() {}
+
+func (x *JobResult) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JobResult.ProtoReflect.Descriptor instead.
+func (*JobResult) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *JobResult) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *JobResult) GetExitCode() int32 {
+	if x != nil && x.ExitCode != nil {
+		return *x.ExitCode
+	}
+	return 0
+}
+
+func (x *JobResult) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *JobResult) GetOutput() string {
+	if x != nil {
+		return x.Output
+	}
+	return ""
+}
+
+func (x *JobResult) GetTruncated() bool {
+	if x != nil {
+		return x.Truncated
+	}
+	return false
+}
+
+func (x *JobResult) GetRecordStatus() string {
+	if x != nil {
+		return x.RecordStatus
+	}
+	return ""
+}
+
+func (x *JobResult) GetStartedAtMs() int64 {
+	if x != nil {
+		return x.StartedAtMs
+	}
+	return 0
+}
+
+func (x *JobResult) GetFinishedAtMs() int64 {
+	if x != nil {
+		return x.FinishedAtMs
+	}
+	return 0
+}
+
+type ListJobsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListJobsRequest) Reset() {
+	*x = ListJobsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListJobsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListJobsRequest) ProtoMessage() {}
+
+func (x *ListJobsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListJobsRequest.ProtoReflect.Descriptor instead.
+func (*ListJobsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{62}
+}
+
+type ListJobsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Jobs          []*Job                 `protobuf:"bytes,1,rep,name=jobs,proto3" json:"jobs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListJobsResponse) Reset() {
+	*x = ListJobsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[63]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListJobsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListJobsResponse) ProtoMessage() {}
+
+func (x *ListJobsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[63]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListJobsResponse.ProtoReflect.Descriptor instead.
+func (*ListJobsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{63}
+}
+
+func (x *ListJobsResponse) GetJobs() []*Job {
+	if x != nil {
+		return x.Jobs
+	}
+	return nil
+}
+
+type GetJobRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetJobRequest) Reset() {
+	*x = GetJobRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetJobRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetJobRequest) ProtoMessage() {}
+
+func (x *GetJobRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetJobRequest.ProtoReflect.Descriptor instead.
+func (*GetJobRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{64}
+}
+
+func (x *GetJobRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type CreateJobRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Spec          *JobSpec               `protobuf:"bytes,1,opt,name=spec,proto3" json:"spec,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateJobRequest) Reset() {
+	*x = CreateJobRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateJobRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateJobRequest) ProtoMessage() {}
+
+func (x *CreateJobRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateJobRequest.ProtoReflect.Descriptor instead.
+func (*CreateJobRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *CreateJobRequest) GetSpec() *JobSpec {
+	if x != nil {
+		return x.Spec
+	}
+	return nil
+}
+
+type UpdateJobRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Spec          *JobSpec               `protobuf:"bytes,2,opt,name=spec,proto3" json:"spec,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateJobRequest) Reset() {
+	*x = UpdateJobRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateJobRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateJobRequest) ProtoMessage() {}
+
+func (x *UpdateJobRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateJobRequest.ProtoReflect.Descriptor instead.
+func (*UpdateJobRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *UpdateJobRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateJobRequest) GetSpec() *JobSpec {
+	if x != nil {
+		return x.Spec
+	}
+	return nil
+}
+
+type DeleteJobRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteJobRequest) Reset() {
+	*x = DeleteJobRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteJobRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteJobRequest) ProtoMessage() {}
+
+func (x *DeleteJobRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteJobRequest.ProtoReflect.Descriptor instead.
+func (*DeleteJobRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *DeleteJobRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteJobResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteJobResponse) Reset() {
+	*x = DeleteJobResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteJobResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteJobResponse) ProtoMessage() {}
+
+func (x *DeleteJobResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteJobResponse.ProtoReflect.Descriptor instead.
+func (*DeleteJobResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{68}
+}
+
+type SetJobEnabledRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Enabled       bool                   `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetJobEnabledRequest) Reset() {
+	*x = SetJobEnabledRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetJobEnabledRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetJobEnabledRequest) ProtoMessage() {}
+
+func (x *SetJobEnabledRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetJobEnabledRequest.ProtoReflect.Descriptor instead.
+func (*SetJobEnabledRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *SetJobEnabledRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *SetJobEnabledRequest) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+type RunJobNowRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunJobNowRequest) Reset() {
+	*x = RunJobNowRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunJobNowRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunJobNowRequest) ProtoMessage() {}
+
+func (x *RunJobNowRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunJobNowRequest.ProtoReflect.Descriptor instead.
+func (*RunJobNowRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *RunJobNowRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type ListJobRunsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JobId         string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
+	Limit         uint32                 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"` // 0 이면 50
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListJobRunsRequest) Reset() {
+	*x = ListJobRunsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListJobRunsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListJobRunsRequest) ProtoMessage() {}
+
+func (x *ListJobRunsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListJobRunsRequest.ProtoReflect.Descriptor instead.
+func (*ListJobRunsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *ListJobRunsRequest) GetJobId() string {
+	if x != nil {
+		return x.JobId
+	}
+	return ""
+}
+
+func (x *ListJobRunsRequest) GetLimit() uint32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type ListJobRunsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Runs          []*JobRun              `protobuf:"bytes,1,rep,name=runs,proto3" json:"runs,omitempty"` // 최근 것부터
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListJobRunsResponse) Reset() {
+	*x = ListJobRunsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListJobRunsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListJobRunsResponse) ProtoMessage() {}
+
+func (x *ListJobRunsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListJobRunsResponse.ProtoReflect.Descriptor instead.
+func (*ListJobRunsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *ListJobRunsResponse) GetRuns() []*JobRun {
+	if x != nil {
+		return x.Runs
+	}
+	return nil
+}
+
+type GetJobRunRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetJobRunRequest) Reset() {
+	*x = GetJobRunRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetJobRunRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetJobRunRequest) ProtoMessage() {}
+
+func (x *GetJobRunRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetJobRunRequest.ProtoReflect.Descriptor instead.
+func (*GetJobRunRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *GetJobRunRequest) GetRunId() string {
+	if x != nil {
+		return x.RunId
+	}
+	return ""
+}
+
+type GetJobRunResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Run           *JobRun                `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
+	Results       []*JobResult           `protobuf:"bytes,2,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetJobRunResponse) Reset() {
+	*x = GetJobRunResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetJobRunResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetJobRunResponse) ProtoMessage() {}
+
+func (x *GetJobRunResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetJobRunResponse.ProtoReflect.Descriptor instead.
+func (*GetJobRunResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *GetJobRunResponse) GetRun() *JobRun {
+	if x != nil {
+		return x.Run
+	}
+	return nil
+}
+
+func (x *GetJobRunResponse) GetResults() []*JobResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type StateRecord struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ValueJson     string                 `protobuf:"bytes,3,opt,name=value_json,json=valueJson,proto3" json:"value_json,omitempty"`
+	RecordedAtMs  int64                  `protobuf:"varint,4,opt,name=recorded_at_ms,json=recordedAtMs,proto3" json:"recorded_at_ms,omitempty"`
+	Source        string                 `protobuf:"bytes,5,opt,name=source,proto3" json:"source,omitempty"` // job:<잡>:<회차> 또는 ai:<세션>
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StateRecord) Reset() {
+	*x = StateRecord{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StateRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StateRecord) ProtoMessage() {}
+
+func (x *StateRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StateRecord.ProtoReflect.Descriptor instead.
+func (*StateRecord) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *StateRecord) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *StateRecord) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StateRecord) GetValueJson() string {
+	if x != nil {
+		return x.ValueJson
+	}
+	return ""
+}
+
+func (x *StateRecord) GetRecordedAtMs() int64 {
+	if x != nil {
+		return x.RecordedAtMs
+	}
+	return 0
+}
+
+func (x *StateRecord) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+type ListLatestRecordsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLatestRecordsRequest) Reset() {
+	*x = ListLatestRecordsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLatestRecordsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLatestRecordsRequest) ProtoMessage() {}
+
+func (x *ListLatestRecordsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLatestRecordsRequest.ProtoReflect.Descriptor instead.
+func (*ListLatestRecordsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *ListLatestRecordsRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+type ListRecordsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EndpointId    string                 `protobuf:"bytes,1,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"` // 정확히 그 이름이거나 "name." 아래 전부
+	SinceMs       int64                  `protobuf:"varint,3,opt,name=since_ms,json=sinceMs,proto3" json:"since_ms,omitempty"`
+	Limit         uint32                 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"` // 0 이면 200
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRecordsRequest) Reset() {
+	*x = ListRecordsRequest{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[77]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRecordsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRecordsRequest) ProtoMessage() {}
+
+func (x *ListRecordsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[77]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRecordsRequest.ProtoReflect.Descriptor instead.
+func (*ListRecordsRequest) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{77}
+}
+
+func (x *ListRecordsRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *ListRecordsRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ListRecordsRequest) GetSinceMs() int64 {
+	if x != nil {
+		return x.SinceMs
+	}
+	return 0
+}
+
+func (x *ListRecordsRequest) GetLimit() uint32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type ListRecordsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Records       []*StateRecord         `protobuf:"bytes,1,rep,name=records,proto3" json:"records,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRecordsResponse) Reset() {
+	*x = ListRecordsResponse{}
+	mi := &file_gridelta_v1_console_proto_msgTypes[78]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRecordsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRecordsResponse) ProtoMessage() {}
+
+func (x *ListRecordsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_gridelta_v1_console_proto_msgTypes[78]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRecordsResponse.ProtoReflect.Descriptor instead.
+func (*ListRecordsResponse) Descriptor() ([]byte, []int) {
+	return file_gridelta_v1_console_proto_rawDescGZIP(), []int{78}
+}
+
+func (x *ListRecordsResponse) GetRecords() []*StateRecord {
+	if x != nil {
+		return x.Records
+	}
+	return nil
+}
+
 var File_gridelta_v1_console_proto protoreflect.FileDescriptor
 
 const file_gridelta_v1_console_proto_rawDesc = "" +
@@ -3104,7 +4389,106 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x06tokens\x18\x01 \x03(\v2\x18.gridelta.v1.EnrollTokenR\x06tokens\"*\n" +
 	"\x18RevokeEnrollTokenRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1b\n" +
-	"\x19RevokeEnrollTokenResponse2\xc2\x12\n" +
+	"\x19RevokeEnrollTokenResponse\"\xc1\x03\n" +
+	"\aJobSpec\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x1f\n" +
+	"\vtarget_type\x18\x03 \x01(\tR\n" +
+	"targetType\x12\x1b\n" +
+	"\ttarget_id\x18\x04 \x01(\tR\btargetId\x12\x12\n" +
+	"\x04cron\x18\x05 \x01(\tR\x04cron\x12\x1a\n" +
+	"\trun_at_ms\x18\x06 \x01(\x03R\arunAtMs\x12\x1a\n" +
+	"\btimezone\x18\a \x01(\tR\btimezone\x12!\n" +
+	"\fcommand_unix\x18\b \x01(\tR\vcommandUnix\x12'\n" +
+	"\x0fcommand_windows\x18\t \x01(\tR\x0ecommandWindows\x12\x1b\n" +
+	"\tai_prompt\x18\n" +
+	" \x01(\tR\baiPrompt\x12\x1f\n" +
+	"\vrecord_name\x18\v \x01(\tR\n" +
+	"recordName\x12!\n" +
+	"\frecord_parse\x18\f \x01(\tR\vrecordParse\x12\x1b\n" +
+	"\ttimeout_s\x18\r \x01(\rR\btimeoutS\x12 \n" +
+	"\vconcurrency\x18\x0e \x01(\rR\vconcurrency\x12\x18\n" +
+	"\aenabled\x18\x0f \x01(\bR\aenabled\"\xa7\x02\n" +
+	"\x06JobRun\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x15\n" +
+	"\x06job_id\x18\x02 \x01(\tR\x05jobId\x12&\n" +
+	"\x0fscheduled_at_ms\x18\x03 \x01(\x03R\rscheduledAtMs\x12\"\n" +
+	"\rstarted_at_ms\x18\x04 \x01(\x03R\vstartedAtMs\x12$\n" +
+	"\x0efinished_at_ms\x18\x05 \x01(\x03R\ffinishedAtMs\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\x12\x12\n" +
+	"\x04note\x18\a \x01(\tR\x04note\x12\x18\n" +
+	"\atrigger\x18\b \x01(\tR\atrigger\x12!\n" +
+	"\ftarget_count\x18\t \x01(\rR\vtargetCount\x12\x1b\n" +
+	"\tran_count\x18\n" +
+	" \x01(\rR\branCount\"\xfb\x01\n" +
+	"\x03Job\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
+	"\x04spec\x18\x02 \x01(\v2\x14.gridelta.v1.JobSpecR\x04spec\x12#\n" +
+	"\x0enext_run_at_ms\x18\x03 \x01(\x03R\vnextRunAtMs\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x04 \x01(\tR\tcreatedBy\x12\"\n" +
+	"\rcreated_at_ms\x18\x05 \x01(\x03R\vcreatedAtMs\x12\"\n" +
+	"\rupdated_at_ms\x18\x06 \x01(\x03R\vupdatedAtMs\x12.\n" +
+	"\blast_run\x18\a \x01(\v2\x13.gridelta.v1.JobRunR\alastRun\"\x97\x02\n" +
+	"\tJobResult\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12 \n" +
+	"\texit_code\x18\x02 \x01(\x05H\x00R\bexitCode\x88\x01\x01\x12\x14\n" +
+	"\x05error\x18\x03 \x01(\tR\x05error\x12\x16\n" +
+	"\x06output\x18\x04 \x01(\tR\x06output\x12\x1c\n" +
+	"\ttruncated\x18\x05 \x01(\bR\ttruncated\x12#\n" +
+	"\rrecord_status\x18\x06 \x01(\tR\frecordStatus\x12\"\n" +
+	"\rstarted_at_ms\x18\a \x01(\x03R\vstartedAtMs\x12$\n" +
+	"\x0efinished_at_ms\x18\b \x01(\x03R\ffinishedAtMsB\f\n" +
+	"\n" +
+	"_exit_code\"\x11\n" +
+	"\x0fListJobsRequest\"8\n" +
+	"\x10ListJobsResponse\x12$\n" +
+	"\x04jobs\x18\x01 \x03(\v2\x10.gridelta.v1.JobR\x04jobs\"\x1f\n" +
+	"\rGetJobRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"<\n" +
+	"\x10CreateJobRequest\x12(\n" +
+	"\x04spec\x18\x01 \x01(\v2\x14.gridelta.v1.JobSpecR\x04spec\"L\n" +
+	"\x10UpdateJobRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
+	"\x04spec\x18\x02 \x01(\v2\x14.gridelta.v1.JobSpecR\x04spec\"\"\n" +
+	"\x10DeleteJobRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
+	"\x11DeleteJobResponse\"@\n" +
+	"\x14SetJobEnabledRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
+	"\aenabled\x18\x02 \x01(\bR\aenabled\"\"\n" +
+	"\x10RunJobNowRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"A\n" +
+	"\x12ListJobRunsRequest\x12\x15\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\rR\x05limit\">\n" +
+	"\x13ListJobRunsResponse\x12'\n" +
+	"\x04runs\x18\x01 \x03(\v2\x13.gridelta.v1.JobRunR\x04runs\")\n" +
+	"\x10GetJobRunRequest\x12\x15\n" +
+	"\x06run_id\x18\x01 \x01(\tR\x05runId\"l\n" +
+	"\x11GetJobRunResponse\x12%\n" +
+	"\x03run\x18\x01 \x01(\v2\x13.gridelta.v1.JobRunR\x03run\x120\n" +
+	"\aresults\x18\x02 \x03(\v2\x16.gridelta.v1.JobResultR\aresults\"\x9f\x01\n" +
+	"\vStateRecord\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"value_json\x18\x03 \x01(\tR\tvalueJson\x12$\n" +
+	"\x0erecorded_at_ms\x18\x04 \x01(\x03R\frecordedAtMs\x12\x16\n" +
+	"\x06source\x18\x05 \x01(\tR\x06source\";\n" +
+	"\x18ListLatestRecordsRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\"z\n" +
+	"\x12ListRecordsRequest\x12\x1f\n" +
+	"\vendpoint_id\x18\x01 \x01(\tR\n" +
+	"endpointId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x19\n" +
+	"\bsince_ms\x18\x03 \x01(\x03R\asinceMs\x12\x14\n" +
+	"\x05limit\x18\x04 \x01(\rR\x05limit\"I\n" +
+	"\x13ListRecordsResponse\x122\n" +
+	"\arecords\x18\x01 \x03(\v2\x18.gridelta.v1.StateRecordR\arecords2\xe0\x18\n" +
 	"\x0eConsoleService\x12V\n" +
 	"\rListEndpoints\x12!.gridelta.v1.ListEndpointsRequest\x1a\".gridelta.v1.ListEndpointsResponse\x12R\n" +
 	"\x0eWatchEndpoints\x12\".gridelta.v1.WatchEndpointsRequest\x1a\x1a.gridelta.v1.EndpointEvent0\x01\x12M\n" +
@@ -3131,7 +4515,18 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x0eListAiSessions\x12\".gridelta.v1.ListAiSessionsRequest\x1a#.gridelta.v1.ListAiSessionsResponse\x12N\n" +
 	"\x0fCreateAiSession\x12#.gridelta.v1.CreateAiSessionRequest\x1a\x16.gridelta.v1.AiSession\x12\\\n" +
 	"\x0fRenameAiSession\x12#.gridelta.v1.RenameAiSessionRequest\x1a$.gridelta.v1.RenameAiSessionResponse\x12\\\n" +
-	"\x0fDeleteAiSession\x12#.gridelta.v1.DeleteAiSessionRequest\x1a$.gridelta.v1.DeleteAiSessionResponse\x12K\n" +
+	"\x0fDeleteAiSession\x12#.gridelta.v1.DeleteAiSessionRequest\x1a$.gridelta.v1.DeleteAiSessionResponse\x12G\n" +
+	"\bListJobs\x12\x1c.gridelta.v1.ListJobsRequest\x1a\x1d.gridelta.v1.ListJobsResponse\x126\n" +
+	"\x06GetJob\x12\x1a.gridelta.v1.GetJobRequest\x1a\x10.gridelta.v1.Job\x12<\n" +
+	"\tCreateJob\x12\x1d.gridelta.v1.CreateJobRequest\x1a\x10.gridelta.v1.Job\x12<\n" +
+	"\tUpdateJob\x12\x1d.gridelta.v1.UpdateJobRequest\x1a\x10.gridelta.v1.Job\x12J\n" +
+	"\tDeleteJob\x12\x1d.gridelta.v1.DeleteJobRequest\x1a\x1e.gridelta.v1.DeleteJobResponse\x12D\n" +
+	"\rSetJobEnabled\x12!.gridelta.v1.SetJobEnabledRequest\x1a\x10.gridelta.v1.Job\x12?\n" +
+	"\tRunJobNow\x12\x1d.gridelta.v1.RunJobNowRequest\x1a\x13.gridelta.v1.JobRun\x12P\n" +
+	"\vListJobRuns\x12\x1f.gridelta.v1.ListJobRunsRequest\x1a .gridelta.v1.ListJobRunsResponse\x12J\n" +
+	"\tGetJobRun\x12\x1d.gridelta.v1.GetJobRunRequest\x1a\x1e.gridelta.v1.GetJobRunResponse\x12\\\n" +
+	"\x11ListLatestRecords\x12%.gridelta.v1.ListLatestRecordsRequest\x1a .gridelta.v1.ListRecordsResponse\x12P\n" +
+	"\vListRecords\x12\x1f.gridelta.v1.ListRecordsRequest\x1a .gridelta.v1.ListRecordsResponse\x12K\n" +
 	"\rGetAiSettings\x12!.gridelta.v1.GetAiSettingsRequest\x1a\x17.gridelta.v1.AiSettings\x12Q\n" +
 	"\x10UpdateAiSettings\x12$.gridelta.v1.UpdateAiSettingsRequest\x1a\x17.gridelta.v1.AiSettingsBFZDgithub.com/Epsilondelta-ai/gridelta/agent/gen/gridelta/v1;grideltav1b\x06proto3"
 
@@ -3147,7 +4542,7 @@ func file_gridelta_v1_console_proto_rawDescGZIP() []byte {
 	return file_gridelta_v1_console_proto_rawDescData
 }
 
-var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 58)
+var file_gridelta_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 79)
 var file_gridelta_v1_console_proto_goTypes = []any{
 	(*Endpoint)(nil),                  // 0: gridelta.v1.Endpoint
 	(*ListEndpointsRequest)(nil),      // 1: gridelta.v1.ListEndpointsRequest
@@ -3207,6 +4602,27 @@ var file_gridelta_v1_console_proto_goTypes = []any{
 	(*ListEnrollTokensResponse)(nil),  // 55: gridelta.v1.ListEnrollTokensResponse
 	(*RevokeEnrollTokenRequest)(nil),  // 56: gridelta.v1.RevokeEnrollTokenRequest
 	(*RevokeEnrollTokenResponse)(nil), // 57: gridelta.v1.RevokeEnrollTokenResponse
+	(*JobSpec)(nil),                   // 58: gridelta.v1.JobSpec
+	(*JobRun)(nil),                    // 59: gridelta.v1.JobRun
+	(*Job)(nil),                       // 60: gridelta.v1.Job
+	(*JobResult)(nil),                 // 61: gridelta.v1.JobResult
+	(*ListJobsRequest)(nil),           // 62: gridelta.v1.ListJobsRequest
+	(*ListJobsResponse)(nil),          // 63: gridelta.v1.ListJobsResponse
+	(*GetJobRequest)(nil),             // 64: gridelta.v1.GetJobRequest
+	(*CreateJobRequest)(nil),          // 65: gridelta.v1.CreateJobRequest
+	(*UpdateJobRequest)(nil),          // 66: gridelta.v1.UpdateJobRequest
+	(*DeleteJobRequest)(nil),          // 67: gridelta.v1.DeleteJobRequest
+	(*DeleteJobResponse)(nil),         // 68: gridelta.v1.DeleteJobResponse
+	(*SetJobEnabledRequest)(nil),      // 69: gridelta.v1.SetJobEnabledRequest
+	(*RunJobNowRequest)(nil),          // 70: gridelta.v1.RunJobNowRequest
+	(*ListJobRunsRequest)(nil),        // 71: gridelta.v1.ListJobRunsRequest
+	(*ListJobRunsResponse)(nil),       // 72: gridelta.v1.ListJobRunsResponse
+	(*GetJobRunRequest)(nil),          // 73: gridelta.v1.GetJobRunRequest
+	(*GetJobRunResponse)(nil),         // 74: gridelta.v1.GetJobRunResponse
+	(*StateRecord)(nil),               // 75: gridelta.v1.StateRecord
+	(*ListLatestRecordsRequest)(nil),  // 76: gridelta.v1.ListLatestRecordsRequest
+	(*ListRecordsRequest)(nil),        // 77: gridelta.v1.ListRecordsRequest
+	(*ListRecordsResponse)(nil),       // 78: gridelta.v1.ListRecordsResponse
 }
 var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
@@ -3217,65 +4633,96 @@ var file_gridelta_v1_console_proto_depIdxs = []int32{
 	33, // 5: gridelta.v1.ListAiSessionsResponse.sessions:type_name -> gridelta.v1.AiSession
 	41, // 6: gridelta.v1.ListGroupsResponse.groups:type_name -> gridelta.v1.Group
 	53, // 7: gridelta.v1.ListEnrollTokensResponse.tokens:type_name -> gridelta.v1.EnrollToken
-	1,  // 8: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3,  // 9: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	42, // 10: gridelta.v1.ConsoleService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
-	44, // 11: gridelta.v1.ConsoleService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
-	45, // 12: gridelta.v1.ConsoleService.RenameGroup:input_type -> gridelta.v1.RenameGroupRequest
-	47, // 13: gridelta.v1.ConsoleService.DeleteGroup:input_type -> gridelta.v1.DeleteGroupRequest
-	49, // 14: gridelta.v1.ConsoleService.MoveEndpoint:input_type -> gridelta.v1.MoveEndpointRequest
-	51, // 15: gridelta.v1.ConsoleService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
-	54, // 16: gridelta.v1.ConsoleService.ListEnrollTokens:input_type -> gridelta.v1.ListEnrollTokensRequest
-	56, // 17: gridelta.v1.ConsoleService.RevokeEnrollToken:input_type -> gridelta.v1.RevokeEnrollTokenRequest
-	5,  // 18: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
-	8,  // 19: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
-	10, // 20: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
-	12, // 21: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
-	14, // 22: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
-	16, // 23: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	29, // 24: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
-	31, // 25: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
-	19, // 26: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
-	21, // 27: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
-	23, // 28: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
-	34, // 29: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
-	36, // 30: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
-	37, // 31: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
-	39, // 32: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
-	27, // 33: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
-	28, // 34: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
-	2,  // 35: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 36: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	43, // 37: gridelta.v1.ConsoleService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
-	41, // 38: gridelta.v1.ConsoleService.CreateGroup:output_type -> gridelta.v1.Group
-	46, // 39: gridelta.v1.ConsoleService.RenameGroup:output_type -> gridelta.v1.RenameGroupResponse
-	48, // 40: gridelta.v1.ConsoleService.DeleteGroup:output_type -> gridelta.v1.DeleteGroupResponse
-	50, // 41: gridelta.v1.ConsoleService.MoveEndpoint:output_type -> gridelta.v1.MoveEndpointResponse
-	52, // 42: gridelta.v1.ConsoleService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
-	55, // 43: gridelta.v1.ConsoleService.ListEnrollTokens:output_type -> gridelta.v1.ListEnrollTokensResponse
-	57, // 44: gridelta.v1.ConsoleService.RevokeEnrollToken:output_type -> gridelta.v1.RevokeEnrollTokenResponse
-	6,  // 45: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 46: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 47: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 48: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 49: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 50: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	30, // 51: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
-	32, // 52: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
-	20, // 53: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
-	22, // 54: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
-	24, // 55: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
-	35, // 56: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
-	33, // 57: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
-	38, // 58: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
-	40, // 59: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
-	26, // 60: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
-	26, // 61: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
-	35, // [35:62] is the sub-list for method output_type
-	8,  // [8:35] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	58, // 8: gridelta.v1.Job.spec:type_name -> gridelta.v1.JobSpec
+	59, // 9: gridelta.v1.Job.last_run:type_name -> gridelta.v1.JobRun
+	60, // 10: gridelta.v1.ListJobsResponse.jobs:type_name -> gridelta.v1.Job
+	58, // 11: gridelta.v1.CreateJobRequest.spec:type_name -> gridelta.v1.JobSpec
+	58, // 12: gridelta.v1.UpdateJobRequest.spec:type_name -> gridelta.v1.JobSpec
+	59, // 13: gridelta.v1.ListJobRunsResponse.runs:type_name -> gridelta.v1.JobRun
+	59, // 14: gridelta.v1.GetJobRunResponse.run:type_name -> gridelta.v1.JobRun
+	61, // 15: gridelta.v1.GetJobRunResponse.results:type_name -> gridelta.v1.JobResult
+	75, // 16: gridelta.v1.ListRecordsResponse.records:type_name -> gridelta.v1.StateRecord
+	1,  // 17: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 18: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	42, // 19: gridelta.v1.ConsoleService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
+	44, // 20: gridelta.v1.ConsoleService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
+	45, // 21: gridelta.v1.ConsoleService.RenameGroup:input_type -> gridelta.v1.RenameGroupRequest
+	47, // 22: gridelta.v1.ConsoleService.DeleteGroup:input_type -> gridelta.v1.DeleteGroupRequest
+	49, // 23: gridelta.v1.ConsoleService.MoveEndpoint:input_type -> gridelta.v1.MoveEndpointRequest
+	51, // 24: gridelta.v1.ConsoleService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
+	54, // 25: gridelta.v1.ConsoleService.ListEnrollTokens:input_type -> gridelta.v1.ListEnrollTokensRequest
+	56, // 26: gridelta.v1.ConsoleService.RevokeEnrollToken:input_type -> gridelta.v1.RevokeEnrollTokenRequest
+	5,  // 27: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 28: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 29: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 30: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 31: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 32: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	29, // 33: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
+	31, // 34: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
+	19, // 35: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 36: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 37: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	34, // 38: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
+	36, // 39: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
+	37, // 40: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
+	39, // 41: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
+	62, // 42: gridelta.v1.ConsoleService.ListJobs:input_type -> gridelta.v1.ListJobsRequest
+	64, // 43: gridelta.v1.ConsoleService.GetJob:input_type -> gridelta.v1.GetJobRequest
+	65, // 44: gridelta.v1.ConsoleService.CreateJob:input_type -> gridelta.v1.CreateJobRequest
+	66, // 45: gridelta.v1.ConsoleService.UpdateJob:input_type -> gridelta.v1.UpdateJobRequest
+	67, // 46: gridelta.v1.ConsoleService.DeleteJob:input_type -> gridelta.v1.DeleteJobRequest
+	69, // 47: gridelta.v1.ConsoleService.SetJobEnabled:input_type -> gridelta.v1.SetJobEnabledRequest
+	70, // 48: gridelta.v1.ConsoleService.RunJobNow:input_type -> gridelta.v1.RunJobNowRequest
+	71, // 49: gridelta.v1.ConsoleService.ListJobRuns:input_type -> gridelta.v1.ListJobRunsRequest
+	73, // 50: gridelta.v1.ConsoleService.GetJobRun:input_type -> gridelta.v1.GetJobRunRequest
+	76, // 51: gridelta.v1.ConsoleService.ListLatestRecords:input_type -> gridelta.v1.ListLatestRecordsRequest
+	77, // 52: gridelta.v1.ConsoleService.ListRecords:input_type -> gridelta.v1.ListRecordsRequest
+	27, // 53: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
+	28, // 54: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
+	2,  // 55: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 56: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	43, // 57: gridelta.v1.ConsoleService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
+	41, // 58: gridelta.v1.ConsoleService.CreateGroup:output_type -> gridelta.v1.Group
+	46, // 59: gridelta.v1.ConsoleService.RenameGroup:output_type -> gridelta.v1.RenameGroupResponse
+	48, // 60: gridelta.v1.ConsoleService.DeleteGroup:output_type -> gridelta.v1.DeleteGroupResponse
+	50, // 61: gridelta.v1.ConsoleService.MoveEndpoint:output_type -> gridelta.v1.MoveEndpointResponse
+	52, // 62: gridelta.v1.ConsoleService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
+	55, // 63: gridelta.v1.ConsoleService.ListEnrollTokens:output_type -> gridelta.v1.ListEnrollTokensResponse
+	57, // 64: gridelta.v1.ConsoleService.RevokeEnrollToken:output_type -> gridelta.v1.RevokeEnrollTokenResponse
+	6,  // 65: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 66: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 67: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 68: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 69: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 70: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	30, // 71: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
+	32, // 72: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
+	20, // 73: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 74: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 75: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	35, // 76: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
+	33, // 77: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
+	38, // 78: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
+	40, // 79: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
+	63, // 80: gridelta.v1.ConsoleService.ListJobs:output_type -> gridelta.v1.ListJobsResponse
+	60, // 81: gridelta.v1.ConsoleService.GetJob:output_type -> gridelta.v1.Job
+	60, // 82: gridelta.v1.ConsoleService.CreateJob:output_type -> gridelta.v1.Job
+	60, // 83: gridelta.v1.ConsoleService.UpdateJob:output_type -> gridelta.v1.Job
+	68, // 84: gridelta.v1.ConsoleService.DeleteJob:output_type -> gridelta.v1.DeleteJobResponse
+	60, // 85: gridelta.v1.ConsoleService.SetJobEnabled:output_type -> gridelta.v1.Job
+	59, // 86: gridelta.v1.ConsoleService.RunJobNow:output_type -> gridelta.v1.JobRun
+	72, // 87: gridelta.v1.ConsoleService.ListJobRuns:output_type -> gridelta.v1.ListJobRunsResponse
+	74, // 88: gridelta.v1.ConsoleService.GetJobRun:output_type -> gridelta.v1.GetJobRunResponse
+	78, // 89: gridelta.v1.ConsoleService.ListLatestRecords:output_type -> gridelta.v1.ListRecordsResponse
+	78, // 90: gridelta.v1.ConsoleService.ListRecords:output_type -> gridelta.v1.ListRecordsResponse
+	26, // 91: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
+	26, // 92: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
+	55, // [55:93] is the sub-list for method output_type
+	17, // [17:55] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }
@@ -3284,13 +4731,14 @@ func file_gridelta_v1_console_proto_init() {
 		return
 	}
 	file_gridelta_v1_console_proto_msgTypes[11].OneofWrappers = []any{}
+	file_gridelta_v1_console_proto_msgTypes[61].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_gridelta_v1_console_proto_rawDesc), len(file_gridelta_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   58,
+			NumMessages:   79,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

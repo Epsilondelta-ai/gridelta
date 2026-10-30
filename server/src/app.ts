@@ -16,7 +16,8 @@ import { hub } from './hub/index.ts';
 import { startAdmin } from './rpc/admin.ts';
 import { mountConsole } from './rpc/console.ts';
 import { mountDebug } from './rpc/debug.ts';
-import { store } from './store/index.ts';
+import { scheduler } from './jobs/index.ts';
+import { jobStore, store } from './store/index.ts';
 
 // AgentGateway(HTTP/2)와 AdminService(유닉스 소켓)는 Flue 서버와 별도로 띄운다(설계 6.1).
 // Vite 개발 모드에서 app.ts 가 다시 로드돼도 한 번만 실행하도록 globalThis 로 막는다.
@@ -47,6 +48,7 @@ g.__grideltaServers ??= (() => {
   void store.expirePendingApprovals();
   const vault = new OAuthVault(store, loadMasterKey(config.masterKeyPath));
   void aiModels.load();
+  void scheduler.start(new Date(), config.catchupDelayMs);
   if (config.aiFaux) registerFauxProvider();
   // openai-codex 는 CLI 로그인(gridelta login openai)으로 저장한 자격 증명을 쓴다. openai/... 는 OPENAI_API_KEY
   else registerCodexProvider(vault);
@@ -65,7 +67,7 @@ const app = new Hono();
 
 app.get('/healthz', (c) => c.text('ok'));
 mountAuth(app, store);
-mountConsole(app, hub, store, approvals, aiModels, enrollInfo);
+mountConsole(app, { hub, store, jobs: jobStore, approvals, aiModels, scheduler, enroll: enrollInfo });
 
 // AI 대화: Flue 라우트. 통합 대화는 /agents/assistant/<세션>, PC 대화는 /agents/operator/<PC>:<세션>.
 // "대화 URL 에 접근할 수 있으면 누구나 대화할 수 있다" 는 Flue 의 전제 때문에 인증을 반드시 앞에 두고,

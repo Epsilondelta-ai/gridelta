@@ -46,11 +46,14 @@ import {
   type ApprovalRow,
   DEFAULT_GROUP,
   NameTakenError,
+  type JobStore,
   type SessionUser,
   type Store,
 } from '../store/index.ts';
 import { endpointsView } from './endpoints-view.ts';
 import { createEnrollToken, type EnrollInfo } from './enroll.ts';
+import { jobHandlers } from './jobs.ts';
+import type { Scheduler } from '../jobs/scheduler.ts';
 
 export const RPC_PREFIX = '/rpc';
 const MAX_NAME_LENGTH = 64;
@@ -104,7 +107,17 @@ function toTerminal(pty: PtySession): Terminal {
   });
 }
 
-export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCenter, aiModels: AiModels, enroll: EnrollInfo) {
+export interface ConsoleDeps {
+  hub: AgentHub;
+  store: Store;
+  jobs: JobStore;
+  approvals: ApprovalCenter;
+  aiModels: AiModels;
+  scheduler: Scheduler;
+  enroll: EnrollInfo;
+}
+
+export function consoleRoutes({ hub, store, jobs, approvals, aiModels, scheduler, enroll }: ConsoleDeps) {
   const view = endpointsView(hub, store);
   const names = new Map<string, string>(); // 승인 카드에 보여 줄 PC 이름 (WatchApprovals 시작 때 채움)
   const toApproval = (row: ApprovalRow): Approval =>
@@ -119,6 +132,8 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
     });
   return (router: ConnectRouter) => {
     router.service(ConsoleService, {
+      ...jobHandlers({ store, jobs, scheduler }),
+
       async listEndpoints() {
         return { endpoints: await view.list() };
       },
@@ -356,16 +371,10 @@ export function consoleRoutes(hub: AgentHub, store: Store, approvals: ApprovalCe
  * ConsoleService 를 Flue 의 Hono 앱에 마운트한다. 로그인한 사용자만 호출할 수 있다.
  * Flue 빌드 서버는 교체할 수 없으므로 Connect 를 fetch 핸들러로 바꿔 Hono 라우트로 붙인다.
  */
-export function mountConsole(
-  app: Hono,
-  hub: AgentHub,
-  store: Store,
-  approvals: ApprovalCenter,
-  aiModels: AiModels,
-  enroll: EnrollInfo,
-): void {
+export function mountConsole(app: Hono, deps: ConsoleDeps): void {
+  const store = deps.store;
   const router = createConnectRouter();
-  consoleRoutes(hub, store, approvals, aiModels, enroll)(router);
+  consoleRoutes(deps)(router);
   for (const handler of router.handlers) {
     app.post(RPC_PREFIX + handler.requestPath, requireAuth(store), async (c) => {
       // 로그인 사용자를 Connect 핸들러의 context 로 넘긴다 (감사 로그용)
