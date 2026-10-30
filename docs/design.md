@@ -693,7 +693,7 @@ docker compose -p gridelta-local -f docker/compose.yaml exec server gridelta aut
 | --- | --- |
 | 이름 | 사람이 알아볼 이름 |
 | 종류 | **명령 잡**: 셸 명령 실행. OS 가 섞인 대상을 위해 macOS·Linux 용과 Windows 용 명령을 따로 적을 수 있다<br>**AI 잡**: 자연어 지시를 AI 가 수행 (예: "디스크·메모리를 점검하고 이상하면 요약해줘") |
-| 대상 | PC 하나, 그룹, 전체 PC. 그룹·전체는 **실행 시점**의 소속으로 정한다 |
+| 대상 | PC 하나 또는 그룹. "전체 PC" 대상은 두지 않는다. 그룹은 **실행 시점**의 소속으로 정한다 (나중에 그룹에 들어온 PC 도 포함) |
 | 주기 | cron 식(프리셋 제공: 매시간, 매일 09:00, 평일, 매주 월요일 …) 또는 한 번만(특정 일시). 시간대는 잡마다 지정, 기본은 만드는 사람의 브라우저 시간대 |
 | 상태 저장 (명령 잡) | 출력을 상태 기록으로 저장할지와 이름(예: `disk.root`), 해석 방식: 출력 전체가 JSON / 한 줄에 하나씩 `이름=값` / 텍스트 그대로 |
 | 타임아웃 | PC 하나당 실행 시간 상한, 기본 10분 |
@@ -709,7 +709,7 @@ docker compose -p gridelta-local -f docker/compose.yaml exec server gridelta aut
 - **서버가 꺼져 있던 동안 놓친 회차**: 다시 켜졌을 때 놓친 지 1시간 이내면 한 번만 실행하고, 그보다 오래되었으면 건너뛴다.
 - **성공 판단**: 명령 잡은 종료 코드 0 이 성공이다. 상태 저장에서 해석이 실패하면 실행 결과와 별도로 "기록 실패" 를 표시한다.
 - **출력 보관**: PC 하나당 회차마다 stdout·stderr 를 합쳐 64 KB 까지 보관하고, 넘으면 앞 32 KB 와 뒤 32 KB 를 남기고 잘렸다고 표시한다 (에이전트 전송 상한 1 MiB 와 별개). 보통의 점검 명령은 수 KB 이하라 거의 걸리지 않으며, 로그·목록처럼 긴 출력이 쌓여 DB 가 커지는 것을 막는 안전장치다.
-- **AI 잡 실행**: 회차마다 AI 대화 세션을 하나 만들고(이름 `[스케줄] <잡 이름> <일시>`, 대상이 PC 하나면 PC 세션, 아니면 통합 세션) 지시를 보낸다. 회차 기록에서 그 세션으로 이동해 과정을 볼 수 있다.
+- **AI 잡 실행**: 회차마다 AI 대화 세션을 하나 만들고(이름 `[스케줄] <잡 이름> <일시>`, 대상이 PC 하나면 PC 세션, 그룹이면 통합 세션) 지시를 보낸다. 회차 기록에서 그 세션으로 이동해 과정을 볼 수 있다.
   - 사람이 지켜보지 않는 실행이므로, 스케줄로 실행된 AI 잡에서 **위험 명령은 승인을 기다리지 않고 거부**하고(종료 코드 126, "스케줄 실행에서는 위험 명령을 실행하지 않음"), AI 가 결과에 남기게 한다.
 - 실행 기록은 30일 또는 잡당 최근 100회만 보관한다. 감사 로그의 실행 주체는 `schedule` 이다.
 - 실패 알림은 이번 범위에서 제외하고 기록만 남긴다(14.9).
@@ -764,7 +764,7 @@ docker compose -p gridelta-local -f docker/compose.yaml exec server gridelta aut
 
 | 테이블 | 주요 컬럼 |
 | --- | --- |
-| jobs | id, name, kind(command/ai), target_type(endpoint/group/all), target_id, cron, run_at(한 번만), timezone, command_unix, command_windows, ai_prompt, record_name, record_parse(json/kv/text), timeout_s, concurrency, enabled, next_run_at, created_by, created_session, approval_id, created_at, updated_at |
+| jobs | id, name, kind(command/ai), target_type(endpoint/group), target_id, cron, run_at(한 번만), timezone, command_unix, command_windows, ai_prompt, record_name, record_parse(json/kv/text), timeout_s, concurrency, enabled, next_run_at, created_by, created_session, approval_id, created_at, updated_at |
 | job_runs | id, job_id, scheduled_at, started_at, finished_at, status(running/succeeded/failed/skipped), target_count, ran_count, ai_session_id |
 | job_results | id, run_id, endpoint_id, exit_code, output(최대 64 KB), truncated, record_status, started_at, finished_at |
 | records | 14.5 |
