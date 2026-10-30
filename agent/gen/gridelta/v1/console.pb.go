@@ -1000,6 +1000,9 @@ type Approval struct {
 	Status         string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"` // pending | approved | denied | expired
 	CreatedAtMs    int64                  `protobuf:"varint,6,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
 	ConversationId string                 `protobuf:"bytes,7,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // 요청한 AI 대화 (Flue 인스턴스 id)
+	Kind           string                 `protobuf:"bytes,8,opt,name=kind,proto3" json:"kind,omitempty"`                                           // exec(명령 실행) | job(위험 명령이 든 잡 만들기·바꾸기)
+	Job            *JobSpec               `protobuf:"bytes,9,opt,name=job,proto3" json:"job,omitempty"`                                             // kind=job 일 때 승인 카드에 보일 잡 내용
+	TargetName     string                 `protobuf:"bytes,10,opt,name=target_name,json=targetName,proto3" json:"target_name,omitempty"`            // kind=job 일 때 대상 PC·그룹 이름
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1079,6 +1082,27 @@ func (x *Approval) GetCreatedAtMs() int64 {
 func (x *Approval) GetConversationId() string {
 	if x != nil {
 		return x.ConversationId
+	}
+	return ""
+}
+
+func (x *Approval) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *Approval) GetJob() *JobSpec {
+	if x != nil {
+		return x.Job
+	}
+	return nil
+}
+
+func (x *Approval) GetTargetName() string {
+	if x != nil {
+		return x.TargetName
 	}
 	return ""
 }
@@ -1706,7 +1730,8 @@ type AiSession struct {
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	CreatedAtMs   int64                  `protobuf:"varint,4,opt,name=created_at_ms,json=createdAtMs,proto3" json:"created_at_ms,omitempty"`
 	UpdatedAtMs   int64                  `protobuf:"varint,5,opt,name=updated_at_ms,json=updatedAtMs,proto3" json:"updated_at_ms,omitempty"`
-	AgentUrl      string                 `protobuf:"bytes,6,opt,name=agent_url,json=agentUrl,proto3" json:"agent_url,omitempty"` // 이 세션의 Flue 대화 URL (/agents/assistant/<id> 또는 /agents/operator/<endpoint>:<id>)
+	AgentUrl      string                 `protobuf:"bytes,6,opt,name=agent_url,json=agentUrl,proto3" json:"agent_url,omitempty"`   // 이 세션의 Flue 대화 URL (/agents/assistant/<id> 또는 /agents/operator/<endpoint>:<id>)
+	JobRunId      string                 `protobuf:"bytes,7,opt,name=job_run_id,json=jobRunId,proto3" json:"job_run_id,omitempty"` // 스케줄 AI 잡 회차가 만든 대화면 그 회차
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1779,6 +1804,13 @@ func (x *AiSession) GetUpdatedAtMs() int64 {
 func (x *AiSession) GetAgentUrl() string {
 	if x != nil {
 		return x.AgentUrl
+	}
+	return ""
+}
+
+func (x *AiSession) GetJobRunId() string {
+	if x != nil {
+		return x.JobRunId
 	}
 	return ""
 }
@@ -3087,7 +3119,8 @@ type JobRun struct {
 	Note          string                 `protobuf:"bytes,7,opt,name=note,proto3" json:"note,omitempty"`
 	Trigger       string                 `protobuf:"bytes,8,opt,name=trigger,proto3" json:"trigger,omitempty"` // schedule | manual | catchup
 	TargetCount   uint32                 `protobuf:"varint,9,opt,name=target_count,json=targetCount,proto3" json:"target_count,omitempty"`
-	RanCount      uint32                 `protobuf:"varint,10,opt,name=ran_count,json=ranCount,proto3" json:"ran_count,omitempty"` // 오프라인 PC 는 세지 않는다
+	RanCount      uint32                 `protobuf:"varint,10,opt,name=ran_count,json=ranCount,proto3" json:"ran_count,omitempty"`           // 오프라인 PC 는 세지 않는다
+	AiSessionId   string                 `protobuf:"bytes,11,opt,name=ai_session_id,json=aiSessionId,proto3" json:"ai_session_id,omitempty"` // AI 잡 회차의 대화 세션
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3190,6 +3223,13 @@ func (x *JobRun) GetRanCount() uint32 {
 		return x.RanCount
 	}
 	return 0
+}
+
+func (x *JobRun) GetAiSessionId() string {
+	if x != nil {
+		return x.AiSessionId
+	}
+	return ""
 }
 
 type Job struct {
@@ -4279,7 +4319,7 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\x14CloseTerminalRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\"\x17\n" +
-	"\x15CloseTerminalResponse\"\xd6\x01\n" +
+	"\x15CloseTerminalResponse\"\xb3\x02\n" +
 	"\bApproval\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\vendpoint_id\x18\x02 \x01(\tR\n" +
@@ -4288,7 +4328,12 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\acommand\x18\x04 \x01(\tR\acommand\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\tR\x06status\x12\"\n" +
 	"\rcreated_at_ms\x18\x06 \x01(\x03R\vcreatedAtMs\x12'\n" +
-	"\x0fconversation_id\x18\a \x01(\tR\x0econversationId\"\x17\n" +
+	"\x0fconversation_id\x18\a \x01(\tR\x0econversationId\x12\x12\n" +
+	"\x04kind\x18\b \x01(\tR\x04kind\x12&\n" +
+	"\x03job\x18\t \x01(\v2\x14.gridelta.v1.JobSpecR\x03job\x12\x1f\n" +
+	"\vtarget_name\x18\n" +
+	" \x01(\tR\n" +
+	"targetName\"\x17\n" +
 	"\x15WatchApprovalsRequest\"B\n" +
 	"\rApprovalEvent\x121\n" +
 	"\bapproval\x18\x01 \x01(\v2\x15.gridelta.v1.ApprovalR\bapproval\"A\n" +
@@ -4320,14 +4365,16 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\x18\n" +
-	"\x16RenameEndpointResponse\"\xac\x01\n" +
+	"\x16RenameEndpointResponse\"\xca\x01\n" +
 	"\tAiSession\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05scope\x18\x02 \x01(\tR\x05scope\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12\"\n" +
 	"\rcreated_at_ms\x18\x04 \x01(\x03R\vcreatedAtMs\x12\"\n" +
 	"\rupdated_at_ms\x18\x05 \x01(\x03R\vupdatedAtMs\x12\x1b\n" +
-	"\tagent_url\x18\x06 \x01(\tR\bagentUrl\"8\n" +
+	"\tagent_url\x18\x06 \x01(\tR\bagentUrl\x12\x1c\n" +
+	"\n" +
+	"job_run_id\x18\a \x01(\tR\bjobRunId\"8\n" +
 	"\x15ListAiSessionsRequest\x12\x1f\n" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\"L\n" +
@@ -4408,7 +4455,7 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\frecord_parse\x18\f \x01(\tR\vrecordParse\x12\x1b\n" +
 	"\ttimeout_s\x18\r \x01(\rR\btimeoutS\x12 \n" +
 	"\vconcurrency\x18\x0e \x01(\rR\vconcurrency\x12\x18\n" +
-	"\aenabled\x18\x0f \x01(\bR\aenabled\"\xa7\x02\n" +
+	"\aenabled\x18\x0f \x01(\bR\aenabled\"\xcb\x02\n" +
 	"\x06JobRun\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x15\n" +
 	"\x06job_id\x18\x02 \x01(\tR\x05jobId\x12&\n" +
@@ -4420,7 +4467,8 @@ const file_gridelta_v1_console_proto_rawDesc = "" +
 	"\atrigger\x18\b \x01(\tR\atrigger\x12!\n" +
 	"\ftarget_count\x18\t \x01(\rR\vtargetCount\x12\x1b\n" +
 	"\tran_count\x18\n" +
-	" \x01(\rR\branCount\"\xfb\x01\n" +
+	" \x01(\rR\branCount\x12\"\n" +
+	"\rai_session_id\x18\v \x01(\tR\vaiSessionId\"\xfb\x01\n" +
 	"\x03Job\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
 	"\x04spec\x18\x02 \x01(\v2\x14.gridelta.v1.JobSpecR\x04spec\x12#\n" +
@@ -4628,101 +4676,102 @@ var file_gridelta_v1_console_proto_depIdxs = []int32{
 	0,  // 0: gridelta.v1.ListEndpointsResponse.endpoints:type_name -> gridelta.v1.Endpoint
 	0,  // 1: gridelta.v1.EndpointEvent.endpoint:type_name -> gridelta.v1.Endpoint
 	7,  // 2: gridelta.v1.ListTerminalsResponse.terminals:type_name -> gridelta.v1.Terminal
-	18, // 3: gridelta.v1.ApprovalEvent.approval:type_name -> gridelta.v1.Approval
-	25, // 4: gridelta.v1.AiSettings.models:type_name -> gridelta.v1.AiModel
-	33, // 5: gridelta.v1.ListAiSessionsResponse.sessions:type_name -> gridelta.v1.AiSession
-	41, // 6: gridelta.v1.ListGroupsResponse.groups:type_name -> gridelta.v1.Group
-	53, // 7: gridelta.v1.ListEnrollTokensResponse.tokens:type_name -> gridelta.v1.EnrollToken
-	58, // 8: gridelta.v1.Job.spec:type_name -> gridelta.v1.JobSpec
-	59, // 9: gridelta.v1.Job.last_run:type_name -> gridelta.v1.JobRun
-	60, // 10: gridelta.v1.ListJobsResponse.jobs:type_name -> gridelta.v1.Job
-	58, // 11: gridelta.v1.CreateJobRequest.spec:type_name -> gridelta.v1.JobSpec
-	58, // 12: gridelta.v1.UpdateJobRequest.spec:type_name -> gridelta.v1.JobSpec
-	59, // 13: gridelta.v1.ListJobRunsResponse.runs:type_name -> gridelta.v1.JobRun
-	59, // 14: gridelta.v1.GetJobRunResponse.run:type_name -> gridelta.v1.JobRun
-	61, // 15: gridelta.v1.GetJobRunResponse.results:type_name -> gridelta.v1.JobResult
-	75, // 16: gridelta.v1.ListRecordsResponse.records:type_name -> gridelta.v1.StateRecord
-	1,  // 17: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
-	3,  // 18: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
-	42, // 19: gridelta.v1.ConsoleService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
-	44, // 20: gridelta.v1.ConsoleService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
-	45, // 21: gridelta.v1.ConsoleService.RenameGroup:input_type -> gridelta.v1.RenameGroupRequest
-	47, // 22: gridelta.v1.ConsoleService.DeleteGroup:input_type -> gridelta.v1.DeleteGroupRequest
-	49, // 23: gridelta.v1.ConsoleService.MoveEndpoint:input_type -> gridelta.v1.MoveEndpointRequest
-	51, // 24: gridelta.v1.ConsoleService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
-	54, // 25: gridelta.v1.ConsoleService.ListEnrollTokens:input_type -> gridelta.v1.ListEnrollTokensRequest
-	56, // 26: gridelta.v1.ConsoleService.RevokeEnrollToken:input_type -> gridelta.v1.RevokeEnrollTokenRequest
-	5,  // 27: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
-	8,  // 28: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
-	10, // 29: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
-	12, // 30: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
-	14, // 31: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
-	16, // 32: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
-	29, // 33: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
-	31, // 34: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
-	19, // 35: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
-	21, // 36: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
-	23, // 37: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
-	34, // 38: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
-	36, // 39: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
-	37, // 40: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
-	39, // 41: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
-	62, // 42: gridelta.v1.ConsoleService.ListJobs:input_type -> gridelta.v1.ListJobsRequest
-	64, // 43: gridelta.v1.ConsoleService.GetJob:input_type -> gridelta.v1.GetJobRequest
-	65, // 44: gridelta.v1.ConsoleService.CreateJob:input_type -> gridelta.v1.CreateJobRequest
-	66, // 45: gridelta.v1.ConsoleService.UpdateJob:input_type -> gridelta.v1.UpdateJobRequest
-	67, // 46: gridelta.v1.ConsoleService.DeleteJob:input_type -> gridelta.v1.DeleteJobRequest
-	69, // 47: gridelta.v1.ConsoleService.SetJobEnabled:input_type -> gridelta.v1.SetJobEnabledRequest
-	70, // 48: gridelta.v1.ConsoleService.RunJobNow:input_type -> gridelta.v1.RunJobNowRequest
-	71, // 49: gridelta.v1.ConsoleService.ListJobRuns:input_type -> gridelta.v1.ListJobRunsRequest
-	73, // 50: gridelta.v1.ConsoleService.GetJobRun:input_type -> gridelta.v1.GetJobRunRequest
-	76, // 51: gridelta.v1.ConsoleService.ListLatestRecords:input_type -> gridelta.v1.ListLatestRecordsRequest
-	77, // 52: gridelta.v1.ConsoleService.ListRecords:input_type -> gridelta.v1.ListRecordsRequest
-	27, // 53: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
-	28, // 54: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
-	2,  // 55: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
-	4,  // 56: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
-	43, // 57: gridelta.v1.ConsoleService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
-	41, // 58: gridelta.v1.ConsoleService.CreateGroup:output_type -> gridelta.v1.Group
-	46, // 59: gridelta.v1.ConsoleService.RenameGroup:output_type -> gridelta.v1.RenameGroupResponse
-	48, // 60: gridelta.v1.ConsoleService.DeleteGroup:output_type -> gridelta.v1.DeleteGroupResponse
-	50, // 61: gridelta.v1.ConsoleService.MoveEndpoint:output_type -> gridelta.v1.MoveEndpointResponse
-	52, // 62: gridelta.v1.ConsoleService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
-	55, // 63: gridelta.v1.ConsoleService.ListEnrollTokens:output_type -> gridelta.v1.ListEnrollTokensResponse
-	57, // 64: gridelta.v1.ConsoleService.RevokeEnrollToken:output_type -> gridelta.v1.RevokeEnrollTokenResponse
-	6,  // 65: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
-	9,  // 66: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
-	11, // 67: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
-	13, // 68: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
-	15, // 69: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
-	17, // 70: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
-	30, // 71: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
-	32, // 72: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
-	20, // 73: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
-	22, // 74: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
-	24, // 75: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
-	35, // 76: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
-	33, // 77: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
-	38, // 78: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
-	40, // 79: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
-	63, // 80: gridelta.v1.ConsoleService.ListJobs:output_type -> gridelta.v1.ListJobsResponse
-	60, // 81: gridelta.v1.ConsoleService.GetJob:output_type -> gridelta.v1.Job
-	60, // 82: gridelta.v1.ConsoleService.CreateJob:output_type -> gridelta.v1.Job
-	60, // 83: gridelta.v1.ConsoleService.UpdateJob:output_type -> gridelta.v1.Job
-	68, // 84: gridelta.v1.ConsoleService.DeleteJob:output_type -> gridelta.v1.DeleteJobResponse
-	60, // 85: gridelta.v1.ConsoleService.SetJobEnabled:output_type -> gridelta.v1.Job
-	59, // 86: gridelta.v1.ConsoleService.RunJobNow:output_type -> gridelta.v1.JobRun
-	72, // 87: gridelta.v1.ConsoleService.ListJobRuns:output_type -> gridelta.v1.ListJobRunsResponse
-	74, // 88: gridelta.v1.ConsoleService.GetJobRun:output_type -> gridelta.v1.GetJobRunResponse
-	78, // 89: gridelta.v1.ConsoleService.ListLatestRecords:output_type -> gridelta.v1.ListRecordsResponse
-	78, // 90: gridelta.v1.ConsoleService.ListRecords:output_type -> gridelta.v1.ListRecordsResponse
-	26, // 91: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
-	26, // 92: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
-	55, // [55:93] is the sub-list for method output_type
-	17, // [17:55] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	58, // 3: gridelta.v1.Approval.job:type_name -> gridelta.v1.JobSpec
+	18, // 4: gridelta.v1.ApprovalEvent.approval:type_name -> gridelta.v1.Approval
+	25, // 5: gridelta.v1.AiSettings.models:type_name -> gridelta.v1.AiModel
+	33, // 6: gridelta.v1.ListAiSessionsResponse.sessions:type_name -> gridelta.v1.AiSession
+	41, // 7: gridelta.v1.ListGroupsResponse.groups:type_name -> gridelta.v1.Group
+	53, // 8: gridelta.v1.ListEnrollTokensResponse.tokens:type_name -> gridelta.v1.EnrollToken
+	58, // 9: gridelta.v1.Job.spec:type_name -> gridelta.v1.JobSpec
+	59, // 10: gridelta.v1.Job.last_run:type_name -> gridelta.v1.JobRun
+	60, // 11: gridelta.v1.ListJobsResponse.jobs:type_name -> gridelta.v1.Job
+	58, // 12: gridelta.v1.CreateJobRequest.spec:type_name -> gridelta.v1.JobSpec
+	58, // 13: gridelta.v1.UpdateJobRequest.spec:type_name -> gridelta.v1.JobSpec
+	59, // 14: gridelta.v1.ListJobRunsResponse.runs:type_name -> gridelta.v1.JobRun
+	59, // 15: gridelta.v1.GetJobRunResponse.run:type_name -> gridelta.v1.JobRun
+	61, // 16: gridelta.v1.GetJobRunResponse.results:type_name -> gridelta.v1.JobResult
+	75, // 17: gridelta.v1.ListRecordsResponse.records:type_name -> gridelta.v1.StateRecord
+	1,  // 18: gridelta.v1.ConsoleService.ListEndpoints:input_type -> gridelta.v1.ListEndpointsRequest
+	3,  // 19: gridelta.v1.ConsoleService.WatchEndpoints:input_type -> gridelta.v1.WatchEndpointsRequest
+	42, // 20: gridelta.v1.ConsoleService.ListGroups:input_type -> gridelta.v1.ListGroupsRequest
+	44, // 21: gridelta.v1.ConsoleService.CreateGroup:input_type -> gridelta.v1.CreateGroupRequest
+	45, // 22: gridelta.v1.ConsoleService.RenameGroup:input_type -> gridelta.v1.RenameGroupRequest
+	47, // 23: gridelta.v1.ConsoleService.DeleteGroup:input_type -> gridelta.v1.DeleteGroupRequest
+	49, // 24: gridelta.v1.ConsoleService.MoveEndpoint:input_type -> gridelta.v1.MoveEndpointRequest
+	51, // 25: gridelta.v1.ConsoleService.CreateEnrollToken:input_type -> gridelta.v1.CreateEnrollTokenRequest
+	54, // 26: gridelta.v1.ConsoleService.ListEnrollTokens:input_type -> gridelta.v1.ListEnrollTokensRequest
+	56, // 27: gridelta.v1.ConsoleService.RevokeEnrollToken:input_type -> gridelta.v1.RevokeEnrollTokenRequest
+	5,  // 28: gridelta.v1.ConsoleService.OpenTerminal:input_type -> gridelta.v1.OpenTerminalRequest
+	8,  // 29: gridelta.v1.ConsoleService.ListTerminals:input_type -> gridelta.v1.ListTerminalsRequest
+	10, // 30: gridelta.v1.ConsoleService.AttachTerminal:input_type -> gridelta.v1.AttachTerminalRequest
+	12, // 31: gridelta.v1.ConsoleService.SendInput:input_type -> gridelta.v1.SendInputRequest
+	14, // 32: gridelta.v1.ConsoleService.ResizeTerminal:input_type -> gridelta.v1.ResizeTerminalRequest
+	16, // 33: gridelta.v1.ConsoleService.CloseTerminal:input_type -> gridelta.v1.CloseTerminalRequest
+	29, // 34: gridelta.v1.ConsoleService.RenameTerminal:input_type -> gridelta.v1.RenameTerminalRequest
+	31, // 35: gridelta.v1.ConsoleService.RenameEndpoint:input_type -> gridelta.v1.RenameEndpointRequest
+	19, // 36: gridelta.v1.ConsoleService.WatchApprovals:input_type -> gridelta.v1.WatchApprovalsRequest
+	21, // 37: gridelta.v1.ConsoleService.DecideApproval:input_type -> gridelta.v1.DecideApprovalRequest
+	23, // 38: gridelta.v1.ConsoleService.SetApprovalPolicy:input_type -> gridelta.v1.SetApprovalPolicyRequest
+	34, // 39: gridelta.v1.ConsoleService.ListAiSessions:input_type -> gridelta.v1.ListAiSessionsRequest
+	36, // 40: gridelta.v1.ConsoleService.CreateAiSession:input_type -> gridelta.v1.CreateAiSessionRequest
+	37, // 41: gridelta.v1.ConsoleService.RenameAiSession:input_type -> gridelta.v1.RenameAiSessionRequest
+	39, // 42: gridelta.v1.ConsoleService.DeleteAiSession:input_type -> gridelta.v1.DeleteAiSessionRequest
+	62, // 43: gridelta.v1.ConsoleService.ListJobs:input_type -> gridelta.v1.ListJobsRequest
+	64, // 44: gridelta.v1.ConsoleService.GetJob:input_type -> gridelta.v1.GetJobRequest
+	65, // 45: gridelta.v1.ConsoleService.CreateJob:input_type -> gridelta.v1.CreateJobRequest
+	66, // 46: gridelta.v1.ConsoleService.UpdateJob:input_type -> gridelta.v1.UpdateJobRequest
+	67, // 47: gridelta.v1.ConsoleService.DeleteJob:input_type -> gridelta.v1.DeleteJobRequest
+	69, // 48: gridelta.v1.ConsoleService.SetJobEnabled:input_type -> gridelta.v1.SetJobEnabledRequest
+	70, // 49: gridelta.v1.ConsoleService.RunJobNow:input_type -> gridelta.v1.RunJobNowRequest
+	71, // 50: gridelta.v1.ConsoleService.ListJobRuns:input_type -> gridelta.v1.ListJobRunsRequest
+	73, // 51: gridelta.v1.ConsoleService.GetJobRun:input_type -> gridelta.v1.GetJobRunRequest
+	76, // 52: gridelta.v1.ConsoleService.ListLatestRecords:input_type -> gridelta.v1.ListLatestRecordsRequest
+	77, // 53: gridelta.v1.ConsoleService.ListRecords:input_type -> gridelta.v1.ListRecordsRequest
+	27, // 54: gridelta.v1.ConsoleService.GetAiSettings:input_type -> gridelta.v1.GetAiSettingsRequest
+	28, // 55: gridelta.v1.ConsoleService.UpdateAiSettings:input_type -> gridelta.v1.UpdateAiSettingsRequest
+	2,  // 56: gridelta.v1.ConsoleService.ListEndpoints:output_type -> gridelta.v1.ListEndpointsResponse
+	4,  // 57: gridelta.v1.ConsoleService.WatchEndpoints:output_type -> gridelta.v1.EndpointEvent
+	43, // 58: gridelta.v1.ConsoleService.ListGroups:output_type -> gridelta.v1.ListGroupsResponse
+	41, // 59: gridelta.v1.ConsoleService.CreateGroup:output_type -> gridelta.v1.Group
+	46, // 60: gridelta.v1.ConsoleService.RenameGroup:output_type -> gridelta.v1.RenameGroupResponse
+	48, // 61: gridelta.v1.ConsoleService.DeleteGroup:output_type -> gridelta.v1.DeleteGroupResponse
+	50, // 62: gridelta.v1.ConsoleService.MoveEndpoint:output_type -> gridelta.v1.MoveEndpointResponse
+	52, // 63: gridelta.v1.ConsoleService.CreateEnrollToken:output_type -> gridelta.v1.CreateEnrollTokenResponse
+	55, // 64: gridelta.v1.ConsoleService.ListEnrollTokens:output_type -> gridelta.v1.ListEnrollTokensResponse
+	57, // 65: gridelta.v1.ConsoleService.RevokeEnrollToken:output_type -> gridelta.v1.RevokeEnrollTokenResponse
+	6,  // 66: gridelta.v1.ConsoleService.OpenTerminal:output_type -> gridelta.v1.OpenTerminalResponse
+	9,  // 67: gridelta.v1.ConsoleService.ListTerminals:output_type -> gridelta.v1.ListTerminalsResponse
+	11, // 68: gridelta.v1.ConsoleService.AttachTerminal:output_type -> gridelta.v1.TerminalOutput
+	13, // 69: gridelta.v1.ConsoleService.SendInput:output_type -> gridelta.v1.SendInputResponse
+	15, // 70: gridelta.v1.ConsoleService.ResizeTerminal:output_type -> gridelta.v1.ResizeTerminalResponse
+	17, // 71: gridelta.v1.ConsoleService.CloseTerminal:output_type -> gridelta.v1.CloseTerminalResponse
+	30, // 72: gridelta.v1.ConsoleService.RenameTerminal:output_type -> gridelta.v1.RenameTerminalResponse
+	32, // 73: gridelta.v1.ConsoleService.RenameEndpoint:output_type -> gridelta.v1.RenameEndpointResponse
+	20, // 74: gridelta.v1.ConsoleService.WatchApprovals:output_type -> gridelta.v1.ApprovalEvent
+	22, // 75: gridelta.v1.ConsoleService.DecideApproval:output_type -> gridelta.v1.DecideApprovalResponse
+	24, // 76: gridelta.v1.ConsoleService.SetApprovalPolicy:output_type -> gridelta.v1.SetApprovalPolicyResponse
+	35, // 77: gridelta.v1.ConsoleService.ListAiSessions:output_type -> gridelta.v1.ListAiSessionsResponse
+	33, // 78: gridelta.v1.ConsoleService.CreateAiSession:output_type -> gridelta.v1.AiSession
+	38, // 79: gridelta.v1.ConsoleService.RenameAiSession:output_type -> gridelta.v1.RenameAiSessionResponse
+	40, // 80: gridelta.v1.ConsoleService.DeleteAiSession:output_type -> gridelta.v1.DeleteAiSessionResponse
+	63, // 81: gridelta.v1.ConsoleService.ListJobs:output_type -> gridelta.v1.ListJobsResponse
+	60, // 82: gridelta.v1.ConsoleService.GetJob:output_type -> gridelta.v1.Job
+	60, // 83: gridelta.v1.ConsoleService.CreateJob:output_type -> gridelta.v1.Job
+	60, // 84: gridelta.v1.ConsoleService.UpdateJob:output_type -> gridelta.v1.Job
+	68, // 85: gridelta.v1.ConsoleService.DeleteJob:output_type -> gridelta.v1.DeleteJobResponse
+	60, // 86: gridelta.v1.ConsoleService.SetJobEnabled:output_type -> gridelta.v1.Job
+	59, // 87: gridelta.v1.ConsoleService.RunJobNow:output_type -> gridelta.v1.JobRun
+	72, // 88: gridelta.v1.ConsoleService.ListJobRuns:output_type -> gridelta.v1.ListJobRunsResponse
+	74, // 89: gridelta.v1.ConsoleService.GetJobRun:output_type -> gridelta.v1.GetJobRunResponse
+	78, // 90: gridelta.v1.ConsoleService.ListLatestRecords:output_type -> gridelta.v1.ListRecordsResponse
+	78, // 91: gridelta.v1.ConsoleService.ListRecords:output_type -> gridelta.v1.ListRecordsResponse
+	26, // 92: gridelta.v1.ConsoleService.GetAiSettings:output_type -> gridelta.v1.AiSettings
+	26, // 93: gridelta.v1.ConsoleService.UpdateAiSettings:output_type -> gridelta.v1.AiSettings
+	56, // [56:94] is the sub-list for method output_type
+	18, // [18:56] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_gridelta_v1_console_proto_init() }

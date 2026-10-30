@@ -18,7 +18,7 @@ import type { JobInput, JobResultRow, JobRow, JobRunRow, JobStore, RecordRow, St
 const RECORD_NAME = /^[A-Za-z0-9_][\w.-]{0,127}$/;
 const ms = (d: Date | null | undefined) => BigInt(d?.getTime() ?? 0);
 
-function toRun(r: JobRunRow): JobRun {
+export function toRun(r: JobRunRow): JobRun {
   return create(JobRunSchema, {
     id: r.id,
     jobId: r.jobId,
@@ -30,6 +30,7 @@ function toRun(r: JobRunRow): JobRun {
     trigger: r.trigger,
     targetCount: r.targetCount,
     ranCount: r.ranCount,
+    aiSessionId: r.aiSessionId ?? '',
   });
 }
 
@@ -86,7 +87,7 @@ export function toRecord(r: RecordRow): StateRecord {
 
 const invalid = (msg: string) => new ConnectError(msg, Code.InvalidArgument);
 
-/** JobSpec 을 검사해 DB 에 넣을 값으로 바꾼다. 사람과 AI(M8) 가 함께 쓴다 */
+/** JobSpec 을 검사해 DB 에 넣을 값으로 바꾼다. 사람(웹)과 AI 도구가 함께 쓴다 */
 export async function specToInput(
   store: Store,
   spec: JobSpec | undefined,
@@ -96,8 +97,8 @@ export async function specToInput(
   if (!spec) throw invalid('spec is required');
   const name = spec.name.trim();
   if (!name || [...name].length > 64) throw invalid('이름은 1~64자여야 합니다');
-  if (spec.kind === 'ai') throw new ConnectError('AI 잡은 다음 마일스톤(M8)에서 지원합니다', Code.Unimplemented);
-  if (spec.kind !== 'command') throw invalid('kind 는 command 또는 ai 입니다');
+  if (spec.kind !== 'command' && spec.kind !== 'ai') throw invalid('kind 는 command 또는 ai 입니다');
+  const ai = spec.kind === 'ai';
 
   if (spec.targetType === 'endpoint') {
     const ep = await store.getEndpoint(spec.targetId);
@@ -120,8 +121,9 @@ export async function specToInput(
     throw err;
   }
 
-  if (!spec.commandUnix.trim() && !spec.commandWindows.trim()) throw invalid('실행할 명령이 필요합니다');
-  if (spec.recordName && !RECORD_NAME.test(spec.recordName)) throw invalid('상태 이름은 영문·숫자·_ . - 로 128자 이내입니다');
+  if (ai && !spec.aiPrompt.trim()) throw invalid('AI 에게 줄 지시가 필요합니다');
+  if (!ai && !spec.commandUnix.trim() && !spec.commandWindows.trim()) throw invalid('실행할 명령이 필요합니다');
+  if (!ai && spec.recordName && !RECORD_NAME.test(spec.recordName)) throw invalid('상태 이름은 영문·숫자·_ . - 로 128자 이내입니다');
   if (!['json', 'kv', 'text'].includes(spec.recordParse || 'json')) throw invalid('record_parse 는 json, kv, text 중 하나입니다');
   const timeoutS = spec.timeoutS || 600;
   const concurrency = spec.concurrency || 10;
@@ -130,14 +132,15 @@ export async function specToInput(
 
   return {
     name,
-    kind: 'command',
+    kind: spec.kind,
     targetType: spec.targetType,
     targetId: spec.targetId,
     ...schedule,
-    commandUnix: spec.commandUnix.trim(),
-    commandWindows: spec.commandWindows.trim(),
-    aiPrompt: '',
-    recordName: spec.recordName,
+    // AI 잡은 명령·상태 저장 대신 지시만 쓴다 (상태는 AI 가 record_value 로 남긴다)
+    commandUnix: ai ? '' : spec.commandUnix.trim(),
+    commandWindows: ai ? '' : spec.commandWindows.trim(),
+    aiPrompt: ai ? spec.aiPrompt.trim() : '',
+    recordName: ai ? '' : spec.recordName,
     recordParse: (spec.recordParse || 'json') as JobInput['recordParse'],
     timeoutS,
     concurrency,

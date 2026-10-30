@@ -196,6 +196,21 @@ echo "== M7: 스케줄 잡과 상태 기록 (브라우저)"
 dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" browser \
   sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node jobs-test.mjs' || fail "jobs e2e"
 
+echo "== M8: AI 잡과 AI 도구 (정해진 응답 모델 + 브라우저)"
+dc run --rm -T --no-deps -e USERNAME="$USERNAME" -e PASSWORD="$PASSWORD" browser \
+  sh -c 'npm install --silent --no-audit --no-fund >/dev/null 2>&1 && node ai-jobs-test.mjs' || fail "AI jobs e2e"
+[[ "$(dc exec -T server node -e "
+  const { DatabaseSync } = require('node:sqlite');
+  const db = new DatabaseSync('/var/lib/gridelta/gridelta.db');
+  const job = db.prepare(\"select status, command from approvals where kind = 'job'\").all();
+  const created = db.prepare(\"select command from audit_log where actor = 'ai' and kind = 'job'\").all().map(r => r.command);
+  const deleted = db.prepare(\"select count(*) n from audit_log where actor = 'ai' and kind = 'job' and command like 'delete %'\").get().n;
+  const refused = db.prepare(\"select count(*) n from audit_log where actor = 'schedule' and kind = 'exec' and exit_code = 126\").get().n;
+  console.log(job.length === 1 && job[0].status === 'approved' && job[0].command === 'rm -rf /tmp/gridelta-cleanup-test'
+    && ['create 루트 점검', 'create 임시 정리', 'create 커널 AI'].every(c => created.includes(c)) && deleted === 0 && refused >= 1);
+")" == true ]] || fail "approvals/audit_log rows for AI jobs"
+pass "잡 승인 기록(kind=job), AI 의 잡 만들기 감사 로그, 스케줄 실행 중 거부된 위험 명령(actor=schedule)"
+
 echo "== 재연결"
 # WatchEndpoints 서버 스트림을 HTTP/1.1 로 구독해 둔다 (Connect 스트리밍 envelope: flags 1B + length 4B)
 printf '\x00\x00\x00\x00\x02{}' | curl -sN -m 90 -b "$JAR" -XPOST "$BASE/rpc/gridelta.v1.ConsoleService/WatchEndpoints" \

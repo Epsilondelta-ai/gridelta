@@ -47,6 +47,14 @@ export class JobStore {
     return row;
   }
 
+  /** id 또는 이름(정확히, 대소문자 무시)으로 찾는다. AI 도구가 잡을 이름으로 부를 수 있게 한다 */
+  async findJob(ref: string): Promise<JobRow[]> {
+    const byId = await this.getJob(ref);
+    if (byId) return [byId];
+    const key = ref.trim().toLowerCase();
+    return (await this.listJobs()).filter((j) => j.name.toLowerCase() === key);
+  }
+
   async listJobs(): Promise<JobRow[]> {
     return this.db.select().from(jobs).orderBy(asc(jobs.createdAt));
   }
@@ -87,6 +95,10 @@ export class JobStore {
       .update(jobRuns)
       .set({ ...patch, finishedAt: new Date() })
       .where(eq(jobRuns.id, id));
+  }
+
+  async setRunSession(id: string, aiSessionId: string): Promise<void> {
+    await this.db.update(jobRuns).set({ aiSessionId }).where(eq(jobRuns.id, id));
   }
 
   async getRun(id: string): Promise<JobRunRow | undefined> {

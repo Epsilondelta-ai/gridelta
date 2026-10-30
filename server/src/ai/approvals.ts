@@ -8,7 +8,26 @@ export type ApprovalDecision = 'approved' | 'denied' | 'expired';
 
 type Events = { change: [ApprovalRow] };
 
-/** AI 명령 승인 대기열. 대기 중인 요청은 메모리에 두고, 기록은 approvals 테이블에 남긴다. */
+/** 잡 승인 카드에 보일 내용 (approvals.detail 에 JSON 으로 둔다). spec 은 proto JobSpec 과 같은 이름이다 */
+export interface ApprovalJobDetail {
+  spec: {
+    name: string;
+    kind: string;
+    targetType: string;
+    targetId: string;
+    cron: string;
+    runAtMs: number;
+    timezone: string;
+    commandUnix: string;
+    commandWindows: string;
+    aiPrompt: string;
+    recordName: string;
+    recordParse: string;
+  };
+  targetName: string;
+}
+
+/** AI 명령·잡 승인 대기열. 대기 중인 요청은 메모리에 두고, 기록은 approvals 테이블에 남긴다. */
 export class ApprovalCenter {
   readonly events = new EventEmitter<Events>();
   readonly #pending = new Map<string, { row: ApprovalRow; resolve: (d: ApprovalDecision) => void }>();
@@ -21,7 +40,7 @@ export class ApprovalCenter {
 
   /** 승인을 요청하고 결정될 때까지 기다린다. signal 이 abort 되면(대화 중단) 만료 처리한다. */
   async request(
-    req: Pick<ApprovalRow, 'endpointId' | 'command' | 'requestedBy'>,
+    req: Pick<ApprovalRow, 'endpointId' | 'command' | 'requestedBy'> & Partial<Pick<ApprovalRow, 'kind' | 'detail'>>,
     signal?: AbortSignal,
   ): Promise<{ id: string; decision: ApprovalDecision }> {
     const row = await this.store.createApproval(req);

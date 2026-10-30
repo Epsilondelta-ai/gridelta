@@ -42,10 +42,12 @@ function StatusBadge({ status }: { status: string }) {
 interface Props {
   endpoints: Map<string, Endpoint>;
   onError: (err: unknown) => void;
+  /** AI 잡 회차의 대화를 연다. scope 는 PC id 또는 'all' */
+  onOpenSession: (sessionId: string, scope: string) => void;
 }
 
 /** 스케줄 잡 화면: 목록, 만들기·편집, 회차 기록 (설계 14.9) */
-export function JobsView({ endpoints, onError }: Props) {
+export function JobsView({ endpoints, onError, onOpenSession }: Props) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [editing, setEditing] = useState<Job | 'new'>();
@@ -93,7 +95,11 @@ export function JobsView({ endpoints, onError }: Props) {
         </button>
       </div>
 
-      {jobs.length === 0 && <p className="text-sm text-muted">아직 잡이 없습니다. 정해진 시각에 PC 들에서 명령을 실행하고 결과를 상태로 모을 수 있습니다.</p>}
+      {jobs.length === 0 && (
+        <p className="text-sm text-muted">
+          아직 잡이 없습니다. 정해진 시각에 PC 들에서 명령이나 AI 작업을 실행하고 결과를 상태로 모을 수 있습니다. AI 대화에서 "매일 아침 디스크를 점검해줘" 처럼 부탁해도 됩니다.
+        </p>
+      )}
       {jobs.length > 0 && (
         <div className="overflow-x-auto rounded-lg border border-line bg-panel">
           <table className="w-full text-left text-sm">
@@ -115,7 +121,8 @@ export function JobsView({ endpoints, onError }: Props) {
                     <button type="button" onClick={() => setDetail(j.id)} className="font-medium hover:underline">
                       {j.spec?.name}
                     </button>
-                    {j.createdBy === 'ai' && <span className="ml-1 text-xs text-muted">(AI)</span>}
+                    {j.spec?.kind === 'ai' && <span className="ml-1 rounded bg-accent-soft px-1 text-xs">AI 잡</span>}
+                    {j.createdBy === 'ai' && <span className="ml-1 text-xs text-muted">(AI 가 만듦)</span>}
                   </td>
                   <td className="px-3 py-2">{targetName(j.spec)}</td>
                   <td className="px-3 py-2" title={`${j.spec?.cron} (${j.spec?.timezone})`}>
@@ -176,7 +183,19 @@ export function JobsView({ endpoints, onError }: Props) {
         </div>
       )}
 
-      {detailJob && <JobRuns job={detailJob} endpoints={endpoints} onClose={() => setDetail(undefined)} onError={onError} />}
+      {detailJob && (
+        <JobRuns
+          job={detailJob}
+          endpoints={endpoints}
+          onClose={() => setDetail(undefined)}
+          onError={onError}
+          onOpenSession={(id) => {
+            const spec = detailJob.spec;
+            setDetail(undefined);
+            onOpenSession(id, spec?.targetType === 'endpoint' ? spec.targetId : 'all');
+          }}
+        />
+      )}
       {editing && (
         <JobEditor
           job={editing === 'new' ? undefined : editing}
@@ -241,6 +260,8 @@ function JobEditor({
 }) {
   const s = job?.spec;
   const [name, setName] = useState(s?.name ?? '');
+  const [kind, setKind] = useState(s?.kind || 'command');
+  const [aiPrompt, setAiPrompt] = useState(s?.aiPrompt ?? '');
   const [targetType, setTargetType] = useState(s?.targetType ?? 'group');
   const [targetId, setTargetId] = useState(s?.targetId ?? groups[0]?.id ?? '');
   const [once, setOnce] = useState(!!s && !s.cron);
@@ -268,7 +289,7 @@ function JobEditor({
     setError('');
     const spec = {
       name,
-      kind: 'command',
+      kind,
       targetType,
       targetId,
       cron: once ? '' : cron,
@@ -276,7 +297,7 @@ function JobEditor({
       timezone,
       commandUnix,
       commandWindows,
-      aiPrompt: '',
+      aiPrompt,
       recordName,
       recordParse,
       timeoutS,
@@ -300,6 +321,18 @@ function JobEditor({
           <span className="text-xs text-muted">이름</span>
           <input aria-label="잡 이름" value={name} onChange={(e) => setName(e.target.value)} required maxLength={64} className="field" />
         </label>
+
+        <fieldset className="space-y-1">
+          <legend className="text-xs text-muted">종류</legend>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1">
+              <input type="radio" checked={kind === 'command'} onChange={() => setKind('command')} /> 명령
+            </label>
+            <label className="flex items-center gap-1">
+              <input type="radio" checked={kind === 'ai'} onChange={() => setKind('ai')} /> AI
+            </label>
+          </div>
+        </fieldset>
 
         <fieldset className="space-y-1">
           <legend className="text-xs text-muted">대상</legend>
@@ -360,28 +393,48 @@ function JobEditor({
           {!once && <p className="text-xs text-muted" data-testid="schedule-preview">{describeSchedule({ cron, runAtMs: 0n, timezone })}</p>}
         </fieldset>
 
-        <label className="block space-y-1">
-          <span className="text-xs text-muted">명령 (macOS · Linux)</span>
-          <textarea aria-label="macOS·Linux 명령" value={commandUnix} onChange={(e) => setCommandUnix(e.target.value)} rows={3} className="field font-mono" />
-        </label>
-        <label className="block space-y-1">
-          <span className="text-xs text-muted">명령 (Windows PowerShell, 대상에 Windows PC 가 있으면)</span>
-          <textarea aria-label="Windows 명령" value={commandWindows} onChange={(e) => setCommandWindows(e.target.value)} rows={2} className="field font-mono" />
-        </label>
+        {kind === 'ai' ? (
+          <label className="block space-y-1">
+            <span className="text-xs text-muted">AI 에게 줄 지시 (회차마다 새 대화로 실행, 위험 명령은 거부됨, 값은 AI 가 상태로 기록)</span>
+            <textarea
+              aria-label="AI 지시"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              rows={4}
+              placeholder="디스크와 메모리 사용량을 점검해 disk.root, mem 으로 기록하고, 이상하면 요약해줘"
+              className="field"
+            />
+          </label>
+        ) : (
+          <>
+          <label className="block space-y-1">
+            <span className="text-xs text-muted">명령 (macOS · Linux)</span>
+            <textarea aria-label="macOS·Linux 명령" value={commandUnix} onChange={(e) => setCommandUnix(e.target.value)} rows={3} className="field font-mono" />
+          </label>
+          <label className="block space-y-1">
+            <span className="text-xs text-muted">명령 (Windows PowerShell, 대상에 Windows PC 가 있으면)</span>
+            <textarea aria-label="Windows 명령" value={commandWindows} onChange={(e) => setCommandWindows(e.target.value)} rows={2} className="field font-mono" />
+          </label>
+          </>
+        )}
 
         <div className="flex flex-wrap items-end gap-3">
-          <label className="space-y-1">
-            <span className="block text-xs text-muted">출력을 상태로 저장 (이름, 비우면 저장 안 함)</span>
-            <input aria-label="상태 이름" value={recordName} onChange={(e) => setRecordName(e.target.value)} placeholder="disk.root" className="w-48 rounded-md border border-line bg-bg px-2 py-1 font-mono" />
-          </label>
-          <label className="space-y-1">
-            <span className="block text-xs text-muted">출력 형식</span>
-            <select aria-label="출력 형식" value={recordParse} onChange={(e) => setRecordParse(e.target.value)} className="rounded-md border border-line bg-bg px-2 py-1">
-              <option value="json">JSON 하나</option>
-              <option value="kv">줄마다 이름=값</option>
-              <option value="text">텍스트 그대로</option>
-            </select>
-          </label>
+          {kind === 'command' && (
+            <>
+            <label className="space-y-1">
+              <span className="block text-xs text-muted">출력을 상태로 저장 (이름, 비우면 저장 안 함)</span>
+              <input aria-label="상태 이름" value={recordName} onChange={(e) => setRecordName(e.target.value)} placeholder="disk.root" className="w-48 rounded-md border border-line bg-bg px-2 py-1 font-mono" />
+            </label>
+            <label className="space-y-1">
+              <span className="block text-xs text-muted">출력 형식</span>
+              <select aria-label="출력 형식" value={recordParse} onChange={(e) => setRecordParse(e.target.value)} className="rounded-md border border-line bg-bg px-2 py-1">
+                <option value="json">JSON 하나</option>
+                <option value="kv">줄마다 이름=값</option>
+                <option value="text">텍스트 그대로</option>
+              </select>
+            </label>
+            </>
+          )}
           <label className="space-y-1">
             <span className="block text-xs text-muted">타임아웃 (초)</span>
             <input aria-label="타임아웃" type="number" min={1} max={86400} value={timeoutS} onChange={(e) => setTimeoutS(Number(e.target.value))} className="w-24 rounded-md border border-line bg-bg px-2 py-1" />
@@ -410,7 +463,19 @@ function JobEditor({
 }
 
 /** 잡의 회차 기록과 회차별 PC 결과 */
-function JobRuns({ job, endpoints, onClose, onError }: { job: Job; endpoints: Map<string, Endpoint>; onClose: () => void; onError: (err: unknown) => void }) {
+function JobRuns({
+  job,
+  endpoints,
+  onClose,
+  onError,
+  onOpenSession,
+}: {
+  job: Job;
+  endpoints: Map<string, Endpoint>;
+  onClose: () => void;
+  onError: (err: unknown) => void;
+  onOpenSession: (sessionId: string) => void;
+}) {
   const [runs, setRuns] = useState<JobRun[]>([]);
   const [open, setOpen] = useState<GetJobRunResponse>();
 
@@ -433,9 +498,11 @@ function JobRuns({ job, endpoints, onClose, onError }: { job: Job; endpoints: Ma
   }, [refresh]);
 
   const pc = (id: string) => {
+    if (!id) return '그룹';
     const e = endpoints.get(id);
     return e ? pcName(e) : id.slice(0, 8);
   };
+  const ai = job.spec?.kind === 'ai';
 
   return (
     <Modal label={`${job.spec?.name} 실행 기록`} onClose={onClose}>
@@ -466,14 +533,25 @@ function JobRuns({ job, endpoints, onClose, onError }: { job: Job; endpoints: Ma
 
       {open?.run && (
         <div className="space-y-2" aria-label="회차 결과">
-          {open.results.length === 0 && <p className="text-xs text-muted">이 회차에서 실행한 PC 가 없습니다 ({open.run.note}).</p>}
+          {open.run.aiSessionId && (
+            <button type="button" onClick={() => onOpenSession(open.run!.aiSessionId)} className="text-xs text-accent hover:underline">
+              이 회차의 AI 대화 보기
+            </button>
+          )}
+          {open.results.length === 0 && open.run.status !== 'running' && (
+            <p className="text-xs text-muted">이 회차에서 실행한 PC 가 없습니다 ({open.run.note}).</p>
+          )}
           {open.results.map((res) => (
             <div key={res.endpointId} className="rounded-md border border-line" data-result-endpoint={res.endpointId}>
               <div className="flex items-center gap-2 bg-hover px-2 py-1 text-xs">
                 <span className="font-medium">{pc(res.endpointId)}</span>
-                <span className={res.exitCode === 0 ? 'text-ok' : 'text-danger'}>
-                  {res.exitCode !== undefined ? `종료 코드 ${res.exitCode}` : '실행 못 함'}
-                </span>
+                {ai ? (
+                  <span className={res.error ? 'text-danger' : 'text-ok'}>{res.error ? 'AI 실패' : 'AI 답'}</span>
+                ) : (
+                  <span className={res.exitCode === 0 ? 'text-ok' : 'text-danger'}>
+                    {res.exitCode !== undefined ? `종료 코드 ${res.exitCode}` : '실행 못 함'}
+                  </span>
+                )}
                 {res.recordStatus === 'saved' && <span className="text-ok">상태 저장됨</span>}
                 {res.recordStatus === 'failed' && <span className="text-danger">상태 저장 실패</span>}
                 {res.truncated && <span className="text-muted">출력 일부 생략</span>}

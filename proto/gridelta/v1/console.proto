@@ -160,6 +160,9 @@ message Approval {
   string status = 5; // pending | approved | denied | expired
   int64 created_at_ms = 6;
   string conversation_id = 7; // 요청한 AI 대화 (Flue 인스턴스 id)
+  string kind = 8; // exec(명령 실행) | job(위험 명령이 든 잡 만들기·바꾸기)
+  JobSpec job = 9; // kind=job 일 때 승인 카드에 보일 잡 내용
+  string target_name = 10; // kind=job 일 때 대상 PC·그룹 이름
 }
 
 message WatchApprovalsRequest {}
@@ -219,6 +222,7 @@ message AiSession {
   int64 created_at_ms = 4;
   int64 updated_at_ms = 5;
   string agent_url = 6; // 이 세션의 Flue 대화 URL (/agents/assistant/<id> 또는 /agents/operator/<endpoint>:<id>)
+  string job_run_id = 7; // 스케줄 AI 잡 회차가 만든 대화면 그 회차
 }
 
 message ListAiSessionsRequest {
@@ -350,6 +354,7 @@ message JobRun {
   string trigger = 8; // schedule | manual | catchup
   uint32 target_count = 9;
   uint32 ran_count = 10; // 오프라인 PC 는 세지 않는다
+  string ai_session_id = 11; // AI 잡 회차의 대화 세션
 }
 
 message Job {
