@@ -6,6 +6,7 @@ import { Assistant } from './agents/assistant.ts';
 import { Operator } from './agents/operator.ts';
 import { registerFauxProvider } from './ai/faux.ts';
 import { aiModels, approvals } from './ai/index.ts';
+import { aiJobRunner } from './ai/job-runner.ts';
 import { sessionForInstance } from './ai/sessions.ts';
 import { OAuthVault, registerCodexProvider } from './auth/openai.ts';
 import { loadMasterKey } from './auth/secrets.ts';
@@ -48,6 +49,7 @@ g.__grideltaServers ??= (() => {
   void store.expirePendingApprovals();
   const vault = new OAuthVault(store, loadMasterKey(config.masterKeyPath));
   void aiModels.load();
+  scheduler.setAiRunner(aiJobRunner(store, jobStore));
   void scheduler.start(new Date(), config.catchupDelayMs);
   if (config.aiFaux) registerFauxProvider();
   // openai-codex 는 CLI 로그인(gridelta login openai)으로 저장한 자격 증명을 쓴다. openai/... 는 OPENAI_API_KEY

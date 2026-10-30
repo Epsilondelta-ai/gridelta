@@ -5,48 +5,14 @@ import { aiModels, approvals } from '../ai/index.ts';
 import { execWithApproval, readRemoteFile, writeRemoteFile } from '../ai/remote.ts';
 import { hub } from '../hub/index.ts';
 import { store } from '../store/index.ts';
+import { JOB_GUIDE, useJobTools } from './job-tools.ts';
+import { listPcs as listPcsOf, resolvePc as resolvePcOf } from './pcs.ts';
 
 const deps = { hub, store, approvals };
 const utf8 = new TextDecoder();
 
-interface PcInfo {
-  id: string;
-  name: string;
-  group: string;
-  hostname: string;
-  os: string;
-  arch: string;
-  online: boolean;
-  shell: string;
-  home: string;
-}
-
-async function listPcs(): Promise<PcInfo[]> {
-  const groupNames = new Map((await store.listGroups()).map((g) => [g.id, g.name]));
-  return (await store.listEndpoints())
-    .filter((e) => !e.revokedAt)
-    .map((e) => ({
-      id: e.id,
-      name: e.displayName || e.hostname,
-      group: groupNames.get(e.groupId) ?? e.groupId,
-      hostname: e.hostname,
-      os: e.os,
-      arch: e.arch,
-      online: hub.get(e.id) !== undefined,
-      shell: e.defaultShell,
-      home: e.homeDir,
-    }));
-}
-
-/** 모델이 PC 를 id, 이름, 호스트 이름 중 무엇으로 불러도 하나로 정해지면 찾는다 */
-async function resolvePc(ref: string): Promise<PcInfo> {
-  const pcs = await listPcs();
-  const key = ref.trim().toLowerCase();
-  const exact = pcs.filter((p) => p.id === ref || p.name.toLowerCase() === key || p.hostname.toLowerCase() === key);
-  if (exact.length === 1) return exact[0]!;
-  const names = pcs.map((p) => `${p.name} (${p.id})`).join(', ');
-  throw new Error(exact.length > 1 ? `"${ref}" 에 해당하는 PC 가 여럿입니다. id 로 지정하세요: ${names}` : `"${ref}" PC 를 찾지 못했습니다. 있는 PC: ${names}`);
-}
+const listPcs = () => listPcsOf(store, hub);
+const resolvePc = (ref: string) => resolvePcOf(store, hub, ref);
 
 const pcParam = v.pipe(v.string(), v.description('대상 PC 의 id, 이름 또는 호스트 이름 (list_pcs 결과 참고)'));
 
@@ -117,11 +83,14 @@ export function Assistant({ id }: AgentProps) {
     }),
   );
 
+  useJobTools({ instanceId: id });
+
   return [
     '당신은 여러 원격 PC 를 함께 관리하는 운영자입니다.',
     '어떤 PC 가 있는지 모르면 먼저 list_pcs 를 호출하고, 명령마다 대상 PC 를 정확히 지정하십시오.',
     '명령을 실행하기 전에 무엇을 할지 짧게 말하고, 파괴적인 작업은 꼭 필요할 때만 하십시오.',
     '위험한 명령은 사용자 승인을 거칩니다. 종료 코드 126 과 "사용자가 실행을 거부함"은 사용자가 거부했다는 뜻입니다.',
     'Windows PC 에서는 PowerShell 문법을 쓰고, 경로는 /c/Users/... 형태로 다루십시오.',
+    JOB_GUIDE,
   ].join('\n');
 }

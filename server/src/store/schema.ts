@@ -69,11 +69,17 @@ export const auditLog = sqliteTable('audit_log', {
   approvalId: text('approval_id'),
 });
 
-/** AI 가 요청한 위험 명령의 승인 대기열. */
+/** AI 가 요청한 위험 명령·잡의 승인 대기열. */
 export const approvals = sqliteTable('approvals', {
   id: text('id').primaryKey(),
+  /** exec = 위험 명령 실행, job = 위험 명령이 든 잡 만들기·바꾸기 (설계 14.4) */
+  kind: text('kind', { enum: ['exec', 'job'] }).notNull().default('exec'),
+  /** 잡 승인이면 그룹 대상일 때 빈 문자열 */
   endpointId: text('endpoint_id').notNull(),
+  /** 실행할 명령. 잡 승인이면 위험으로 분류된 명령 */
   command: text('command').notNull(),
+  /** 잡 승인: 승인 카드에 보일 잡 내용 (JSON, ApprovalJobDetail) */
+  detail: text('detail').notNull().default(''),
   requestedBy: text('requested_by').notNull(),
   status: text('status', { enum: ['pending', 'approved', 'denied', 'expired'] }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
@@ -103,6 +109,8 @@ export const aiSessions = sqliteTable('ai_sessions', {
   /** 'all' 이면 여러 PC 를 다루는 통합 대화, 아니면 그 PC(endpoint id)에 묶인 대화 */
   scope: text('scope').notNull(),
   title: text('title').notNull().default(''),
+  /** 스케줄 AI 잡 회차가 만든 대화면 그 회차. 사람이 지켜보지 않으므로 위험 명령을 거부한다 (설계 14.3) */
+  jobRunId: text('job_run_id'),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
 });
@@ -156,12 +164,13 @@ export const jobRuns = sqliteTable('job_runs', {
   aiSessionId: text('ai_session_id'),
 });
 
-/** 회차 안에서 PC 하나의 결과. 오프라인으로 건너뛴 PC 는 행이 없다 */
+/** 회차 안에서 PC 하나의 결과. 오프라인으로 건너뛴 PC 는 행이 없다. AI 잡은 회차마다 한 행(AI 의 마지막 답) */
 export const jobResults = sqliteTable('job_results', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   runId: text('run_id')
     .notNull()
     .references(() => jobRuns.id, { onDelete: 'cascade' }),
+  /** 그룹 대상 AI 잡의 결과는 빈 문자열 */
   endpointId: text('endpoint_id').notNull(),
   /** 명령이 끝나지 못했으면(전송 실패·명령 없음) null 이고 error 에 이유 */
   exitCode: integer('exit_code'),

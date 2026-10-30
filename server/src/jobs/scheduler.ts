@@ -21,6 +21,17 @@ export interface SchedulerDeps {
 
 type Trigger = JobRunRow['trigger'];
 
+/**
+ * AI 잡 회차를 실행한다: 대화 세션을 만들어 지시를 보내고 AI 의 마지막 답을 돌려준다.
+ * Flue 에이전트에 의존하므로 app.ts 에서 넣어 준다 (스케줄러 ↔ 에이전트 순환 import 를 피한다)
+ */
+export type AiJobRunner = (
+  job: JobRow,
+  run: JobRunRow,
+  online: EndpointRow[],
+  offline: EndpointRow[],
+) => Promise<{ text: string; error?: string }>;
+
 const utf8 = new TextDecoder();
 
 /**
@@ -32,8 +43,13 @@ export class Scheduler {
   #timer: NodeJS.Timeout | undefined;
   #cleanupTimer: NodeJS.Timeout | undefined;
   #stopped = false;
+  #aiRunner: AiJobRunner | undefined;
 
   constructor(private readonly deps: SchedulerDeps) {}
+
+  setAiRunner(runner: AiJobRunner): void {
+    this.#aiRunner = runner;
+  }
 
   /** 놓친 회차를 처리하고 실행 루프를 시작한다 */
   async start(now = new Date(), catchupDelayMs = CATCHUP_DELAY_MS): Promise<void> {
@@ -138,7 +154,8 @@ export class Scheduler {
         targetCount: targets.length,
         ranCount: online.length,
       });
-      void this.#execute(job, run, online).finally(() => this.#running.delete(job.id));
+      const offline = targets.filter((e) => !online.includes(e));
+      void this.#execute(job, run, online, offline).finally(() => this.#running.delete(job.id));
       return run;
     } catch (err) {
       this.#running.delete(job.id);
@@ -152,7 +169,7 @@ export class Scheduler {
     return job.targetType === 'endpoint' ? all.filter((e) => e.id === job.targetId) : all.filter((e) => e.groupId === job.targetId);
   }
 
-  async #execute(job: JobRow, run: JobRunRow, online: EndpointRow[]): Promise<void> {
+  async #execute(job: JobRow, run: JobRunRow, online: EndpointRow[], offline: EndpointRow[]): Promise<void> {
     const { jobs } = this.deps;
     let failed = 0;
     try {
@@ -164,6 +181,7 @@ export class Scheduler {
         });
         return;
       }
+      if (job.kind === 'ai') return await this.#executeAi(job, run, online, offline);
       // 동시 실행 수만큼 작업자를 두고 PC 를 나눠 처리한다
       const queue = [...online];
       const worker = async () => {
@@ -179,6 +197,32 @@ export class Scheduler {
       console.error(`[scheduler] run ${run.id} failed`, err);
       await jobs.finishRun(run.id, { status: 'failed', note: String(err), ranCount: online.length }).catch(() => {});
     }
+  }
+
+  /** AI 잡: 회차마다 대화 하나. 결과는 AI 의 마지막 답 한 행 (그룹 대상이면 endpoint_id 가 빈 문자열) */
+  async #executeAi(job: JobRow, run: JobRunRow, online: EndpointRow[], offline: EndpointRow[]): Promise<void> {
+    const { jobs } = this.deps;
+    const startedAt = new Date();
+    let r: { text: string; error?: string };
+    try {
+      if (!this.#aiRunner) throw new Error('AI 실행기가 준비되지 않음');
+      r = await this.#aiRunner(job, run, online, offline);
+    } catch (err) {
+      r = { text: '', error: err instanceof Error ? err.message : String(err) };
+    }
+    const { output, truncated } = keepOutput(r.text, '');
+    await jobs.addResult({
+      runId: run.id,
+      endpointId: job.targetType === 'endpoint' ? job.targetId : '',
+      exitCode: null,
+      error: r.error ?? '',
+      output,
+      truncated,
+      recordStatus: 'none',
+      startedAt,
+      finishedAt: new Date(),
+    });
+    await jobs.finishRun(run.id, { status: r.error ? 'failed' : 'succeeded', note: r.error ?? '', ranCount: online.length });
   }
 
   /** PC 하나에서 명령을 실행하고 결과·상태 기록을 남긴다. 성공(종료 코드 0)이면 true */

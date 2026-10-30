@@ -28,3 +28,13 @@ export async function sessionForInstance(
   const ep = await store.getEndpoint(endpointId);
   return ep && !ep.revokedAt ? row : undefined;
 }
+
+/** Flue 인스턴스 id 에서 세션 id 를 꺼낸다. 통합 대화는 그대로, PC 대화는 `<endpoint>:<세션>` 의 뒷부분 */
+export function sessionIdOf(instanceId: string): string {
+  return instanceId.slice(instanceId.lastIndexOf(':') + 1);
+}
+
+/** 스케줄 AI 잡 회차의 대화인지. 사람이 지켜보지 않으므로 승인이 필요한 일은 기다리지 않고 거부한다 (설계 14.3) */
+export async function isUnattended(store: Store, instanceId: string): Promise<boolean> {
+  return !!(await store.getAiSession(sessionIdOf(instanceId)))?.jobRunId;
+}

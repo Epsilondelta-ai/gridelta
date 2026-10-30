@@ -19,6 +19,8 @@ import {
   type EndpointEvent,
   EndpointEventSchema,
   EndpointSchema,
+  type JobSpec,
+  JobSpecSchema,
   type Terminal,
   type TerminalOutput,
   TerminalOutputSchema,
@@ -35,7 +37,7 @@ import {
   RequestTimeoutError,
 } from '../hub/index.ts';
 import type { PtySession } from '../hub/pty.ts';
-import type { ApprovalCenter } from '../ai/approvals.ts';
+import type { ApprovalCenter, ApprovalJobDetail } from '../ai/approvals.ts';
 import { type AiModels, UnknownModelError } from '../ai/models.ts';
 import { agentUrl } from '../ai/sessions.ts';
 import {
@@ -86,6 +88,13 @@ async function mapErrors<T>(fn: () => T | Promise<T>): Promise<T> {
   }
 }
 
+/** 잡 승인이면 승인 카드에 보일 잡 내용 */
+function jobDetail(row: ApprovalRow): { job?: JobSpec; targetName?: string } {
+  if (row.kind !== 'job' || !row.detail) return {};
+  const d = JSON.parse(row.detail) as ApprovalJobDetail;
+  return { job: create(JobSpecSchema, { ...d.spec, runAtMs: BigInt(d.spec.runAtMs) }), targetName: d.targetName };
+}
+
 function toAiSession(row: AiSessionRow): AiSession {
   return create(AiSessionSchema, {
     id: row.id,
@@ -94,6 +103,7 @@ function toAiSession(row: AiSessionRow): AiSession {
     createdAtMs: BigInt(row.createdAt.getTime()),
     updatedAtMs: BigInt(row.updatedAt.getTime()),
     agentUrl: agentUrl(row),
+    jobRunId: row.jobRunId ?? '',
   });
 }
 
@@ -129,6 +139,8 @@ export function consoleRoutes({ hub, store, jobs, approvals, aiModels, scheduler
       status: row.status,
       createdAtMs: BigInt(row.createdAt.getTime()),
       conversationId: row.requestedBy,
+      kind: row.kind,
+      ...jobDetail(row),
     });
   return (router: ConnectRouter) => {
     router.service(ConsoleService, {

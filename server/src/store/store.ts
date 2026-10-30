@@ -311,8 +311,12 @@ export class Store {
     return Number(result.changes) === 1;
   }
 
-  async createApproval(row: Pick<ApprovalRow, 'endpointId' | 'command' | 'requestedBy'>): Promise<ApprovalRow> {
+  async createApproval(
+    row: Pick<ApprovalRow, 'endpointId' | 'command' | 'requestedBy'> & Partial<Pick<ApprovalRow, 'kind' | 'detail'>>,
+  ): Promise<ApprovalRow> {
     const approval: ApprovalRow = {
+      kind: 'exec',
+      detail: '',
       ...row,
       id: uuidv7(),
       status: 'pending',
@@ -371,9 +375,16 @@ export class Store {
 
   // --- AI 대화 세션 ---
 
-  async createAiSession(scope: string): Promise<AiSessionRow> {
+  async createAiSession(scope: string, o: { title?: string; jobRunId?: string } = {}): Promise<AiSessionRow> {
     const now = new Date();
-    const row: AiSessionRow = { id: uuidv7(), scope, title: '', createdAt: now, updatedAt: now };
+    const row: AiSessionRow = {
+      id: uuidv7(),
+      scope,
+      title: o.title ?? '',
+      jobRunId: o.jobRunId ?? null,
+      createdAt: now,
+      updatedAt: now,
+    };
     await this.db.insert(aiSessions).values(row);
     return row;
   }

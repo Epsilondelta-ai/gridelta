@@ -5,9 +5,11 @@ import type { AgentHub, RequestOpts } from '../hub/index.ts';
 import type { ApprovalPolicy, Store } from '../store/index.ts';
 import type { ApprovalCenter } from './approvals.ts';
 import { needsApproval } from './policy.ts';
+import { isUnattended } from './sessions.ts';
 
 /** 거부된 명령의 종료 코드. 모델이 이유를 알고 다른 방법을 찾게 결과로 돌려준다 (설계 8.5) */
 export const DENIED_EXIT_CODE = 126;
+export const UNATTENDED_DENIED = '스케줄 실행에서는 위험 명령을 실행하지 않음';
 const DEFAULT_EXEC_TIMEOUT_MS = 5 * 60 * 1000;
 
 export interface RemoteDeps {
@@ -45,6 +47,11 @@ export async function execWithApproval(
   const policy = (ep?.approvalPolicy ?? 'dangerous') as ApprovalPolicy;
   let approvalId: string | null = null;
   if (needsApproval(policy, command)) {
+    if (await isUnattended(store, o.requestedBy)) {
+      const result: ShellResult = { stdout: '', stderr: UNATTENDED_DENIED, exitCode: DENIED_EXIT_CODE };
+      await store.audit({ actor: 'schedule', endpointId, kind: 'exec', command, exitCode: result.exitCode });
+      return result;
+    }
     const approval = await approvals.request({ endpointId, command, requestedBy: o.requestedBy }, o.signal);
     approvalId = approval.id;
     if (approval.decision !== 'approved') {

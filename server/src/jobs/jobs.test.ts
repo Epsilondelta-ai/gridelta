@@ -9,6 +9,9 @@ import { Store } from '../store/store.ts';
 import { keepOutput, OUTPUT_LIMIT_BYTES, parseRecords, RecordParseError } from './output.ts';
 import { InvalidScheduleError, nextRunAfter, validateSchedule } from './schedule.ts';
 import { CATCHUP_WINDOW_MS, Scheduler } from './scheduler.ts';
+import { type JobSpec, JobSpecSchema } from '@gridelta/proto/console';
+import { ApprovalCenter } from '../ai/approvals.ts';
+import { type AiJobDeps, dangerousCommand, saveJobAsAi } from './ai-actions.ts';
 
 describe('keepOutput', () => {
   it('keeps short output and appends stderr', () => {
@@ -174,5 +177,117 @@ describe('Scheduler', () => {
     expect(await jobs.listRuns(old.id)).toEqual([]);
     // 다음 시각은 지금부터 다시 계산된다
     expect((await jobs.getJob(old.id))?.nextRunAt?.toISOString()).toBe('2026-10-30T11:00:00.000Z');
+  });
+
+  it('runs an AI job through the runner and keeps the reply as one result', async () => {
+    const a = await store.enrollEndpoint({ hostname: 'a', os: 'linux', arch: 'arm64' });
+    const b = await store.enrollEndpoint({ hostname: 'b', os: 'linux', arch: 'arm64' });
+    online.add(a.id);
+    const calls: { online: string[]; offline: string[] }[] = [];
+    scheduler.setAiRunner(async (_job, run, on, off) => {
+      calls.push({ online: on.map((e) => e.id), offline: off.map((e) => e.id) });
+      await jobs.setRunSession(run.id, 'session-1');
+      return { text: '디스크 여유 충분' };
+    });
+    const j = await jobs.createJob(job({ kind: 'ai', aiPrompt: '점검해줘', commandUnix: '', recordName: '' }), null);
+    const run = await finished((await scheduler.runNow(j)).id);
+    expect(run).toMatchObject({ status: 'succeeded', targetCount: 2, ranCount: 1, aiSessionId: 'session-1' });
+    expect(calls).toEqual([{ online: [a.id], offline: [b.id] }]);
+    expect(execs).toEqual([]);
+    expect(await jobs.listResults(run.id)).toMatchObject([{ endpointId: '', output: '디스크 여유 충분', error: '' }]);
+
+    scheduler.setAiRunner(async () => ({ text: '', error: '타임아웃 (60초)' }));
+    expect(await finished((await scheduler.runNow(j)).id)).toMatchObject({ status: 'failed', note: '타임아웃 (60초)' });
+  });
+});
+
+describe('AI job actions', () => {
+  let store: Store;
+  let jobs: JobStore;
+  let approvals: ApprovalCenter;
+  const scheduler = { reschedule: async () => null };
+  let deps: AiJobDeps;
+
+  const spec = (over: Partial<JobSpec> = {}) =>
+    create(JobSpecSchema, {
+      name: '정리',
+      kind: 'command',
+      targetType: 'group',
+      targetId: 'default',
+      cron: '0 3 * * *',
+      timezone: 'UTC',
+      commandUnix: 'df -h',
+      enabled: true,
+      ...over,
+    });
+
+  /** 승인 요청이 대기열에 올라올 때까지 기다렸다가 결정한다 */
+  async function decideNext(approve: boolean) {
+    while (approvals.pending().length === 0) await new Promise((r) => setTimeout(r, 5));
+    const [row] = approvals.pending();
+    await approvals.decide(row!.id, approve);
+    return row!;
+  }
+
+  beforeEach(() => {
+    store = new Store(openDb(':memory:', resolve(import.meta.dirname, '../../drizzle')));
+    jobs = new JobStore(store.db);
+    approvals = new ApprovalCenter(store);
+    deps = { store, jobs, scheduler, approvals };
+  });
+
+  it('classifies only command jobs', () => {
+    expect(dangerousCommand({ kind: 'command', commandUnix: 'rm -rf /tmp/x', commandWindows: '' })).toBe('rm -rf /tmp/x');
+    expect(dangerousCommand({ kind: 'command', commandUnix: 'df -h', commandWindows: 'Remove-Item C:\\x -Recurse' })).toBe('Remove-Item C:\\x -Recurse');
+    expect(dangerousCommand({ kind: 'command', commandUnix: 'df -h', commandWindows: '' })).toBeUndefined();
+    expect(dangerousCommand({ kind: 'ai', commandUnix: '', commandWindows: '' })).toBeUndefined();
+  });
+
+  it('saves a safe job right away, enabled', async () => {
+    const r = await saveJobAsAi(deps, { spec: spec(), session: 'chat-1' });
+    expect(r.outcome).toBe('saved');
+    expect(r.job).toMatchObject({ enabled: true, createdBy: 'ai', createdSession: 'chat-1' });
+    expect(approvals.pending()).toEqual([]);
+  });
+
+  it('keeps a dangerous job off until approved, then turns it on', async () => {
+    const saving = saveJobAsAi(deps, { spec: spec({ commandUnix: 'rm -rf /tmp/old' }), session: 'chat-1' });
+    const row = await decideNext(true);
+    expect(row).toMatchObject({ kind: 'job', command: 'rm -rf /tmp/old', requestedBy: 'chat-1', endpointId: '' });
+    expect(JSON.parse(row.detail)).toMatchObject({ spec: { name: '정리', cron: '0 3 * * *' }, targetName: '그룹 기본' });
+    const r = await saving;
+    expect(r.outcome).toBe('approved');
+    expect(r.job).toMatchObject({ enabled: true, approvalId: row.id });
+  });
+
+  it('deletes a new dangerous job when denied, and leaves an existing job unchanged', async () => {
+    const saving = saveJobAsAi(deps, { spec: spec({ commandUnix: 'sudo reboot' }), session: 'chat-1' });
+    // 기다리는 동안 꺼진 채 저장되어 있다
+    while (approvals.pending().length === 0) await new Promise((r) => setTimeout(r, 5));
+    expect((await jobs.listJobs()).map((j) => j.enabled)).toEqual([false]);
+    await decideNext(false);
+    expect((await saving).outcome).toBe('denied');
+    expect(await jobs.listJobs()).toEqual([]);
+
+    const existing = (await saveJobAsAi(deps, { spec: spec(), session: 'chat-1' })).job!;
+    const updating = saveJobAsAi(deps, { spec: spec({ commandUnix: 'rm -rf /' }), session: 'chat-1', existing });
+    await decideNext(false);
+    expect((await updating).outcome).toBe('denied');
+    expect(await jobs.getJob(existing.id)).toMatchObject({ commandUnix: 'df -h', enabled: true });
+  });
+
+  it('refuses a dangerous job from an unattended (scheduled) AI session without asking', async () => {
+    const session = await store.createAiSession('all', { jobRunId: 'run-1' });
+    const r = await saveJobAsAi(deps, { spec: spec({ commandUnix: 'rm -rf /tmp/x' }), session: session.id });
+    expect(r.outcome).toBe('unattended');
+    expect(approvals.pending()).toEqual([]);
+    expect(await jobs.listJobs()).toEqual([]);
+  });
+
+  it('accepts AI jobs with a prompt and drops command fields', async () => {
+    const r = await saveJobAsAi(deps, { spec: spec({ kind: 'ai', aiPrompt: '점검해줘', commandUnix: 'rm -rf /', recordName: 'x' }), session: 'chat-1' });
+    expect(r.outcome).toBe('saved');
+    expect(r.job).toMatchObject({ kind: 'ai', aiPrompt: '점검해줘', commandUnix: '', recordName: '' });
+    await expect(saveJobAsAi(deps, { spec: spec({ kind: 'ai', aiPrompt: ' ' }), session: 'chat-1' })).rejects.toThrow('지시');
   });
 });

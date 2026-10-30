@@ -4,11 +4,13 @@ import { aiModels, approvals } from '../ai/index.ts';
 import { hub } from '../hub/index.ts';
 import { endpointIdOf, remotePc } from '../sandboxes/remote-pc.ts';
 import { store } from '../store/index.ts';
+import { JOB_GUIDE, useJobTools } from './job-tools.ts';
 
 /** 원격 PC 하나를 맡는 운영자 에이전트. 인스턴스 id 는 `<endpoint_id>:<대화 id>` (설계 8.1). */
 export function Operator({ id }: AgentProps) {
   useModel(aiModels.current(), { thinkingLevel: 'medium' });
   useSandbox(remotePc({ hub, store, approvals }));
+  useJobTools({ instanceId: id, defaultPc: endpointIdOf(id) });
 
   const pc = hub.list().find((e) => e.id === endpointIdOf(id));
   const windows = pc?.os === 'windows';
@@ -20,6 +22,7 @@ export function Operator({ id }: AgentProps) {
       ? `대상 PC: ${pc.hostname} (${pc.os}/${pc.arch}), 셸 ${pc.defaultShell}, 홈 디렉터리 ${pc.homeDir}.`
       : '대상 PC 정보는 작업 공간 정보를 따르십시오.',
     windows ? 'Windows PC 입니다. powershell 도구로 PowerShell 문법을 쓰고, 경로는 /c/Users/... 형태로 다루십시오.' : '',
+    JOB_GUIDE,
   ]
     .filter(Boolean)
     .join('\n');

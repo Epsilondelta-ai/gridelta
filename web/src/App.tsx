@@ -6,7 +6,7 @@ import { JobsView } from './JobsView.tsx';
 import { PcList, pcName } from './PcList.tsx';
 import { StatusView } from './StatusView.tsx';
 import { consoleClient, fetchMe, isUnauthenticated, login, logout, sleep, type User } from './api.ts';
-import { Approvals } from './Approvals.tsx';
+import { Approvals, ApprovalsProvider } from './Approvals.tsx';
 import type { TerminalSession } from './terminal-session.ts';
 import { type TerminalStatus, TerminalView } from './TerminalView.tsx';
 
@@ -90,6 +90,8 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   const [pane, setPane] = useState<'terminal' | 'status'>('terminal');
   /** 이름을 바꾸는 중인 터미널 세션 id */
   const [renaming, setRenaming] = useState('');
+  /** AI 패널에서 열 세션 (스케줄 회차의 "대화 보기") */
+  const [aiRequest, setAiRequest] = useState<{ id: string; n: number }>();
 
   const handleError = useCallback(
     (err: unknown) => {
@@ -207,6 +209,13 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
     setActiveTab(tabs.find((t) => t.endpointId === id)?.sessionId ?? '');
   }
 
+  /** scope 가 PC 면 그 PC 를 고른 뒤 AI 패널에서 세션을 연다 */
+  function openAiSession(id: string, scope: string) {
+    if (scope !== 'all') selectPc(scope);
+    setShowAi(true);
+    setAiRequest({ id, n: Date.now() });
+  }
+
   const updateTab = useCallback((sessionId: string, status: TerminalStatus, exitCode?: number) => {
     setTabs((prev) => prev.map((t) => (t.sessionId === sessionId ? { ...t, status, exitCode } : t)));
   }, []);
@@ -217,6 +226,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   };
 
   return (
+    <ApprovalsProvider onLoggedOut={onLoggedOut}>
     <div className="flex h-dvh flex-col bg-bg text-fg md:flex-row">
       <aside className="flex shrink-0 flex-col border-line bg-panel md:w-64 md:border-r max-md:border-b">
         <div className="flex items-center justify-between px-4 py-3">
@@ -252,11 +262,11 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
       </aside>
 
       <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <Approvals onLoggedOut={onLoggedOut} />
+        <Approvals />
         <div className="flex min-h-0 flex-1 max-md:flex-col">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {view === 'jobs' ? (
-          <JobsView endpoints={endpoints} onError={handleError} />
+          <JobsView endpoints={endpoints} onError={handleError} onOpenSession={openAiSession} />
         ) : !endpoint ? (
           <div className="grid flex-1 place-items-center p-6 text-muted">왼쪽에서 PC를 선택하세요.</div>
         ) : (
@@ -350,7 +360,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
           </>
         )}
         </div>
-        {showAi && <AiPanel endpoint={endpoint} endpointName={endpointName} />}
+        {showAi && <AiPanel endpoint={endpoint} endpointName={endpointName} request={aiRequest} />}
         </div>
         <footer className="flex items-center gap-4 border-t border-line bg-panel px-4 py-1 text-xs text-muted">
           <span>{endpoint ? `${pcName(endpoint)} · ${endpoint.defaultShell}` : ''}</span>
@@ -363,5 +373,6 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
         </footer>
       </main>
     </div>
+    </ApprovalsProvider>
   );
 }

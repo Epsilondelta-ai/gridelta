@@ -2,6 +2,7 @@ import { type FlueConversationPart, useFlueAgent } from '@flue/react';
 import type { AiSession, AiSettings, Endpoint } from '@gridelta/proto/console';
 import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { consoleClient } from './api.ts';
+import { ApprovalCard, useApprovals } from './Approvals.tsx';
 import { NameInput } from './NameInput.tsx';
 
 const ALL_PCS = 'all';
@@ -38,13 +39,15 @@ interface Props {
   /** 선택한 PC. 없으면 통합 대화만 쓸 수 있다 */
   endpoint: Endpoint | undefined;
   endpointName: (id: string) => string;
+  /** 이 세션을 연다 (스케줄 회차 기록의 "대화 보기"). n 은 같은 세션을 다시 열 때도 바뀌게 하는 값 */
+  request?: { id: string; n: number };
 }
 
 /**
  * AI 대화 패널. 대화는 세션으로 저장된다: 통합(여러 PC) 세션과 PC 세션.
  * 세션 목록·이름은 서버 DB, 대화 내용은 Flue(flue.db) 에 남는다.
  */
-export function AiPanel({ endpoint, endpointName }: Props) {
+export function AiPanel({ endpoint, endpointName, request }: Props) {
   const [sessions, setSessions] = useState<AiSession[]>([]);
   const [currentId, setCurrentId] = useState('');
   const [renaming, setRenaming] = useState(false);
@@ -84,7 +87,29 @@ export function AiPanel({ endpoint, endpointName }: Props) {
     setPolicy(endpoint?.approvalPolicy || 'dangerous');
   }, [endpoint?.approvalPolicy]);
 
+  // 요청받은 세션을 마지막 세션으로 남겨 두면 PC 가 바뀌며 목록을 다시 읽을 때도 그 세션을 연다
+  useEffect(() => {
+    if (!request) return;
+    saveLastSession(endpointId, request.id);
+    void refresh().then(
+      (list) => {
+        if (list.some((s) => s.id === request.id)) {
+          setCurrentId(request.id);
+          setDraftScope(undefined);
+        }
+      },
+      () => {},
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request]);
+
   const agent = useFlueAgent({ url: current?.agentUrl });
+  // 이 대화가 요청한 승인은 대화 안에도 카드로 띄운다 (설계 14.4)
+  const { pending: approvals } = useApprovals();
+  const instanceId = current ? (current.scope === ALL_PCS ? current.id : `${current.scope}:${current.id}`) : '';
+  const chatApprovals = approvals.filter((a) => instanceId && a.conversationId === instanceId);
+  /** 스케줄 AI 잡 회차의 대화는 기록으로만 본다 */
+  const scheduled = !!current?.jobRunId;
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: 'end' });
   }, [agent.messages]);
@@ -284,6 +309,9 @@ export function AiPanel({ endpoint, endpointName }: Props) {
               </div>
             </div>
           ))}
+        {chatApprovals.map((a) => (
+          <ApprovalCard key={a.id} approval={a} testId="chat-approval" />
+        ))}
         {agent.error && agent.status === 'error' && (
           <p className="text-danger" role="alert">
             {agent.error.message}
@@ -292,23 +320,29 @@ export function AiPanel({ endpoint, endpointName }: Props) {
         <div ref={bottom} />
       </div>
 
-      <div className="border-t border-line p-3">
-        <div className="flex gap-2">
-          <textarea
-            aria-label="AI 에게 보낼 메시지"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={onKeyDown}
-            rows={2}
-            placeholder="무엇을 할까요?"
-            className="field resize-none"
-          />
-          <button type="button" onClick={() => void send()} disabled={!draft.trim()} className="btn-primary self-end">
-            보내기
-          </button>
+      {scheduled ? (
+        <p className="border-t border-line p-3 text-xs text-muted" data-testid="ai-scheduled">
+          스케줄 잡 회차의 대화입니다. 사람이 지켜보지 않는 실행이라 위험 명령은 실행되지 않으며, 기록으로만 볼 수 있습니다.
+        </p>
+      ) : (
+        <div className="border-t border-line p-3">
+          <div className="flex gap-2">
+            <textarea
+              aria-label="AI 에게 보낼 메시지"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={onKeyDown}
+              rows={2}
+              placeholder="무엇을 할까요?"
+              className="field resize-none"
+            />
+            <button type="button" onClick={() => void send()} disabled={!draft.trim()} className="btn-primary self-end">
+              보내기
+            </button>
+          </div>
+          <p className="mt-1 h-4 text-xs text-muted">{busy ? '작업 중…' : ''}</p>
         </div>
-        <p className="mt-1 h-4 text-xs text-muted">{busy ? '작업 중…' : ''}</p>
-      </div>
+      )}
     </section>
   );
 }
@@ -333,8 +367,8 @@ function Part({ part }: { part: FlueConversationPart }) {
         </details>
       );
     case 'dynamic-tool': {
-      const input = (part.input ?? {}) as { command?: string; path?: string; pc?: string };
-      const target = [input.pc && `[${input.pc.slice(0, 13)}]`, input.command ?? input.path].filter(Boolean).join(' ');
+      const input = (part.input ?? {}) as { command?: string; path?: string; pc?: string; name?: string; job?: string };
+      const target = [input.pc && `[${input.pc.slice(0, 13)}]`, input.command ?? input.path ?? input.job ?? input.name].filter(Boolean).join(' ');
       return (
         <div className="overflow-hidden rounded-md border border-line" data-testid="tool-call" data-tool={part.toolName} data-state={part.state}>
           <div className="flex items-center gap-2 bg-hover px-2 py-1 text-xs">
