@@ -41,6 +41,21 @@ service ConsoleService {
   rpc RenameAiSession(RenameAiSessionRequest) returns (RenameAiSessionResponse);
   rpc DeleteAiSession(DeleteAiSessionRequest) returns (DeleteAiSessionResponse);
 
+  // 스케줄 잡 (설계 14장)
+  rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  rpc GetJob(GetJobRequest) returns (Job);
+  rpc CreateJob(CreateJobRequest) returns (Job);
+  rpc UpdateJob(UpdateJobRequest) returns (Job);
+  rpc DeleteJob(DeleteJobRequest) returns (DeleteJobResponse);
+  rpc SetJobEnabled(SetJobEnabledRequest) returns (Job);
+  rpc RunJobNow(RunJobNowRequest) returns (JobRun);
+  rpc ListJobRuns(ListJobRunsRequest) returns (ListJobRunsResponse);
+  rpc GetJobRun(GetJobRunRequest) returns (GetJobRunResponse);
+
+  // PC 상태 기록 (이름 + JSON 값)
+  rpc ListLatestRecords(ListLatestRecordsRequest) returns (ListRecordsResponse);
+  rpc ListRecords(ListRecordsRequest) returns (ListRecordsResponse);
+
   // AI 모델 선택. 바꾸면 새 대화부터 적용된다
   rpc GetAiSettings(GetAiSettingsRequest) returns (AiSettings);
   rpc UpdateAiSettings(UpdateAiSettingsRequest) returns (AiSettings);
@@ -304,3 +319,131 @@ message RevokeEnrollTokenRequest {
 }
 
 message RevokeEnrollTokenResponse {}
+
+// 잡을 만들거나 바꿀 때 받는 내용
+message JobSpec {
+  string name = 1;
+  string kind = 2; // command | ai
+  string target_type = 3; // endpoint | group
+  string target_id = 4;
+  string cron = 5; // 5필드 또는 초를 포함한 6필드. 비우면 run_at_ms 에 한 번만
+  int64 run_at_ms = 6;
+  string timezone = 7; // IANA (예: Asia/Seoul)
+  string command_unix = 8; // macOS·Linux
+  string command_windows = 9; // Windows (PowerShell)
+  string ai_prompt = 10;
+  string record_name = 11; // 비우면 출력을 상태로 저장하지 않는다
+  string record_parse = 12; // json | kv | text
+  uint32 timeout_s = 13; // 0 이면 600
+  uint32 concurrency = 14; // 0 이면 10
+  bool enabled = 15;
+}
+
+message JobRun {
+  string id = 1;
+  string job_id = 2;
+  int64 scheduled_at_ms = 3;
+  int64 started_at_ms = 4;
+  int64 finished_at_ms = 5; // 실행 중이면 0
+  string status = 6; // running | succeeded | failed | skipped
+  string note = 7;
+  string trigger = 8; // schedule | manual | catchup
+  uint32 target_count = 9;
+  uint32 ran_count = 10; // 오프라인 PC 는 세지 않는다
+}
+
+message Job {
+  string id = 1;
+  JobSpec spec = 2;
+  int64 next_run_at_ms = 3; // 0 이면 예정 없음
+  string created_by = 4; // user | ai
+  int64 created_at_ms = 5;
+  int64 updated_at_ms = 6;
+  JobRun last_run = 7;
+}
+
+message JobResult {
+  string endpoint_id = 1;
+  optional int32 exit_code = 2; // 명령이 끝나지 못했으면 없음 (error 참고)
+  string error = 3;
+  string output = 4; // stdout + stderr, 최대 64 KB
+  bool truncated = 5;
+  string record_status = 6; // none | saved | failed
+  int64 started_at_ms = 7;
+  int64 finished_at_ms = 8;
+}
+
+message ListJobsRequest {}
+
+message ListJobsResponse {
+  repeated Job jobs = 1;
+}
+
+message GetJobRequest {
+  string id = 1;
+}
+
+message CreateJobRequest {
+  JobSpec spec = 1;
+}
+
+message UpdateJobRequest {
+  string id = 1;
+  JobSpec spec = 2;
+}
+
+message DeleteJobRequest {
+  string id = 1;
+}
+
+message DeleteJobResponse {}
+
+message SetJobEnabledRequest {
+  string id = 1;
+  bool enabled = 2;
+}
+
+message RunJobNowRequest {
+  string id = 1;
+}
+
+message ListJobRunsRequest {
+  string job_id = 1;
+  uint32 limit = 2; // 0 이면 50
+}
+
+message ListJobRunsResponse {
+  repeated JobRun runs = 1; // 최근 것부터
+}
+
+message GetJobRunRequest {
+  string run_id = 1;
+}
+
+message GetJobRunResponse {
+  JobRun run = 1;
+  repeated JobResult results = 2;
+}
+
+message StateRecord {
+  string endpoint_id = 1;
+  string name = 2;
+  string value_json = 3;
+  int64 recorded_at_ms = 4;
+  string source = 5; // job:<잡>:<회차> 또는 ai:<세션>
+}
+
+message ListLatestRecordsRequest {
+  string endpoint_id = 1;
+}
+
+message ListRecordsRequest {
+  string endpoint_id = 1;
+  string name = 2; // 정확히 그 이름이거나 "name." 아래 전부
+  int64 since_ms = 3;
+  uint32 limit = 4; // 0 이면 200
+}
+
+message ListRecordsResponse {
+  repeated StateRecord records = 1;
+}

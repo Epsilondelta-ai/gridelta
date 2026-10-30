@@ -36,5 +36,8 @@ export const config = {
    */
   webAuth: env.GRIDELTA_WEB_AUTH !== 'off',
 
+  /** 서버가 켜진 뒤 놓친 잡 회차를 실행하기 전에 에이전트가 다시 붙기를 기다리는 시간 */
+  catchupDelayMs: Number(env.GRIDELTA_CATCHUP_DELAY_MS ?? 30_000),
+
   debug: env.GRIDELTA_DEBUG === '1',
 };

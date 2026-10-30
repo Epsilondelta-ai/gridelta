@@ -94,6 +94,30 @@ const (
 	// ConsoleServiceDeleteAiSessionProcedure is the procedure name of the ConsoleService's
 	// DeleteAiSession RPC.
 	ConsoleServiceDeleteAiSessionProcedure = "/gridelta.v1.ConsoleService/DeleteAiSession"
+	// ConsoleServiceListJobsProcedure is the procedure name of the ConsoleService's ListJobs RPC.
+	ConsoleServiceListJobsProcedure = "/gridelta.v1.ConsoleService/ListJobs"
+	// ConsoleServiceGetJobProcedure is the procedure name of the ConsoleService's GetJob RPC.
+	ConsoleServiceGetJobProcedure = "/gridelta.v1.ConsoleService/GetJob"
+	// ConsoleServiceCreateJobProcedure is the procedure name of the ConsoleService's CreateJob RPC.
+	ConsoleServiceCreateJobProcedure = "/gridelta.v1.ConsoleService/CreateJob"
+	// ConsoleServiceUpdateJobProcedure is the procedure name of the ConsoleService's UpdateJob RPC.
+	ConsoleServiceUpdateJobProcedure = "/gridelta.v1.ConsoleService/UpdateJob"
+	// ConsoleServiceDeleteJobProcedure is the procedure name of the ConsoleService's DeleteJob RPC.
+	ConsoleServiceDeleteJobProcedure = "/gridelta.v1.ConsoleService/DeleteJob"
+	// ConsoleServiceSetJobEnabledProcedure is the procedure name of the ConsoleService's SetJobEnabled
+	// RPC.
+	ConsoleServiceSetJobEnabledProcedure = "/gridelta.v1.ConsoleService/SetJobEnabled"
+	// ConsoleServiceRunJobNowProcedure is the procedure name of the ConsoleService's RunJobNow RPC.
+	ConsoleServiceRunJobNowProcedure = "/gridelta.v1.ConsoleService/RunJobNow"
+	// ConsoleServiceListJobRunsProcedure is the procedure name of the ConsoleService's ListJobRuns RPC.
+	ConsoleServiceListJobRunsProcedure = "/gridelta.v1.ConsoleService/ListJobRuns"
+	// ConsoleServiceGetJobRunProcedure is the procedure name of the ConsoleService's GetJobRun RPC.
+	ConsoleServiceGetJobRunProcedure = "/gridelta.v1.ConsoleService/GetJobRun"
+	// ConsoleServiceListLatestRecordsProcedure is the procedure name of the ConsoleService's
+	// ListLatestRecords RPC.
+	ConsoleServiceListLatestRecordsProcedure = "/gridelta.v1.ConsoleService/ListLatestRecords"
+	// ConsoleServiceListRecordsProcedure is the procedure name of the ConsoleService's ListRecords RPC.
+	ConsoleServiceListRecordsProcedure = "/gridelta.v1.ConsoleService/ListRecords"
 	// ConsoleServiceGetAiSettingsProcedure is the procedure name of the ConsoleService's GetAiSettings
 	// RPC.
 	ConsoleServiceGetAiSettingsProcedure = "/gridelta.v1.ConsoleService/GetAiSettings"
@@ -278,6 +302,83 @@ var (
 			Procedure:  ConsoleServiceDeleteAiSessionProcedure,
 		}
 	})
+	consoleServiceListJobsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListJobs"),
+			Procedure:  ConsoleServiceListJobsProcedure,
+		}
+	})
+	consoleServiceGetJobSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("GetJob"),
+			Procedure:  ConsoleServiceGetJobProcedure,
+		}
+	})
+	consoleServiceCreateJobSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("CreateJob"),
+			Procedure:  ConsoleServiceCreateJobProcedure,
+		}
+	})
+	consoleServiceUpdateJobSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("UpdateJob"),
+			Procedure:  ConsoleServiceUpdateJobProcedure,
+		}
+	})
+	consoleServiceDeleteJobSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("DeleteJob"),
+			Procedure:  ConsoleServiceDeleteJobProcedure,
+		}
+	})
+	consoleServiceSetJobEnabledSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("SetJobEnabled"),
+			Procedure:  ConsoleServiceSetJobEnabledProcedure,
+		}
+	})
+	consoleServiceRunJobNowSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("RunJobNow"),
+			Procedure:  ConsoleServiceRunJobNowProcedure,
+		}
+	})
+	consoleServiceListJobRunsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListJobRuns"),
+			Procedure:  ConsoleServiceListJobRunsProcedure,
+		}
+	})
+	consoleServiceGetJobRunSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("GetJobRun"),
+			Procedure:  ConsoleServiceGetJobRunProcedure,
+		}
+	})
+	consoleServiceListLatestRecordsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListLatestRecords"),
+			Procedure:  ConsoleServiceListLatestRecordsProcedure,
+		}
+	})
+	consoleServiceListRecordsSpec = sync.OnceValue(func() connect.Spec {
+		return connect.Spec{
+			StreamType: connect.StreamTypeUnary,
+			Schema:     v1.File_gridelta_v1_console_proto.Services().ByName("ConsoleService").Methods().ByName("ListRecords"),
+			Procedure:  ConsoleServiceListRecordsProcedure,
+		}
+	})
 	consoleServiceGetAiSettingsSpec = sync.OnceValue(func() connect.Spec {
 		return connect.Spec{
 			StreamType: connect.StreamTypeUnary,
@@ -325,6 +426,19 @@ type ConsoleServiceClient interface {
 	CreateAiSession(context.Context, *v1.CreateAiSessionRequest) (*v1.AiSession, error)
 	RenameAiSession(context.Context, *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error)
 	DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error)
+	// 스케줄 잡 (설계 14장)
+	ListJobs(context.Context, *v1.ListJobsRequest) (*v1.ListJobsResponse, error)
+	GetJob(context.Context, *v1.GetJobRequest) (*v1.Job, error)
+	CreateJob(context.Context, *v1.CreateJobRequest) (*v1.Job, error)
+	UpdateJob(context.Context, *v1.UpdateJobRequest) (*v1.Job, error)
+	DeleteJob(context.Context, *v1.DeleteJobRequest) (*v1.DeleteJobResponse, error)
+	SetJobEnabled(context.Context, *v1.SetJobEnabledRequest) (*v1.Job, error)
+	RunJobNow(context.Context, *v1.RunJobNowRequest) (*v1.JobRun, error)
+	ListJobRuns(context.Context, *v1.ListJobRunsRequest) (*v1.ListJobRunsResponse, error)
+	GetJobRun(context.Context, *v1.GetJobRunRequest) (*v1.GetJobRunResponse, error)
+	// PC 상태 기록 (이름 + JSON 값)
+	ListLatestRecords(context.Context, *v1.ListLatestRecordsRequest) (*v1.ListRecordsResponse, error)
+	ListRecords(context.Context, *v1.ListRecordsRequest) (*v1.ListRecordsResponse, error)
 	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
 	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
 	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
@@ -430,6 +544,19 @@ type ConsoleServiceHandler interface {
 	CreateAiSession(context.Context, *v1.CreateAiSessionRequest) (*v1.AiSession, error)
 	RenameAiSession(context.Context, *v1.RenameAiSessionRequest) (*v1.RenameAiSessionResponse, error)
 	DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error)
+	// 스케줄 잡 (설계 14장)
+	ListJobs(context.Context, *v1.ListJobsRequest) (*v1.ListJobsResponse, error)
+	GetJob(context.Context, *v1.GetJobRequest) (*v1.Job, error)
+	CreateJob(context.Context, *v1.CreateJobRequest) (*v1.Job, error)
+	UpdateJob(context.Context, *v1.UpdateJobRequest) (*v1.Job, error)
+	DeleteJob(context.Context, *v1.DeleteJobRequest) (*v1.DeleteJobResponse, error)
+	SetJobEnabled(context.Context, *v1.SetJobEnabledRequest) (*v1.Job, error)
+	RunJobNow(context.Context, *v1.RunJobNowRequest) (*v1.JobRun, error)
+	ListJobRuns(context.Context, *v1.ListJobRunsRequest) (*v1.ListJobRunsResponse, error)
+	GetJobRun(context.Context, *v1.GetJobRunRequest) (*v1.GetJobRunResponse, error)
+	// PC 상태 기록 (이름 + JSON 값)
+	ListLatestRecords(context.Context, *v1.ListLatestRecordsRequest) (*v1.ListRecordsResponse, error)
+	ListRecords(context.Context, *v1.ListRecordsRequest) (*v1.ListRecordsResponse, error)
 	// AI 모델 선택. 바꾸면 새 대화부터 적용된다
 	GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error)
 	UpdateAiSettings(context.Context, *v1.UpdateAiSettingsRequest) (*v1.AiSettings, error)
@@ -465,6 +592,17 @@ func RegisterConsoleServiceHandler(server *connect.Server, svc ConsoleServiceHan
 		connect.Method{Spec: consoleServiceCreateAiSessionSpec(), Handler: adapter.createAiSession},
 		connect.Method{Spec: consoleServiceRenameAiSessionSpec(), Handler: adapter.renameAiSession},
 		connect.Method{Spec: consoleServiceDeleteAiSessionSpec(), Handler: adapter.deleteAiSession},
+		connect.Method{Spec: consoleServiceListJobsSpec(), Handler: adapter.listJobs},
+		connect.Method{Spec: consoleServiceGetJobSpec(), Handler: adapter.getJob},
+		connect.Method{Spec: consoleServiceCreateJobSpec(), Handler: adapter.createJob},
+		connect.Method{Spec: consoleServiceUpdateJobSpec(), Handler: adapter.updateJob},
+		connect.Method{Spec: consoleServiceDeleteJobSpec(), Handler: adapter.deleteJob},
+		connect.Method{Spec: consoleServiceSetJobEnabledSpec(), Handler: adapter.setJobEnabled},
+		connect.Method{Spec: consoleServiceRunJobNowSpec(), Handler: adapter.runJobNow},
+		connect.Method{Spec: consoleServiceListJobRunsSpec(), Handler: adapter.listJobRuns},
+		connect.Method{Spec: consoleServiceGetJobRunSpec(), Handler: adapter.getJobRun},
+		connect.Method{Spec: consoleServiceListLatestRecordsSpec(), Handler: adapter.listLatestRecords},
+		connect.Method{Spec: consoleServiceListRecordsSpec(), Handler: adapter.listRecords},
 		connect.Method{Spec: consoleServiceGetAiSettingsSpec(), Handler: adapter.getAiSettings},
 		connect.Method{Spec: consoleServiceUpdateAiSettingsSpec(), Handler: adapter.updateAiSettings},
 	)
@@ -619,6 +757,50 @@ func (UnimplementedConsoleServiceHandler) RenameAiSession(context.Context, *v1.R
 
 func (UnimplementedConsoleServiceHandler) DeleteAiSession(context.Context, *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.DeleteAiSession is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListJobs(context.Context, *v1.ListJobsRequest) (*v1.ListJobsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListJobs is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) GetJob(context.Context, *v1.GetJobRequest) (*v1.Job, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.GetJob is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) CreateJob(context.Context, *v1.CreateJobRequest) (*v1.Job, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.CreateJob is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) UpdateJob(context.Context, *v1.UpdateJobRequest) (*v1.Job, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.UpdateJob is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) DeleteJob(context.Context, *v1.DeleteJobRequest) (*v1.DeleteJobResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.DeleteJob is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) SetJobEnabled(context.Context, *v1.SetJobEnabledRequest) (*v1.Job, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.SetJobEnabled is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) RunJobNow(context.Context, *v1.RunJobNowRequest) (*v1.JobRun, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.RunJobNow is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListJobRuns(context.Context, *v1.ListJobRunsRequest) (*v1.ListJobRunsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListJobRuns is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) GetJobRun(context.Context, *v1.GetJobRunRequest) (*v1.GetJobRunResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.GetJobRun is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListLatestRecords(context.Context, *v1.ListLatestRecordsRequest) (*v1.ListRecordsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListLatestRecords is not implemented")
+}
+
+func (UnimplementedConsoleServiceHandler) ListRecords(context.Context, *v1.ListRecordsRequest) (*v1.ListRecordsResponse, error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, "gridelta.v1.ConsoleService.ListRecords is not implemented")
 }
 
 func (UnimplementedConsoleServiceHandler) GetAiSettings(context.Context, *v1.GetAiSettingsRequest) (*v1.AiSettings, error) {
@@ -828,6 +1010,94 @@ func (c *consoleServiceClient) RenameAiSession(ctx context.Context, req *v1.Rena
 func (c *consoleServiceClient) DeleteAiSession(ctx context.Context, req *v1.DeleteAiSessionRequest) (*v1.DeleteAiSessionResponse, error) {
 	var res v1.DeleteAiSessionResponse
 	if err := c.client.CallUnary(ctx, consoleServiceDeleteAiSessionSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListJobs(ctx context.Context, req *v1.ListJobsRequest) (*v1.ListJobsResponse, error) {
+	var res v1.ListJobsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListJobsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) GetJob(ctx context.Context, req *v1.GetJobRequest) (*v1.Job, error) {
+	var res v1.Job
+	if err := c.client.CallUnary(ctx, consoleServiceGetJobSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) CreateJob(ctx context.Context, req *v1.CreateJobRequest) (*v1.Job, error) {
+	var res v1.Job
+	if err := c.client.CallUnary(ctx, consoleServiceCreateJobSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) UpdateJob(ctx context.Context, req *v1.UpdateJobRequest) (*v1.Job, error) {
+	var res v1.Job
+	if err := c.client.CallUnary(ctx, consoleServiceUpdateJobSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) DeleteJob(ctx context.Context, req *v1.DeleteJobRequest) (*v1.DeleteJobResponse, error) {
+	var res v1.DeleteJobResponse
+	if err := c.client.CallUnary(ctx, consoleServiceDeleteJobSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) SetJobEnabled(ctx context.Context, req *v1.SetJobEnabledRequest) (*v1.Job, error) {
+	var res v1.Job
+	if err := c.client.CallUnary(ctx, consoleServiceSetJobEnabledSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) RunJobNow(ctx context.Context, req *v1.RunJobNowRequest) (*v1.JobRun, error) {
+	var res v1.JobRun
+	if err := c.client.CallUnary(ctx, consoleServiceRunJobNowSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListJobRuns(ctx context.Context, req *v1.ListJobRunsRequest) (*v1.ListJobRunsResponse, error) {
+	var res v1.ListJobRunsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListJobRunsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) GetJobRun(ctx context.Context, req *v1.GetJobRunRequest) (*v1.GetJobRunResponse, error) {
+	var res v1.GetJobRunResponse
+	if err := c.client.CallUnary(ctx, consoleServiceGetJobRunSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListLatestRecords(ctx context.Context, req *v1.ListLatestRecordsRequest) (*v1.ListRecordsResponse, error) {
+	var res v1.ListRecordsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListLatestRecordsSpec(), req, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (c *consoleServiceClient) ListRecords(ctx context.Context, req *v1.ListRecordsRequest) (*v1.ListRecordsResponse, error) {
+	var res v1.ListRecordsResponse
+	if err := c.client.CallUnary(ctx, consoleServiceListRecordsSpec(), req, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -1133,6 +1403,138 @@ func (h consoleServiceHandler) deleteAiSession(ctx context.Context, _ connect.Sp
 		return err
 	}
 	res, err := h.svc.DeleteAiSession(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listJobs(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListJobsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListJobs(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) getJob(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.GetJobRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetJob(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) createJob(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.CreateJobRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.CreateJob(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) updateJob(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.UpdateJobRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.UpdateJob(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) deleteJob(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.DeleteJobRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.DeleteJob(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) setJobEnabled(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.SetJobEnabledRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.SetJobEnabled(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) runJobNow(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.RunJobNowRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.RunJobNow(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listJobRuns(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListJobRunsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListJobRuns(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) getJobRun(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.GetJobRunRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.GetJobRun(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listLatestRecords(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListLatestRecordsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListLatestRecords(ctx, &req)
+	if err != nil {
+		return err
+	}
+	return stream.Send(res)
+}
+
+func (h consoleServiceHandler) listRecords(ctx context.Context, _ connect.Spec, stream connect.ServerStream) error {
+	var req v1.ListRecordsRequest
+	if err := stream.Receive(&req); err != nil {
+		return err
+	}
+	res, err := h.svc.ListRecords(ctx, &req)
 	if err != nil {
 		return err
 	}

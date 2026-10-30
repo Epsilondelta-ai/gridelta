@@ -2,7 +2,9 @@ import type { Endpoint } from '@gridelta/proto/console';
 import { type SubmitEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { AiPanel } from './AiPanel.tsx';
 import { NameInput } from './NameInput.tsx';
+import { JobsView } from './JobsView.tsx';
 import { PcList, pcName } from './PcList.tsx';
+import { StatusView } from './StatusView.tsx';
 import { consoleClient, fetchMe, isUnauthenticated, login, logout, sleep, type User } from './api.ts';
 import { Approvals } from './Approvals.tsx';
 import type { TerminalSession } from './terminal-session.ts';
@@ -82,6 +84,10 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   const sessions = useRef(new Map<string, TerminalSession>());
   const [latency, setLatency] = useState<number>();
   const [showAi, setShowAi] = useState(true);
+  /** 가운데 화면: PC(터미널·상태) 또는 스케줄 */
+  const [view, setView] = useState<'pc' | 'jobs'>('pc');
+  /** 선택한 PC 화면에서 터미널과 상태 중 무엇을 보는지 */
+  const [pane, setPane] = useState<'terminal' | 'status'>('terminal');
   /** 이름을 바꾸는 중인 터미널 세션 id */
   const [renaming, setRenaming] = useState('');
 
@@ -171,6 +177,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
         },
       ]);
       setActiveTab(sessionId);
+      setPane('terminal');
     } catch (err) {
       handleError(err);
     }
@@ -195,6 +202,7 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
   }
 
   function selectPc(id: string) {
+    setView('pc');
     setSelected(id);
     setActiveTab(tabs.find((t) => t.endpointId === id)?.sessionId ?? '');
   }
@@ -224,6 +232,16 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
             </button>
           )}
         </div>
+        <div className="px-2 pb-1">
+          <button
+            type="button"
+            onClick={() => setView('jobs')}
+            aria-pressed={view === 'jobs'}
+            className={`w-full rounded-md px-2 py-2 text-left text-sm ${view === 'jobs' ? 'bg-accent-soft' : 'hover:bg-hover'}`}
+          >
+            스케줄
+          </button>
+        </div>
         <PcList
           endpoints={endpoints}
           selected={selected}
@@ -237,7 +255,9 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
         <Approvals onLoggedOut={onLoggedOut} />
         <div className="flex min-h-0 flex-1 max-md:flex-col">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        {!endpoint ? (
+        {view === 'jobs' ? (
+          <JobsView endpoints={endpoints} onError={handleError} />
+        ) : !endpoint ? (
           <div className="grid flex-1 place-items-center p-6 text-muted">왼쪽에서 PC를 선택하세요.</div>
         ) : (
           <>
@@ -262,7 +282,10 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
                       type="button"
                       role="tab"
                       aria-selected={t.sessionId === activeTab}
-                      onClick={() => setActiveTab(t.sessionId)}
+                      onClick={() => {
+                        setActiveTab(t.sessionId);
+                        setPane('terminal');
+                      }}
                       onDoubleClick={() => setRenaming(t.sessionId)}
                       onKeyDown={(ev) => ev.key === 'F2' && setRenaming(t.sessionId)}
                       title="더블클릭하거나 F2 로 이름 바꾸기"
@@ -284,9 +307,17 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
               ))}
               <button
                 type="button"
+                onClick={() => setPane((p) => (p === 'status' ? 'terminal' : 'status'))}
+                aria-pressed={pane === 'status'}
+                className="ml-auto shrink-0 px-3 py-2 text-sm text-accent order-last"
+              >
+                상태
+              </button>
+              <button
+                type="button"
                 onClick={() => setShowAi((v) => !v)}
                 aria-pressed={showAi}
-                className="ml-auto shrink-0 px-3 py-2 text-sm text-accent order-last"
+                className="shrink-0 px-3 py-2 text-sm text-accent order-last"
               >
                 AI
               </button>
@@ -299,12 +330,13 @@ function Console({ user, onLoggedOut }: { user: User; onLoggedOut: () => void })
                 + 새 터미널
               </button>
             </div>
-            <div className="relative min-h-0 flex-1 bg-term p-2">
+            {pane === 'status' && <StatusView endpoint={endpoint} onError={handleError} />}
+            <div className={`relative min-h-0 flex-1 bg-term p-2 ${pane === 'status' ? 'hidden' : ''}`}>
               {tabs.map((t) => (
                 <TerminalView
                   key={t.sessionId}
                   sessionId={t.sessionId}
-                  active={t.sessionId === activeTab && t.endpointId === selected}
+                  active={pane === 'terminal' && t.sessionId === activeTab && t.endpointId === selected}
                   onStatus={(s, code) => updateTab(t.sessionId, s, code)}
                   onSession={(s) => (s ? sessions.current.set(t.sessionId, s) : sessions.current.delete(t.sessionId))}
                 />
